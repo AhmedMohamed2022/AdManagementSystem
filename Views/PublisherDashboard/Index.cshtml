@@ -1,0 +1,487 @@
+﻿@* @model AdSystem.ViewModels.PublisherDashboardViewModel
+@{
+    ViewData["Title"] = "Publisher Dashboard";
+}
+
+<h2 class="mb-4">🌍 Publisher Dashboard</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Total Websites</h5>
+                <h3>@Model.TotalWebsites</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm bg-success bg-opacity-25">
+            <div class="card-body">
+                <h5>Approved</h5>
+                <h3>@Model.ApprovedSites</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm bg-warning bg-opacity-25">
+            <div class="card-body">
+                <h5>Pending</h5>
+                <h3>@Model.PendingSites</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<h4>📈 Ad Performance</h4>
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Impressions</h5>
+                <h3>@Model.TotalImpressions</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5>Clicks</h5>
+                <h3>@Model.TotalClicks</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+<h4 class="mt-4">📊 Performance Chart</h4>
+<div class="card p-4 shadow-sm">
+    <canvas id="pubChart" height="100"></canvas>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('pubChart');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Impressions', 'Clicks'],
+                datasets: [{
+                    label: 'Website Performance',
+                    data: [@Model.TotalImpressions, @Model.TotalClicks],
+                    backgroundColor: ['#03a9f4', '#4caf50']
+                }]
+            }
+        });
+    </script>
+} *@
+@model AdSystem.ViewModels.PublisherDashboardViewModel
+@{
+    ViewData["Title"] = "لوحة الناشر";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1 class="page-title">لوحة الناشر</h1>
+    <p class="page-subtitle">متابعة أداء مواقعك وإحصائيات الإعلانات</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-card-icon primary">
+                <i class="bi bi-globe"></i>
+            </div>
+            <div class="stat-card-title">إجمالي المواقع</div>
+            <div class="stat-card-value">@Model.TotalWebsites</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-card-icon success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-card-title">المواقع المفعلة</div>
+            <div class="stat-card-value">@Model.ApprovedSites</div>
+            <div class="stat-card-change positive">
+                <i class="bi bi-check"></i>
+                <span>جاهز للعرض</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-card-icon warning">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stat-card-title">بانتظار الموافقة</div>
+            <div class="stat-card-value">@Model.PendingSites</div>
+            @if (Model.PendingSites > 0)
+            {
+                <div class="stat-card-change negative">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>قيد المراجعة</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-card-icon error">
+                <i class="bi bi-eye"></i>
+            </div>
+            <div class="stat-card-title">إجمالي المشاهدات</div>
+            <div class="stat-card-value">@Model.TotalImpressions.ToString("N0")</div>
+        </div>
+    </div>
+</div>
+
+<!-- Performance Metrics -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-4 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <div class="text-secondary small mb-1">إجمالي النقرات</div>
+                        <h3 class="mb-0">@Model.TotalClicks.ToString("N0")</h3>
+                    </div>
+                    <div class="stat-card-icon info" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-cursor"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-info">نشط</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <div class="text-secondary small mb-1">معدل النقر (CTR)</div>
+                        <h3 class="mb-0">
+                            @if (Model.TotalImpressions > 0)
+                            {
+                                @(Math.Round((double)Model.TotalClicks / Model.TotalImpressions * 100, 2))
+                            
+                                <text>%</text>
+                            }
+                            else
+                            {
+                                <text>0%</text>
+                            }
+                        </h3>
+                    </div>
+                    <div class="stat-card-icon success" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-graph-up-arrow"></i>
+                    </div>
+                </div>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar bg-success" role="progressbar"
+                         style="width: @(Model.TotalImpressions > 0 ? Math.Min(Math.Round((double)Model.TotalClicks / Model.TotalImpressions * 100, 2), 100) : 0)%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <div class="text-secondary small mb-1">متوسط المشاهدات لكل موقع</div>
+                        <h3 class="mb-0">
+                            @if (Model.TotalWebsites > 0)
+                            {
+                                @Math.Round((double)Model.TotalImpressions / Model.TotalWebsites, 0).ToString("N0")
+                            }
+                            else
+                            {
+                                <text>0</text>
+                            }
+                        </h3>
+                    </div>
+                    <div class="stat-card-icon warning" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-bar-chart-line"></i>
+                    </div>
+                </div>
+                <div class="text-secondary small">لكل موقع</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Website Status Distribution -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div>
+                    <h5 class="chart-title">حالة المواقع</h5>
+                    <p class="chart-subtitle">التوزيع حسب الحالة</p>
+                </div>
+            </div>
+            <div style="position: relative; height: 250px;">
+                <canvas id="websiteStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Impressions vs Clicks -->
+    <div class="col-xl-8 col-lg-6">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div>
+                    <h5 class="chart-title">أداء الإعلانات</h5>
+                    <p class="chart-subtitle">المشاهدات والنقرات</p>
+                </div>
+            </div>
+            <div style="position: relative; height: 250px;">
+                <canvas id="performanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Performance Chart -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div>
+                    <h5 class="chart-title">نظرة شاملة على الأداء</h5>
+                    <p class="chart-subtitle">إحصائيات تفصيلية</p>
+                </div>
+            </div>
+            <div style="position: relative; height: 300px;">
+                <canvas id="detailedPerformanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions & Tips -->
+<div class="row g-4">
+    <!-- Quick Actions -->
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">إجراءات سريعة</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Websites" asp-action="Create" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i>
+                        إضافة موقع جديد
+                    </a>
+                    <a asp-controller="Websites" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-globe"></i>
+                        عرض جميع المواقع
+                    </a>
+                    @if (Model.PendingSites > 0)
+                    {
+                        <div class="alert alert-warning mb-0">
+                            <i class="bi bi-info-circle"></i>
+                            لديك <strong>@Model.PendingSites</strong> موقع بانتظار موافقة المسؤول
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Summary -->
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">ملخص الأداء</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-secondary">معدل الموافقة على المواقع</span>
+                        <strong class="text-success">
+                            @if (Model.TotalWebsites > 0)
+                            {
+                                @Math.Round((double)Model.ApprovedSites / Model.TotalWebsites * 100, 1)
+                            
+                                <text>%</text>
+                            }
+                            else
+                            {
+                                <text>0%</text>
+                            }
+                        </strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: @(Model.TotalWebsites > 0 ? Math.Round((double)Model.ApprovedSites / Model.TotalWebsites * 100, 1) : 0)%"></div>
+                    </div>
+                </div>
+
+                <div class="mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-secondary">إجمالي التفاعل</span>
+                        <strong>@((Model.TotalImpressions + Model.TotalClicks).ToString("N0"))</strong>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-secondary">متوسط النقرات لكل موقع</span>
+                        <strong>
+                            @if (Model.TotalWebsites > 0)
+                            {
+                                @Math.Round((double)Model.TotalClicks / Model.TotalWebsites, 0).ToString("N0")
+                            }
+                            else
+                            {
+                                <text>0</text>
+                            }
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Website Status Chart (Doughnut)
+        const websiteStatusCtx = document.getElementById('websiteStatusChart');
+        new Chart(websiteStatusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['مفعل', 'بانتظار الموافقة'],
+                datasets: [{
+                    data: [@Model.ApprovedSites, @Model.PendingSites],
+                    backgroundColor: [
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 171, 0, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+
+        // Performance Chart (Bar - Impressions vs Clicks)
+        const performanceCtx = document.getElementById('performanceChart');
+        new Chart(performanceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['المشاهدات', 'النقرات'],
+                datasets: [{
+                    label: 'العدد',
+                    data: [@Model.TotalImpressions, @Model.TotalClicks],
+                    backgroundColor: [
+                        'rgba(0, 184, 217, 0.8)',
+                        'rgba(0, 171, 85, 0.8)'
+                    ],
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(145, 158, 171, 0.08)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Detailed Performance Chart (Line)
+        const detailedCtx = document.getElementById('detailedPerformanceChart');
+        const ctr = @(Model.TotalImpressions > 0 ? Math.Round((double)Model.TotalClicks / Model.TotalImpressions * 100, 2) : 0);
+        const avgImpressions = @(Model.TotalWebsites > 0 ? Math.Round((double)Model.TotalImpressions / Model.TotalWebsites, 0) : 0);
+        const avgClicks = @(Model.TotalWebsites > 0 ? Math.Round((double)Model.TotalClicks / Model.TotalWebsites, 0) : 0);
+
+        new Chart(detailedCtx, {
+            type: 'line',
+            data: {
+                labels: ['المواقع الكلية', 'المواقع المفعلة', 'المواقع المعلقة', 'المشاهدات', 'النقرات', 'معدل النقر %'],
+                datasets: [{
+                    label: 'القيم',
+                    data: [
+                        @Model.TotalWebsites,
+                        @Model.ApprovedSites,
+                        @Model.PendingSites,
+                        @Model.TotalImpressions / 100, // Scaled down for better visualization
+                        @Model.TotalClicks,
+                        ctr * 10 // Scaled up for visibility
+                    ],
+                    backgroundColor: 'rgba(32, 101, 209, 0.1)',
+                    borderColor: 'rgba(32, 101, 209, 0.8)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: 'rgba(32, 101, 209, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(145, 158, 171, 0.08)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

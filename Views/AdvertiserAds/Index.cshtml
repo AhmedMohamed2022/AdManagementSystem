@@ -1,0 +1,452 @@
+﻿@* @model IEnumerable<AdSystem.Models.Ad>
+@{
+    ViewData["Title"] = "My Ads";
+}
+
+<h2>My Advertisements</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">Create New Ad</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Impressions</th>
+            <th>Clicks</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ad in Model)
+        {
+            <tr>
+                <td>@ad.Title</td>
+                <td>@ad.Status</td>
+                <td>@(ad.Impressions?.Count ?? 0)</td>
+                <td>@(ad.Clicks?.Count ?? 0)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@ad.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+@* @model IEnumerable<AdSystem.ViewModels.AdvertiserAdViewModel>
+@{
+    ViewData["Title"] = "My Ads";
+}
+
+<h2>My Advertisements</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">Create New Ad</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Impressions</th>
+            <th>Clicks</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ad in Model)
+        {
+            <tr>
+                <td>@ad.Title</td>
+                <td>@ad.Status</td>
+                <td>@ad.Impressions</td>
+                <td>@ad.Clicks</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@ad.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+
+@model IEnumerable<AdSystem.ViewModels.AdvertiserAdViewModel>
+@{
+    ViewData["Title"] = "إعلاناتي";
+    var approvedCount = Model.Count(a => a.Status == AdManagementSystem.Models.Enums.AdStatus.Approved);
+    var pendingCount = Model.Count(a => a.Status == AdManagementSystem.Models.Enums.AdStatus.Pending);
+    var totalImpressions = Model.Sum(a => a.Impressions);
+    var totalClicks = Model.Sum(a => a.Clicks);
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">إعلاناتي</h1>
+            <p class="page-subtitle">إدارة ومتابعة جميع إعلاناتك النشطة</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            إنشاء إعلان جديد
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-secondary small mb-1">إجمالي الإعلانات</div>
+                        <h3 class="mb-0">@Model.Count()</h3>
+                    </div>
+                    <div class="stat-card-icon primary" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-megaphone"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-secondary small mb-1">الإعلانات المفعلة</div>
+                        <h3 class="mb-0 text-success">@approvedCount</h3>
+                    </div>
+                    <div class="stat-card-icon success" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-secondary small mb-1">إجمالي المشاهدات</div>
+                        <h3 class="mb-0 text-info">@totalImpressions.ToString("N0")</h3>
+                    </div>
+                    <div class="stat-card-icon info" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-eye"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-secondary small mb-1">إجمالي النقرات</div>
+                        <h3 class="mb-0 text-warning">@totalClicks.ToString("N0")</h3>
+                    </div>
+                    <div class="stat-card-icon warning" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-cursor"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ads Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i>
+                قائمة الإعلانات
+            </h5>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge bg-secondary">@Model.Count() إعلان</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+                <h3 class="empty-state-title">لا توجد إعلانات</h3>
+                <p class="empty-state-description">ابدأ بإنشاء إعلانك الأول للوصول إلى جمهورك</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    إنشاء إعلان جديد
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Desktop Table View -->
+            <div class="table-responsive d-none d-lg-block">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">العنوان</th>
+                            <th style="width: 15%;" class="text-center">الحالة</th>
+                            <th style="width: 15%;" class="text-center">المشاهدات</th>
+                            <th style="width: 15%;" class="text-center">النقرات</th>
+                            <th style="width: 15%;" class="text-center">معدل النقر</th>
+                            <th style="width: 10%;" class="text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ad in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-badge-ad text-primary" style="font-size: 20px;"></i>
+                                        <div>
+                                            <strong class="d-block">@ad.Title</strong>
+                                            <small class="text-muted">#@ad.Id</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if (ad.Status == AdManagementSystem.Models.Enums.AdStatus.Approved)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i>
+                                            مفعل
+                                        </span>
+                                    }
+                                    else if (ad.Status == AdManagementSystem.Models.Enums.AdStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-clock"></i>
+                                            معلق
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i>
+                                            مرفوض
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <strong>@ad.Impressions.ToString("N0")</strong>
+                                </td>
+                                <td class="text-center">
+                                    <strong>@ad.Clicks.ToString("N0")</strong>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-info">
+                                        @if (ad.Impressions > 0)
+                                        {
+                                            @Math.Round((double)ad.Clicks / ad.Impressions * 100, 2)
+                                
+                                            <text>%</text>
+                                        }
+                                        else
+                                        {
+                                            <text>0%</text>
+                                        }
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons justify-content-center">
+                                        <a asp-action="Edit" asp-route-id="@ad.Id"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="تعديل"
+                                           data-bs-toggle="tooltip">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                title="حذف"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal"
+                                                onclick="setDeleteId(@ad.Id, '@ad.Title')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Tablet View -->
+            <div class="table-responsive d-none d-md-block d-lg-none">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">العنوان</th>
+                            <th style="width: 20%;" class="text-center">الحالة</th>
+                            <th style="width: 20%;" class="text-center">الأداء</th>
+                            <th style="width: 20%;" class="text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ad in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-badge-ad text-primary"></i>
+                                        <strong>@ad.Title</strong>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if (ad.Status == AdManagementSystem.Models.Enums.AdStatus.Approved)
+                                    {
+                                        <span class="badge bg-success">مفعل</span>
+                                    }
+                                    else if (ad.Status == AdManagementSystem.Models.Enums.AdStatus.Pending)
+                                    {
+                                        <span class="badge bg-warning">معلق</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">مرفوض</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <small class="d-block">@ad.Impressions.ToString("N0") مشاهدة</small>
+                                    <small class="d-block">@ad.Clicks.ToString("N0") نقرة</small>
+                                </td>
+                                <td>
+                                    <div class="action-buttons justify-content-center">
+                                        <a asp-action="Edit" asp-route-id="@ad.Id" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                                onclick="setDeleteId(@ad.Id, '@ad.Title')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="d-md-none">
+                @foreach (var ad in Model)
+                {
+                    <div class="border-bottom p-3">
+                        <div class="d-flex align-items-start justify-content-between mb-2">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-badge-ad text-primary"></i>
+                                    <strong>@ad.Title</strong>
+                                </div>
+                                <small class="text-muted">#@ad.Id</small>
+                            </div>
+                            <div>
+                                @if (ad.Status == AdManagementSystem.Models.Enums.AdStatus.Approved)
+                                {
+                                    <span class="badge bg-success">مفعل</span>
+                                }
+                                else if (ad.Status == AdManagementSystem.Models.Enums.AdStatus.Pending)
+                                {
+                                    <span class="badge bg-warning">معلق</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">مرفوض</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="card bg-light">
+                                    <div class="card-body p-2 text-center">
+                                        <small class="text-muted d-block">المشاهدات</small>
+                                        <strong>@ad.Impressions.ToString("N0")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card bg-light">
+                                    <div class="card-body p-2 text-center">
+                                        <small class="text-muted d-block">النقرات</small>
+                                        <strong>@ad.Clicks.ToString("N0")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a asp-action="Edit" asp-route-id="@ad.Id" class="btn btn-sm btn-outline-primary flex-fill">
+                                <i class="bi bi-pencil"></i>
+                                تعديل
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger flex-fill"
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                    onclick="setDeleteId(@ad.Id, '@ad.Title')">
+                                <i class="bi bi-trash"></i>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle text-danger"></i>
+                    تأكيد الحذف
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">هل أنت متأكد من حذف الإعلان:</p>
+                <p class="fw-bold text-danger" id="deleteAdTitle"></p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>تحذير:</strong> سيتم حذف جميع إحصائيات هذا الإعلان نهائياً
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>
+                    إلغاء
+                </button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i>
+                        حذف نهائياً
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function setDeleteId(id, title) {
+            document.getElementById('deleteAdTitle').textContent = title;
+            const form = document.getElementById('deleteForm');
+            form.action = '@Url.Action("Delete", "AdvertiserAds")/' + id;
+        }
+
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+}

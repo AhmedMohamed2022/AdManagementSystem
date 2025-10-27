@@ -1,0 +1,666 @@
+﻿@* @model AdSystem.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h2 class="mb-4">🧭 Admin Dashboard</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-2">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Advertisers</h5>
+                <h3>@Model.TotalAdvertisers</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Publishers</h5>
+                <h3>@Model.TotalPublishers</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Ads</h5>
+                <h3>@Model.TotalAds</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Websites</h5>
+                <h3>@Model.TotalWebsites</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center shadow-sm bg-warning bg-opacity-25">
+            <div class="card-body">
+                <h5 class="card-title">Pending Sites</h5>
+                <h3>@Model.PendingWebsites</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card text-center shadow-sm bg-success bg-opacity-25">
+            <div class="card-body">
+                <h5 class="card-title">Active Ads</h5>
+                <h3>@Model.ActiveAds</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<h4 class="mt-4">📊 System Overview</h4>
+<p class="text-muted">Charts and analytics can be added here later using Chart.js or a similar library.</p>
+
+<div class="card p-4 shadow-sm">
+    <canvas id="systemChart" height="100"></canvas>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('systemChart');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Advertisers', 'Publishers', 'Ads', 'Websites'],
+                datasets: [{
+                    label: 'System Metrics',
+                    data: [@Model.TotalAdvertisers, @Model.TotalPublishers, @Model.TotalAds, @Model.TotalWebsites],
+                    borderWidth: 1
+                }]
+            },
+        });
+    </script>
+} *@
+@model AdSystem.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "لوحة تحكم المدير";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <h1 class="page-title">لوحة تحكم المدير</h1>
+    <p class="page-subtitle">نظرة شاملة على نظام الإعلانات</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-card-icon primary">
+                <i class="bi bi-megaphone"></i>
+            </div>
+            <div class="stat-card-title">إجمالي المعلنين</div>
+            <div class="stat-card-value">@Model.TotalAdvertisers</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-card-icon success">
+                <i class="bi bi-globe"></i>
+            </div>
+            <div class="stat-card-title">إجمالي الناشرين</div>
+            <div class="stat-card-value">@Model.TotalPublishers</div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-card-icon warning">
+                <i class="bi bi-badge-ad"></i>
+            </div>
+            <div class="stat-card-title">إجمالي الإعلانات</div>
+            <div class="stat-card-value">@Model.TotalAds</div>
+            <div class="stat-card-change positive">
+                <i class="bi bi-arrow-up"></i>
+                <span>@Model.ActiveAds نشط</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+            <div class="stat-card-icon error">
+                <i class="bi bi-shop-window"></i>
+            </div>
+            <div class="stat-card-title">إجمالي المواقع</div>
+            <div class="stat-card-value">@Model.TotalWebsites</div>
+            @if (Model.PendingWebsites > 0)
+            {
+                <div class="stat-card-change negative">
+                    <i class="bi bi-clock"></i>
+                    <span>@Model.PendingWebsites بانتظار الموافقة</span>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Users Distribution Chart -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div>
+                    <h5 class="chart-title">توزيع المستخدمين</h5>
+                    <p class="chart-subtitle">المعلنين والناشرين</p>
+                </div>
+            </div>
+            <div style="position: relative; height: 250px;">
+                <canvas id="usersChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ads Status Chart -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div>
+                    <h5 class="chart-title">حالة الإعلانات</h5>
+                    <p class="chart-subtitle">نشط / غير نشط</p>
+                </div>
+            </div>
+            <div style="position: relative; height: 250px;">
+                <canvas id="adsStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Websites Status Chart -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div>
+                    <h5 class="chart-title">حالة المواقع</h5>
+                    <p class="chart-subtitle">مفعل / معطل / بانتظار</p>
+                </div>
+            </div>
+            <div style="position: relative; height: 250px;">
+                <canvas id="websitesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="chart-container">
+            <div class="chart-header">
+                <div>
+                    <h5 class="chart-title">نظرة عامة على النظام</h5>
+                    <p class="chart-subtitle">إحصائيات شاملة</p>
+                </div>
+            </div>
+            <div style="position: relative; height: 350px;">
+                <canvas id="systemOverviewChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+<!-- Quick Actions & Recent Activity -->
+<div class="row g-4">
+    <!-- Quick Actions -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">إجراءات سريعة</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    @if (Model.PendingWebsites > 0)
+                    {
+                        <a asp-controller="AdminWebsites" asp-action="Index" class="btn btn-warning">
+                            <i class="bi bi-clock-history"></i>
+                            مراجعة المواقع المعلقة (@Model.PendingWebsites)
+                        </a>
+                    }
+                    <a asp-controller="AdminWebsites" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-people"></i>
+                        إدارة المواقع
+                    </a>
+                    <a asp-controller="AdminWebsites" asp-action="Ads" class="btn btn-outline-primary">
+                        <i class="bi bi-badge-ad"></i>
+                        إدارة الإعلانات
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">حالة النظام</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="text-secondary">معدل نشاط الإعلانات</span>
+                    <strong class="text-success">
+                        @if (Model.TotalAds > 0)
+                        {
+                            @Math.Round((double)Model.ActiveAds / Model.TotalAds * 100, 1)
+                        
+                            <text>%</text>
+                        }
+                        else
+                        {
+                            <text>0%</text>
+                        }
+                    </strong>
+                </div>
+                <div class="progress mb-4" style="height: 8px;">
+                    <div class="progress-bar bg-success" role="progressbar"
+                         style="width: @(Model.TotalAds > 0 ? Math.Round((double)Model.ActiveAds / Model.TotalAds * 100, 1) : 0)%"></div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <span class="text-secondary">المواقع المفعلة</span>
+                    <strong class="text-primary">
+                        @{
+                            var approvedWebsites = Model.TotalWebsites - Model.PendingWebsites;
+                        }
+                        @if (Model.TotalWebsites > 0)
+                        {
+                            @Math.Round((double)approvedWebsites / Model.TotalWebsites * 100, 1)
+                        
+                            <text>%</text>
+                        }
+                        else
+                        {
+                            <text>0%</text>
+                        }
+                    </strong>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-primary" role="progressbar"
+                         style="width: @(Model.TotalWebsites > 0 ? Math.Round((double)approvedWebsites / Model.TotalWebsites * 100, 1) : 0)%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="col-xl-4 col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">ملخص إحصائي</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-card-icon primary" style="width: 48px; height: 48px; font-size: 20px;">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small">إجمالي المستخدمين</div>
+                            <strong class="h5 mb-0">@(Model.TotalAdvertisers + Model.TotalPublishers)</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-3 border-bottom">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-card-icon success" style="width: 48px; height: 48px; font-size: 20px;">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small">معدل الموافقة</div>
+                            <strong class="h5 mb-0">
+                                @if (Model.TotalWebsites > 0)
+                                {
+                                    @Math.Round((double)approvedWebsites / Model.TotalWebsites * 100, 0)
+                                
+                                    <text>%</text>
+                                }
+                                else
+                                {
+                                    <text>0%</text>
+                                }
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-card-icon warning" style="width: 48px; height: 48px; font-size: 20px;">
+                            <i class="bi bi-activity"></i>
+                        </div>
+                        <div>
+                            <div class="text-secondary small">متوسط الإعلانات لكل معلن</div>
+                            <strong class="h5 mb-0">
+                                @if (Model.TotalAdvertisers > 0)
+                                {
+                                    @Math.Round((double)Model.TotalAds / Model.TotalAdvertisers, 1)
+                                }
+                                else
+                                {
+                                    <text>0</text>
+                                }
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* @section Scripts {
+    <script>
+        // Chart.js Configuration
+        Chart.defaults.font.family = "'Cairo', sans-serif";
+
+        // Users Distribution Chart (Doughnut)
+        const usersCtx = document.getElementById('usersChart');
+        new Chart(usersCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['المعلنين', 'الناشرين'],
+                datasets: [{
+                    data: [@Model.TotalAdvertisers, @Model.TotalPublishers],
+                    backgroundColor: [
+                        'rgba(32, 101, 209, 0.8)',
+                        'rgba(0, 171, 85, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 13
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Ads Status Chart (Pie)
+        const adsStatusCtx = document.getElementById('adsStatusChart');
+        const inactiveAds = @Model.TotalAds - @Model.ActiveAds;
+        new Chart(adsStatusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['نشط', 'غير نشط'],
+                datasets: [{
+                    data: [@Model.ActiveAds, inactiveAds],
+                    backgroundColor: [
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 86, 48, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 13
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Websites Status Chart (Doughnut)
+        const websitesCtx = document.getElementById('websitesChart');
+        const approvedWebsites = @Model.TotalWebsites - @Model.PendingWebsites;
+        new Chart(websitesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['مفعل', 'بانتظار الموافقة'],
+                datasets: [{
+                    data: [approvedWebsites, @Model.PendingWebsites],
+                    backgroundColor: [
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 171, 0, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 13
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // System Overview Chart (Bar)
+        const systemCtx = document.getElementById('systemOverviewChart');
+        new Chart(systemCtx, {
+            type: 'bar',
+            data: {
+                labels: ['المعلنين', 'الناشرين', 'الإعلانات', 'المواقع', 'الإعلانات النشطة', 'المواقع المعلقة'],
+                datasets: [{
+                    label: 'العدد',
+                    data: [
+                        @Model.TotalAdvertisers,
+                        @Model.TotalPublishers,
+                        @Model.TotalAds,
+                        @Model.TotalWebsites,
+                        @Model.ActiveAds,
+                        @Model.PendingWebsites
+                    ],
+                    backgroundColor: [
+                        'rgba(32, 101, 209, 0.8)',
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 171, 0, 0.8)',
+                        'rgba(0, 184, 217, 0.8)',
+                        'rgba(0, 171, 85, 0.6)',
+                        'rgba(255, 86, 48, 0.8)'
+                    ],
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(145, 158, 171, 0.08)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+} *@
+@section Scripts {
+    <script>
+        // Users Distribution Chart (Doughnut)
+        const usersCtx = document.getElementById('usersChart');
+        new Chart(usersCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['المعلنين', 'الناشرين'],
+                datasets: [{
+                    data: [@Model.TotalAdvertisers, @Model.TotalPublishers],
+                    backgroundColor: [
+                        'rgba(32, 101, 209, 0.8)',
+                        'rgba(0, 171, 85, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+
+        // Ads Status Chart (Pie)
+        const adsStatusCtx = document.getElementById('adsStatusChart');
+        const inactiveAds = @Model.TotalAds - @Model.ActiveAds;
+        new Chart(adsStatusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['نشط', 'غير نشط'],
+                datasets: [{
+                    data: [@Model.ActiveAds, inactiveAds],
+                    backgroundColor: [
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 86, 48, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+
+        // Websites Status Chart (Doughnut)
+        const websitesCtx = document.getElementById('websitesChart');
+        const approvedWebsites = @Model.TotalWebsites - @Model.PendingWebsites;
+        new Chart(websitesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['مفعل', 'بانتظار الموافقة'],
+                datasets: [{
+                    data: [approvedWebsites, @Model.PendingWebsites],
+                    backgroundColor: [
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 171, 0, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15
+                        }
+                    }
+                }
+            }
+        });
+
+        // System Overview Chart (Bar)
+        const systemCtx = document.getElementById('systemOverviewChart');
+        new Chart(systemCtx, {
+            type: 'bar',
+            data: {
+                labels: ['المعلنين', 'الناشرين', 'الإعلانات', 'المواقع', 'الإعلانات النشطة', 'المواقع المعلقة'],
+                datasets: [{
+                    label: 'العدد',
+                    data: [
+                        @Model.TotalAdvertisers,
+                        @Model.TotalPublishers,
+                        @Model.TotalAds,
+                        @Model.TotalWebsites,
+                        @Model.ActiveAds,
+                        @Model.PendingWebsites
+                    ],
+                    backgroundColor: [
+                        'rgba(32, 101, 209, 0.8)',
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 171, 0, 0.8)',
+                        'rgba(0, 184, 217, 0.8)',
+                        'rgba(0, 171, 85, 0.6)',
+                        'rgba(255, 86, 48, 0.8)'
+                    ],
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(145, 158, 171, 0.08)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+}

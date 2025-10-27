@@ -1,0 +1,398 @@
+﻿@* @model IEnumerable<AdSystem.Models.Website>
+@{
+    ViewData["Title"] = "All Publishers Websites";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">🌐 Publishers Websites</h2>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Domain</th>
+                        <th>Publisher (Owner ID)</th> *@
+                        @* <th>Category</th> *@
+                @*         <th>Status</th>
+                        <th>Created</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var site in Model)
+                    {
+                        <tr>
+                            <td>@site.Name</td>
+                            <td>
+                                <a href="@site.Domain" target="_blank">@site.Domain</a>
+                            </td>
+                            <td>@site.OwnerId</td> *@
+                            @* <td>@(string.IsNullOrEmpty(site.Category) ? "—" : site.Category)</td> *@
+@*                             <td>
+                                @if (site.IsApproved)
+                                {
+                                    <span class="badge bg-success">✅ Approved</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">⏳ Pending</span>
+                                }
+                            </td>
+                            <td>@site.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</td>
+
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a asp-action="Details" asp-route-id="@site.Id" class="btn btn-sm btn-info text-white">
+                                        🔍 Details
+                                    </a>
+
+                                    @if (!site.IsApproved)
+                                    {
+                                        <form asp-action="Approve" asp-route-id="@site.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success ms-1">✅ Approve</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Reject" asp-route-id="@site.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger ms-1">🚫 Reject</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-4 text-muted">
+                    No websites found yet.
+                </div>
+            }
+        </div>
+    </div>
+</div> *@
+@model IEnumerable<AdSystem.Models.Website>
+@{
+    ViewData["Title"] = "إدارة مواقع الناشرين";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h4 class="page-title mb-1">إدارة المواقع</h4>
+            <p class="page-subtitle mb-0">عرض وإدارة جميع مواقع الناشرين في المنصة</p>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-light" onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise ms-1"></i>
+                تحديث
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--primary-lighter); color: var(--primary-main);">
+                <i class="bi bi-globe2"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">إجمالي المواقع</div>
+                <div class="stat-value">@Model.Count()</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--success-lighter); color: var(--success-main);">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">مواقع مفعّلة</div>
+                <div class="stat-value">@Model.Count(w => w.IsApproved)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--warning-lighter); color: var(--warning-main);">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">قيد المراجعة</div>
+                <div class="stat-value">@Model.Count(w => !w.IsApproved)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--info-lighter); color: var(--info-main);">
+                <i class="bi bi-calendar-plus"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">مواقع جديدة اليوم</div>
+                <div class="stat-value">@Model.Count(w => w.CreatedAt.Date == DateTime.Today)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Websites Table Card -->
+<div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
+    <div class="card-body p-0">
+        <!-- Card Header -->
+        <div class="p-4 border-bottom">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h5 class="mb-1 fw-semibold">قائمة المواقع</h5>
+                    <p class="text-muted small mb-0">إدارة ومراجعة مواقع الناشرين</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <!-- Filter Buttons -->
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="statusFilter" id="filterAll" autocomplete="off" checked>
+                        <label class="btn btn-outline-secondary btn-sm" for="filterAll" onclick="filterWebsites('all')">
+                            الكل (@Model.Count())
+                        </label>
+
+                        <input type="radio" class="btn-check" name="statusFilter" id="filterApproved" autocomplete="off">
+                        <label class="btn btn-outline-success btn-sm" for="filterApproved" onclick="filterWebsites('approved')">
+                            مفعّل (@Model.Count(w => w.IsApproved))
+                        </label>
+
+                        <input type="radio" class="btn-check" name="statusFilter" id="filterPending" autocomplete="off">
+                        <label class="btn btn-outline-warning btn-sm" for="filterPending" onclick="filterWebsites('pending')">
+                            معلّق (@Model.Count(w => !w.IsApproved))
+                        </label>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="بحث في المواقع..." id="searchInput" onkeyup="searchWebsites()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="websitesTable">
+                    <thead style="background-color: var(--gray-100);">
+                        <tr>
+                            <th class="px-4 py-3 text-muted small fw-semibold" style="width: 25%;">اسم الموقع</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold" style="width: 25%;">النطاق</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold" style="width: 15%;">الناشر</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold text-center" style="width: 12%;">الحالة</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold" style="width: 13%;">تاريخ الإنشاء</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold text-center" style="width: 10%;">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var site in Model)
+                        {
+                            <tr class="website-row" data-status="@(site.IsApproved ? "approved" : "pending")">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 40px; height: 40px; background: var(--primary-lighter); color: var(--primary-main);">
+                                                <i class="bi bi-globe2"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 website-name">
+                                            <div class="fw-semibold mb-0" style="color: var(--text-primary);">@site.Name</div>
+                                            <small class="text-muted">ID: @site.Id</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 website-domain">
+                                    <a href="@site.Domain" target="_blank" class="text-decoration-none d-flex align-items-center gap-2" style="color: var(--primary-main);">
+                                        <i class="bi bi-box-arrow-up-left"></i>
+                                        <span>@site.Domain</span>
+                                    </a>
+                                </td>
+                                <td class="px-4 py-3 website-owner">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 28px; height: 28px; background: var(--gray-200); color: var(--text-secondary); font-size: 12px;">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                        <span class="small">@site.OwnerId</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    @if (site.IsApproved)
+                                    {
+                                        <span class="badge rounded-pill" style="background: var(--success-lighter); color: var(--success-dark); font-weight: 600; padding: 6px 12px;">
+                                            <i class="bi bi-check-circle-fill ms-1"></i>
+                                            مفعّل
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill" style="background: var(--warning-lighter); color: var(--warning-dark); font-weight: 600; padding: 6px 12px;">
+                                            <i class="bi bi-clock-fill ms-1"></i>
+                                            قيد المراجعة
+                                        </span>
+                                    }
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex flex-column">
+                                        <span class="small" style="color: var(--text-primary);">@site.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")</span>
+                                        <span class="text-muted" style="font-size: 11px;">@site.CreatedAt.ToLocalTime().ToString("hh:mm tt")</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a asp-action="Details" asp-route-id="@site.Id"
+                                           class="btn btn-sm btn-light rounded-pill"
+                                           style="padding: 6px 12px;"
+                                           title="عرض التفاصيل">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        @if (!site.IsApproved)
+                                        {
+                                            <form asp-action="Approve" asp-route-id="@site.Id" method="post" class="d-inline">
+                                                <button type="submit"
+                                                        class="btn btn-sm rounded-pill"
+                                                        style="background: var(--success-lighter); color: var(--success-dark); padding: 6px 12px;"
+                                                        title="تفعيل الموقع"
+                                                        onclick="return confirm('هل أنت متأكد من تفعيل هذا الموقع؟')">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Reject" asp-route-id="@site.Id" method="post" class="d-inline">
+                                                <button type="submit"
+                                                        class="btn btn-sm rounded-pill"
+                                                        style="background: var(--error-lighter); color: var(--error-dark); padding: 6px 12px;"
+                                                        title="إلغاء تفعيل الموقع"
+                                                        onclick="return confirm('هل أنت متأكد من إلغاء تفعيل هذا الموقع؟')">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state py-5">
+                <div class="empty-icon mb-3">
+                    <i class="bi bi-globe2"></i>
+                </div>
+                <h5 class="mb-2">لا توجد مواقع بعد</h5>
+                <p class="text-muted mb-0">لم يتم إضافة أي مواقع من قبل الناشرين حتى الآن</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Filter websites by status
+        function filterWebsites(status) {
+            const rows = document.querySelectorAll('.website-row');
+
+            rows.forEach(row => {
+                if (status === 'all') {
+                    row.style.display = '';
+                } else {
+                    const rowStatus = row.getAttribute('data-status');
+                    row.style.display = rowStatus === status ? '' : 'none';
+                }
+            });
+
+            checkEmptyResults();
+        }
+
+        // Search websites
+        function searchWebsites() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('.website-row');
+
+            rows.forEach(row => {
+                const name = row.querySelector('.website-name').textContent.toLowerCase();
+                const domain = row.querySelector('.website-domain').textContent.toLowerCase();
+                const owner = row.querySelector('.website-owner').textContent.toLowerCase();
+
+                if (name.includes(filter) || domain.includes(filter) || owner.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            checkEmptyResults();
+        }
+
+        // Check if results are empty and show message
+        function checkEmptyResults() {
+            const table = document.getElementById('websitesTable');
+            if (!table) return;
+
+            const rows = document.querySelectorAll('.website-row');
+            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+
+            // Remove existing empty message
+            const existingMsg = document.getElementById('noResultsMessage');
+            if (existingMsg) existingMsg.remove();
+
+            if (visibleRows.length === 0) {
+                const tbody = table.querySelector('tbody');
+                const colCount = table.querySelector('thead tr').children.length;
+
+                const emptyRow = document.createElement('tr');
+                emptyRow.id = 'noResultsMessage';
+                emptyRow.innerHTML = `
+                    <td colspan="${colCount}" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="bi bi-search mb-2" style="font-size: 2rem;"></i>
+                            <p class="mb-0">لا توجد نتائج مطابقة للبحث</p>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(emptyRow);
+            }
+        }
+
+        // Add hover effect to action buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const actionButtons = document.querySelectorAll('.btn-sm');
+
+            actionButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,403 @@
+﻿@* @model AdSystem.Models.Ad
+@{
+    ViewData["Title"] = "Ad Details";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">🌐 Website Details</h2>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Title</dt>
+                <dd class="col-sm-9">@Model.Title</dd>
+
+                <dt class="col-sm-3">ImageUrl</dt>
+                <dd class="col-sm-9">
+                    <a href="@Model.ImageUrl" target="_blank">@Model.ImageUrl</a>
+                </dd>
+                <dt class="col-sm-3">TargetUrl</dt>
+                <dd class="col-sm-9">
+                    <a href="@Model.TargetUrl" target="_blank">@Model.TargetUrl</a>
+                </dd>
+
+                <dt class="col-sm-3">Category</dt>
+                <dd class="col-sm-9">@Model.Category ?? "—"</dd>
+
+                <dt class="col-sm-3">Owner ID</dt>
+                <dd class="col-sm-9">@Model.AdvertiserId</dd>
+
+                <dt class="col-sm-3">Approved</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Status == AdManagementSystem.Models.Enums.AdStatus.Approved)
+                    {
+                        <span class="badge bg-success">✅ Approved</span>
+                    }
+                    else if(Model.Status == AdManagementSystem.Models.Enums.AdStatus.Rejected)
+                    {
+                        <span class="badge bg-danger">❌ Rejected</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">⏳ Pending</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Created At</dt>
+                <dd class="col-sm-9">@Model.StartDate.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</dd>
+            </dl>
+
+            <hr />
+
+            <div class="d-flex justify-content-between mt-3">
+                <div>
+                    <a asp-action="Ads" class="btn btn-secondary">⬅️ Back to List</a>
+                </div>
+
+                <div>
+                    @if (Model.Status != AdManagementSystem.Models.Enums.AdStatus.Approved)
+                    {
+                        <form asp-action="ApproveAd" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-success me-2">✅ Approve</button>
+                        </form>
+                        <form asp-action="RejectAd" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">❌ Reject</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="RejectAd" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">🚫 Remove Approval</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> *@
+@model AdSystem.Models.Ad
+@{
+    ViewData["Title"] = "تفاصيل الإعلان";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <a asp-action="Ads" class="text-decoration-none" style="color: var(--text-secondary);">
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                <h4 class="page-title mb-0">تفاصيل الإعلان</h4>
+            </div>
+            <p class="page-subtitle mb-0">عرض وإدارة معلومات الإعلان</p>
+        </div>
+        <div class="action-buttons">
+            <a asp-action="Ads" class="btn btn-light">
+                <i class="bi bi-arrow-right ms-1"></i>
+                العودة للقائمة
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Ad Details -->
+<div class="row g-4">
+    <!-- Main Info Card -->
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-start gap-3 mb-4 pb-4 border-bottom">
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 60px; height: 60px; background: var(--primary-lighter); color: var(--primary-main); font-size: 24px;">
+                            <i class="bi bi-megaphone"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <h4 class="mb-2 fw-semibold" style="color: var(--text-primary);">@Model.Title</h4>
+                        <a href="@Model.TargetUrl" target="_blank" class="text-decoration-none d-inline-flex align-items-center gap-2 mb-2" style="color: var(--primary-main);">
+                            <i class="bi bi-link-45deg"></i>
+                            <span>@Model.TargetUrl</span>
+                        </a>
+                        <div class="mt-2">
+                            @if (Model.Status == AdManagementSystem.Models.Enums.AdStatus.Approved)
+                            {
+                                <span class="badge rounded-pill" style="background: var(--success-lighter); color: var(--success-dark); font-weight: 600; padding: 8px 16px;">
+                                    <i class="bi bi-check-circle-fill ms-1"></i>
+                                    إعلان مفعّل
+                                </span>
+                            }
+                            else if (Model.Status == AdManagementSystem.Models.Enums.AdStatus.Rejected)
+                            {
+                                <span class="badge rounded-pill" style="background: var(--error-lighter); color: var(--error-dark); font-weight: 600; padding: 8px 16px;">
+                                    <i class="bi bi-x-circle-fill ms-1"></i>
+                                    إعلان مرفوض
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill" style="background: var(--warning-lighter); color: var(--warning-dark); font-weight: 600; padding: 8px 16px;">
+                                    <i class="bi bi-clock-fill ms-1"></i>
+                                    قيد المراجعة
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; background: var(--gray-100); color: var(--text-secondary);">
+                                    <i class="bi bi-hash"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small mb-1">معرّف الإعلان</div>
+                                <div class="fw-medium" style="color: var(--text-primary);">@Model.Id</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; background: var(--gray-100); color: var(--text-secondary);">
+                                    <i class="bi bi-tag"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small mb-1">التصنيف</div>
+                                <div class="fw-medium" style="color: var(--text-primary);">
+                                    @if (!string.IsNullOrEmpty(Model.Category))
+                                    {
+                                        <span class="badge rounded-pill" style="background: var(--gray-200); color: var(--text-primary); font-weight: 500; padding: 6px 12px;">
+                                            @Model.Category
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">غير محدد</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; background: var(--gray-100); color: var(--text-secondary);">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small mb-1">معرّف المعلن</div>
+                                <div class="fw-medium" style="color: var(--text-primary);">@Model.AdvertiserId</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; background: var(--gray-100); color: var(--text-secondary);">
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small mb-1">تاريخ البدء</div>
+                                <div class="fw-medium" style="color: var(--text-primary);">
+                                    @Model.StartDate.ToLocalTime().ToString("yyyy-MM-dd")
+                                    <span class="text-muted small me-2">@Model.StartDate.ToLocalTime().ToString("hh:mm tt")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ad Preview Card -->
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="rounded d-flex align-items-center justify-content-center"
+                         style="width: 36px; height: 36px; background: var(--info-lighter); color: var(--info-main);">
+                        <i class="bi bi-image"></i>
+                    </div>
+                    <h6 class="mb-0 fw-semibold">معاينة الإعلان</h6>
+                </div>
+
+                <div class="rounded overflow-hidden border" style="background: var(--gray-50);">
+                    <img src="@Model.ImageUrl" alt="@Model.Title" class="w-100" style="max-height: 400px; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="d-none align-items-center justify-content-center" style="height: 200px; color: var(--text-disabled);">
+                        <div class="text-center">
+                            <i class="bi bi-image" style="font-size: 3rem;"></i>
+                            <p class="mt-2 mb-0">لا يمكن تحميل الصورة</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <a href="@Model.ImageUrl" target="_blank" class="btn btn-light w-100">
+                        <i class="bi bi-box-arrow-up-left ms-1"></i>
+                        فتح الصورة في نافذة جديدة
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-12 col-lg-4">
+        <!-- Image URL Card -->
+        <div class="card shadow-sm border-0 mb-3" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="rounded d-flex align-items-center justify-content-center"
+                         style="width: 36px; height: 36px; background: var(--primary-lighter); color: var(--primary-main);">
+                        <i class="bi bi-link-45deg"></i>
+                    </div>
+                    <h6 class="mb-0 fw-semibold">رابط الصورة</h6>
+                </div>
+
+                <div class="mb-3">
+                    <div class="p-3 rounded position-relative" style="background: var(--gray-100); border: 1px dashed var(--gray-300);">
+                        <code class="d-block text-break" style="color: var(--text-primary); font-size: 11px;" id="imageUrl">@Model.ImageUrl</code>
+                    </div>
+                </div>
+
+                <button class="btn btn-light w-100" onclick="copyText('imageUrl', this)">
+                    <i class="bi bi-clipboard ms-1"></i>
+                    نسخ الرابط
+                </button>
+            </div>
+        </div>
+
+        <!-- Target URL Card -->
+        <div class="card shadow-sm border-0 mb-3" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="rounded d-flex align-items-center justify-content-center"
+                         style="width: 36px; height: 36px; background: var(--success-lighter); color: var(--success-main);">
+                        <i class="bi bi-cursor"></i>
+                    </div>
+                    <h6 class="mb-0 fw-semibold">رابط الهدف</h6>
+                </div>
+
+                <div class="mb-3">
+                    <div class="p-3 rounded position-relative" style="background: var(--gray-100); border: 1px dashed var(--gray-300);">
+                        <code class="d-block text-break" style="color: var(--text-primary); font-size: 11px;" id="targetUrl">@Model.TargetUrl</code>
+                    </div>
+                </div>
+
+                <button class="btn btn-light w-100" onclick="copyText('targetUrl', this)">
+                    <i class="bi bi-clipboard ms-1"></i>
+                    نسخ الرابط
+                </button>
+            </div>
+        </div>
+
+        <!-- Actions Card -->
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <h6 class="mb-3 fw-semibold">الإجراءات</h6>
+
+                @if (Model.Status != AdManagementSystem.Models.Enums.AdStatus.Approved)
+                {
+                    <form asp-action="ApproveAd" asp-route-id="@Model.Id" method="post" class="mb-2">
+                        <button type="submit"
+                                class="btn w-100"
+                                style="background: var(--success-main); color: white;"
+                                onclick="return confirm('هل أنت متأكد من تفعيل هذا الإعلان؟')">
+                            <i class="bi bi-check-circle ms-1"></i>
+                            تفعيل الإعلان
+                        </button>
+                    </form>
+                    <form asp-action="RejectAd" asp-route-id="@Model.Id" method="post">
+                        <button type="submit"
+                                class="btn w-100"
+                                style="background: var(--error-lighter); color: var(--error-dark);"
+                                onclick="return confirm('هل أنت متأكد من رفض هذا الإعلان؟')">
+                            <i class="bi bi-x-circle ms-1"></i>
+                            رفض الإعلان
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="RejectAd" asp-route-id="@Model.Id" method="post">
+                        <button type="submit"
+                                class="btn w-100"
+                                style="background: var(--error-main); color: white;"
+                                onclick="return confirm('هل أنت متأكد من إلغاء تفعيل هذا الإعلان؟')">
+                            <i class="bi bi-x-circle ms-1"></i>
+                            إلغاء التفعيل
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function copyText(elementId, button) {
+            const text = document.getElementById(elementId).textContent;
+
+            // Create temporary textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+
+            // Select and copy
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            // Show success feedback
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-check-circle ms-1"></i> تم النسخ!';
+            button.style.background = 'var(--success-main)';
+            button.style.color = 'white';
+
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.style.background = '';
+                button.style.color = '';
+            }, 2000);
+        }
+
+        // Add smooth transitions to action buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+
+            buttons.forEach(button => {
+                button.style.transition = 'all 0.2s ease';
+
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = 'var(--shadow-card)';
+                });
+
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+    </script>
+}

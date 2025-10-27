@@ -1,0 +1,339 @@
+﻿@* @model IEnumerable<AdSystem.Models.Website>
+@{
+    ViewData["Title"] = "My Websites";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">🌐 My Websites</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">➕ Add New Website</a>
+
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Domain</th>
+                <th>Status</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr><td colspan="4" class="text-center text-muted">No websites found.</td></tr>
+            }
+            else
+            {
+                @foreach (var site in Model)
+                {
+                    <tr>
+                        <td>@site.Name</td>
+                        <td>@site.Domain</td>
+                        <td>
+                            @if (site.IsApproved)
+                            {
+                                <span class="badge bg-success">Approved</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Edit" asp-route-id="@site.Id" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@site.Id" class="btn btn-sm btn-outline-danger me-1">Delete</a>
+                            @if (site.IsApproved)
+                            {
+                                <a asp-action="Script" asp-route-id="@site.Id" class="btn btn-sm btn-outline-success">Get Script</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div> *@
+@model IEnumerable<AdSystem.Models.Website>
+@{
+    ViewData["Title"] = "مواقعي";
+    var approvedCount = Model.Count(w => w.IsApproved);
+    var pendingCount = Model.Count(w => !w.IsApproved);
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">مواقعي</h1>
+            <p class="page-subtitle">إدارة ومتابعة جميع مواقعك المسجلة</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            إضافة موقع جديد
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-secondary small mb-1">إجمالي المواقع</div>
+                        <h3 class="mb-0">@Model.Count()</h3>
+                    </div>
+                    <div class="stat-card-icon primary" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-globe"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-secondary small mb-1">المواقع المفعلة</div>
+                        <h3 class="mb-0 text-success">@approvedCount</h3>
+                    </div>
+                    <div class="stat-card-icon success" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-secondary small mb-1">بانتظار الموافقة</div>
+                        <h3 class="mb-0 text-warning">@pendingCount</h3>
+                    </div>
+                    <div class="stat-card-icon warning" style="width: 56px; height: 56px; font-size: 24px;">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Websites Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                <i class="bi bi-list-ul"></i>
+                قائمة المواقع
+            </h5>
+            <div class="d-flex gap-2 align-items-center">
+                <span class="badge bg-secondary">@Model.Count() موقع</span>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-globe"></i>
+                </div>
+                <h3 class="empty-state-title">لا توجد مواقع مسجلة</h3>
+                <p class="empty-state-description">ابدأ بإضافة موقعك الأول لعرض الإعلانات</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    إضافة موقع جديد
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Desktop Table View -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">اسم الموقع</th>
+                            <th style="width: 35%;">الرابط</th>
+                            <th style="width: 15%;" class="text-center">الحالة</th>
+                            <th style="width: 20%;" class="text-center">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var site in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-globe2 text-primary" style="font-size: 20px;"></i>
+                                        <strong>@site.Name</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="@site.Domain" target="_blank" class="text-decoration-none">
+                                        @site.Domain
+                                        <i class="bi bi-box-arrow-up-left small"></i>
+                                    </a>
+                                </td>
+                                <td class="text-center">
+                                    @if (site.IsApproved)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i>
+                                            مفعل
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="bi bi-clock"></i>
+                                            بانتظار الموافقة
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="action-buttons justify-content-center">
+                                        @if (site.IsApproved)
+                                        {
+                                            <a asp-action="Script" asp-route-id="@site.Id"
+                                               class="btn btn-sm btn-success"
+                                               title="الحصول على كود الإعلانات"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-code-square"></i>
+                                            </a>
+                                        }
+                                        <a asp-action="Edit" asp-route-id="@site.Id"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="تعديل"
+                                           data-bs-toggle="tooltip">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                title="حذف"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal"
+                                                onclick="setDeleteId(@site.Id, '@site.Name')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="d-md-none">
+                @foreach (var site in Model)
+                {
+                    <div class="border-bottom p-3">
+                        <div class="d-flex align-items-start justify-content-between mb-2">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-globe2 text-primary"></i>
+                                    <strong>@site.Name</strong>
+                                </div>
+                                <a href="@site.Domain" target="_blank" class="text-muted small text-decoration-none d-block">
+                                    @site.Domain
+                                    <i class="bi bi-box-arrow-up-left"></i>
+                                </a>
+                            </div>
+                            <div>
+                                @if (site.IsApproved)
+                                {
+                                    <span class="badge bg-success">مفعل</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">معلق</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mt-3">
+                            @if (site.IsApproved)
+                            {
+                                <a asp-action="Script" asp-route-id="@site.Id" class="btn btn-sm btn-success flex-fill">
+                                    <i class="bi bi-code-square"></i>
+                                    كود الإعلان
+                                </a>
+                            }
+                            <a asp-action="Edit" asp-route-id="@site.Id" class="btn btn-sm btn-outline-primary flex-fill">
+                                <i class="bi bi-pencil"></i>
+                                تعديل
+                            </a>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger flex-fill"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal"
+                                    onclick="setDeleteId(@site.Id, '@site.Name')">
+                                <i class="bi bi-trash"></i>
+                                حذف
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle text-danger"></i>
+                    تأكيد الحذف
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-2">هل أنت متأكد من حذف الموقع:</p>
+                <p class="fw-bold text-danger" id="deleteWebsiteName"></p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>تحذير:</strong> لا يمكن التراجع عن هذا الإجراء
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle"></i>
+                    إلغاء
+                </button>
+                <form id="deleteForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash"></i>
+                        حذف نهائياً
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function setDeleteId(id, name) {
+            document.getElementById('deleteWebsiteName').textContent = name;
+            const form = document.getElementById('deleteForm');
+            form.action = '@Url.Action("Delete", "Websites")/' + id;
+        }
+
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+}

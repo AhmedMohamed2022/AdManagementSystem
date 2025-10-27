@@ -1,0 +1,77 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">📊 Admin Dashboard</h2>
+
+    <div class="row text-center">
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Users</h5>
+                    <h3 class="fw-bold text-primary">@ViewBag.TotalUsers</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Ads</h5>
+                    <h3 class="fw-bold text-success">@ViewBag.TotalAds</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Total Clicks</h5>
+                    <h3 class="fw-bold text-warning">@ViewBag.TotalClicks</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="card-title text-muted">Impressions</h5>
+                    <h3 class="fw-bold text-info">@ViewBag.TotalImpressions</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <h4 class="mt-4 mb-3">📈 Ads per Advertiser</h4>
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Advertiser ID</th>
+                <th>Ads Count</th>
+                <th>Clicks</th>
+                <th>Impressions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (ViewBag.AdsPerAdvertiser != null)
+            {
+                foreach (var item in ViewBag.AdsPerAdvertiser)
+                {
+                    <tr>
+                        <td>@item.AdvertiserId</td>
+                        <td>@item.Count</td>
+                        <td>@item.Clicks</td>
+                        <td>@item.Impressions</td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="4" class="text-center text-muted">No data available</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

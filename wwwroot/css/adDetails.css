@@ -1,0 +1,136 @@
+﻿/* Detail Rows */
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Ad Image Preview */
+.ad-image-preview img {
+    max-width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: contain;
+    border-radius: var(--radius-md);
+}
+
+.empty-image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: var(--gray-100);
+    border-radius: var(--radius-md);
+    color: var(--text-disabled);
+}
+
+    .empty-image-placeholder i {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+/* Performance Stats */
+.performance-stat {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+}
+
+.performance-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.performance-content {
+    flex: 1;
+}
+
+.performance-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.performance-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Metadata List */
+.metadata-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.metadata-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.metadata-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+}
+
+.metadata-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .action-buttons {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 767px) {
+    .performance-stat {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .performance-value {
+        font-size: 1.75rem;
+    }
+}

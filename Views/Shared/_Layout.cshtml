@@ -1,0 +1,252 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - A3lanly أعلنلي</title>
+
+    <!-- Bootstrap 5 RTL from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet" integrity="sha384-nU14brUcp6StFntEOOEBvcJm4huWjB0OcIeQ3fltAfSmuZFrkAif0T+UtNGlKKQv" crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+    <!-- Cairo Font (Arabic Support) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Theme -->
+    <link rel="stylesheet" href="~/css/theme.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body >
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <!-- Sidebar (Only for authenticated users) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="sidebar-logo">
+                    <i class="bi bi-bullseye"></i>
+                    <span> A3lanly أعلنلي</span>
+                </a>
+                <button class="sidebar-close d-lg-none" id="sidebarClose">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <!-- Common Links -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-door"></i>
+                            <span>الرئيسية</span>
+                        </a>
+                    </li>
+
+                    <!-- Admin Links -->
+                    @if (User.IsInRole("Admin"))
+                    {
+                        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+                        <li class="nav-section">
+                            <span class="nav-section-title">إدارة النظام</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdminDashboard" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="AdminDashboard" asp-action="Index">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>لوحة التحكم</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdminWebsites" ? "active" : "")"
+                               asp-controller="AdminWebsites" asp-action="Index">
+                                <i class="bi bi-globe2"></i>
+                                <span>إدارة المواقع</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdminWebsites" && currentAction == "Ads" ? "active" : "")"
+                               asp-controller="AdminWebsites" asp-action="Ads">
+                                <i class="bi bi-megaphone"></i>
+                                <span>إدارة الإعلانات</span>
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Advertiser Links -->
+                    @if (User.IsInRole("Advertiser"))
+                    {
+                        <li class="nav-section">
+                            <span class="nav-section-title">المعلن</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="AdvertiserDashboard" asp-action="Index">
+                                <i class="bi bi-graph-up-arrow"></i>
+                                <span>لوحة المعلن</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="AdvertiserAds" asp-action="Index">
+                                <i class="bi bi-megaphone"></i>
+                                <span>إعلاناتي</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="AdvertiserAds" asp-action="Create">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>إضافة إعلان</span>
+                            </a>
+                        </li>
+                    }
+
+                    <!-- Publisher Links -->
+                    @if (User.IsInRole("Publisher"))
+                    {
+                        <li class="nav-section">
+                            <span class="nav-section-title">الناشر</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="PublisherDashboard" asp-action="Index">
+                                <i class="bi bi-bar-chart-line"></i>
+                                <span>لوحة الناشر</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Websites" asp-action="Index">
+                                <i class="bi bi-globe"></i>
+                                <span>مواقعي</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Websites" asp-action="Create">
+                                <i class="bi bi-plus-circle"></i>
+                                <span>إضافة موقع</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Backdrop for mobile -->
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    }
+
+    <!-- Main Container -->
+    <div class="@(User.Identity.IsAuthenticated ? "main-container" : "public-container")">
+
+        <!-- Top Navbar -->
+        <header class="@(User.Identity.IsAuthenticated ? "navbar-top" : "navbar-public")">
+            <div class="@(User.Identity.IsAuthenticated ? "navbar-content" : "container")">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="bi bi-list"></i>
+                    </button>
+
+                    <div class="navbar-actions">
+                        <!-- Search (Optional) -->
+                        <div class="search-box d-none d-md-block">
+                            <i class="bi bi-search"></i>
+                            <input type="text" placeholder="بحث...">
+                        </div>
+
+                        <!-- User Menu -->
+                        <partial name="_LoginPartial" />
+                    </div>
+                }
+                else
+                {
+                    <!-- Public Header -->
+                    <div class="d-flex align-items-center justify-content-between w-100">
+                        <a asp-controller="Home" asp-action="Index" class="public-logo">
+                            <i class="bi bi-bullseye"></i>
+                            <span>A3lanly أعلنلي</span>
+                        </a>
+                        <partial name="_LoginPartial" />
+                    </div>
+                }
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="@(User.Identity.IsAuthenticated ? "main-content" : "public-content")">
+            @RenderBody()
+        </main>
+
+        <!-- Footer -->
+        @if (User.Identity.IsAuthenticated)
+        {
+            <footer class="footer">
+                <div class="footer-content">
+                    <p>© @DateTime.Now.Year نظام إدارة الإعلانات. جميع الحقوق محفوظة.</p>
+                </div>
+            </footer>
+        }
+        else
+        {
+            <!-- Public Footer -->
+            <footer class="footer-public">
+                <div class="container">
+                    <div class="row g-4">
+                        <div class="col-12 col-md-4">
+                            <div class="footer-brand">
+                                <i class="bi bi-bullseye"></i>
+                                <span>A3lanly أعلنلي</span>
+                            </div>
+                            <p class="footer-description">
+                                منصة متكاملة لإدارة الحملات الإعلانية بكفاءة واحترافية
+                            </p>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <h6 class="footer-title">روابط سريعة</h6>
+                            <ul class="footer-links">
+                                <li><a href="#">عن المنصة</a></li>
+                                <li><a href="#">الميزات</a></li>
+                                <li><a href="#">الأسعار</a></li>
+                                <li><a href="#">تواصل معنا</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <h6 class="footer-title">تابعنا</h6>
+                            <div class="social-links">
+                                <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                                <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                                <a href="#" class="social-link"><i class="bi bi-linkedin"></i></a>
+                                <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="footer-divider">
+                    <div class="footer-bottom">
+                        <p>© @DateTime.Now.Year جميع الحقوق محفوظة - A3lanly أعلنلي</p>
+                    </div>
+                </div>
+            </footer>
+        }
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <!-- Sidebar Toggle Script -->
+    <script src="~/js/sidebar.js"></script>
+
+    <!-- jQuery (required for validation) -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

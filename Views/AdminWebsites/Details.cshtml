@@ -1,0 +1,346 @@
+﻿@* @model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "Website Details";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">🌐 Website Details</h2>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Domain</dt>
+                <dd class="col-sm-9">
+                    <a href="@Model.Domain" target="_blank">@Model.Domain</a>
+                </dd>
+
+                <dt class="col-sm-3">Category</dt>
+                <dd class="col-sm-9">@Model.Category ?? "—"</dd>
+
+                <dt class="col-sm-3">Owner ID</dt>
+                <dd class="col-sm-9">@Model.OwnerId</dd>
+
+                <dt class="col-sm-3">Script Key</dt>
+                <dd class="col-sm-9">
+                    <code>@Model.ScriptKey</code>
+                </dd>
+
+                <dt class="col-sm-3">Approved</dt>
+                <dd class="col-sm-9">
+                    @if (Model.IsApproved)
+                    {
+                        <span class="badge bg-success">✅ Approved</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">⏳ Pending</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Created At</dt>
+                <dd class="col-sm-9">@Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</dd>
+            </dl>
+
+            <hr />
+
+            <div class="d-flex justify-content-between mt-3">
+                <div>
+                    <a asp-action="Index" class="btn btn-secondary">⬅️ Back to List</a>
+                </div>
+
+                <div>
+                    @if (!Model.IsApproved)
+                    {
+                        <form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-success me-2">✅ Approve</button>
+                        </form>
+                        <form asp-action="Reject" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">❌ Reject</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Reject" asp-route-id="@Model.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger">🚫 Remove Approval</button>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> *@
+@model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "تفاصيل الموقع";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <a asp-action="Index" class="text-decoration-none" style="color: var(--text-secondary);">
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                <h4 class="page-title mb-0">تفاصيل الموقع</h4>
+            </div>
+            <p class="page-subtitle mb-0">عرض وإدارة معلومات الموقع</p>
+        </div>
+        <div class="action-buttons">
+            <a asp-action="Index" class="btn btn-light">
+                <i class="bi bi-arrow-right ms-1"></i>
+                العودة للقائمة
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Website Details -->
+<div class="row g-4">
+    <!-- Main Info Card -->
+    <div class="col-12 col-lg-8">
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-start gap-3 mb-4 pb-4 border-bottom">
+                    <div class="flex-shrink-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 60px; height: 60px; background: var(--primary-lighter); color: var(--primary-main); font-size: 24px;">
+                            <i class="bi bi-globe2"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h4 class="mb-2 fw-semibold" style="color: var(--text-primary);">@Model.Name</h4>
+                        <a href="@Model.Domain" target="_blank" class="text-decoration-none d-inline-flex align-items-center gap-2 mb-2" style="color: var(--primary-main);">
+                            <i class="bi bi-box-arrow-up-left"></i>
+                            <span>@Model.Domain</span>
+                        </a>
+                        <div class="mt-2">
+                            @if (Model.IsApproved)
+                            {
+                                <span class="badge rounded-pill" style="background: var(--success-lighter); color: var(--success-dark); font-weight: 600; padding: 8px 16px;">
+                                    <i class="bi bi-check-circle-fill ms-1"></i>
+                                    موقع مفعّل
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill" style="background: var(--warning-lighter); color: var(--warning-dark); font-weight: 600; padding: 8px 16px;">
+                                    <i class="bi bi-clock-fill ms-1"></i>
+                                    قيد المراجعة
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; background: var(--gray-100); color: var(--text-secondary);">
+                                    <i class="bi bi-hash"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small mb-1">معرّف الموقع</div>
+                                <div class="fw-medium" style="color: var(--text-primary);">@Model.Id</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; background: var(--gray-100); color: var(--text-secondary);">
+                                    <i class="bi bi-tag"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small mb-1">التصنيف</div>
+                                <div class="fw-medium" style="color: var(--text-primary);">
+                                    @if (!string.IsNullOrEmpty(Model.Category))
+                                    {
+                                        <span class="badge rounded-pill" style="background: var(--gray-200); color: var(--text-primary); font-weight: 500; padding: 6px 12px;">
+                                            @Model.Category
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">غير محدد</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; background: var(--gray-100); color: var(--text-secondary);">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small mb-1">معرّف الناشر</div>
+                                <div class="fw-medium" style="color: var(--text-primary);">@Model.OwnerId</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="flex-shrink-0">
+                                <div class="rounded d-flex align-items-center justify-content-center"
+                                     style="width: 40px; height: 40px; background: var(--gray-100); color: var(--text-secondary);">
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="text-muted small mb-1">تاريخ الإنشاء</div>
+                                <div class="fw-medium" style="color: var(--text-primary);">
+                                    @Model.CreatedAt.ToLocalTime().ToString("yyyy-MM-dd")
+                                    <span class="text-muted small me-2">@Model.CreatedAt.ToLocalTime().ToString("hh:mm tt")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Key Card -->
+    <div class="col-12 col-lg-4">
+        <div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="rounded d-flex align-items-center justify-content-center"
+                         style="width: 36px; height: 36px; background: var(--info-lighter); color: var(--info-main);">
+                        <i class="bi bi-key"></i>
+                    </div>
+                    <h6 class="mb-0 fw-semibold">مفتاح السكريبت</h6>
+                </div>
+
+                <div class="mb-3">
+                    <div class="p-3 rounded position-relative" style="background: var(--gray-100); border: 1px dashed var(--gray-300);">
+                        <code class="d-block text-break" style="color: var(--text-primary); font-size: 13px;" id="scriptKey">@Model.ScriptKey</code>
+                    </div>
+                </div>
+
+                <button class="btn btn-light w-100" onclick="copyScriptKey()">
+                    <i class="bi bi-clipboard ms-1"></i>
+                    نسخ المفتاح
+                </button>
+
+                <div class="alert alert-info mt-3 mb-0" style="background: var(--info-lighter); border: none; border-radius: var(--radius-sm);">
+                    <small class="text-muted d-flex align-items-start gap-2">
+                        <i class="bi bi-info-circle mt-1"></i>
+                        <span>استخدم هذا المفتاح لدمج السكريبت في موقع الناشر</span>
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Card -->
+        <div class="card shadow-sm border-0 mt-3" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <h6 class="mb-3 fw-semibold">الإجراءات</h6>
+
+                @if (!Model.IsApproved)
+                {
+                    <form asp-action="Approve" asp-route-id="@Model.Id" method="post" class="mb-2">
+                        <button type="submit"
+                                class="btn w-100"
+                                style="background: var(--success-main); color: white;"
+                                onclick="return confirm('هل أنت متأكد من تفعيل هذا الموقع؟')">
+                            <i class="bi bi-check-circle ms-1"></i>
+                            تفعيل الموقع
+                        </button>
+                    </form>
+                    <form asp-action="Reject" asp-route-id="@Model.Id" method="post">
+                        <button type="submit"
+                                class="btn w-100"
+                                style="background: var(--error-lighter); color: var(--error-dark);"
+                                onclick="return confirm('هل أنت متأكد من رفض هذا الموقع؟')">
+                            <i class="bi bi-x-circle ms-1"></i>
+                            رفض الموقع
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Reject" asp-route-id="@Model.Id" method="post">
+                        <button type="submit"
+                                class="btn w-100"
+                                style="background: var(--error-main); color: white;"
+                                onclick="return confirm('هل أنت متأكد من إلغاء تفعيل هذا الموقع؟')">
+                            <i class="bi bi-x-circle ms-1"></i>
+                            إلغاء التفعيل
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function copyScriptKey() {
+            const scriptKey = document.getElementById('scriptKey').textContent;
+
+            // Create temporary textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = scriptKey;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+
+            // Select and copy
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            // Show success feedback
+            const button = event.target.closest('button');
+            const originalHTML = button.innerHTML;
+            button.innerHTML = '<i class="bi bi-check-circle ms-1"></i> تم النسخ!';
+            button.style.background = 'var(--success-main)';
+            button.style.color = 'white';
+
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.style.background = '';
+                button.style.color = '';
+            }, 2000);
+        }
+
+        // Add smooth transitions to action buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+
+            buttons.forEach(button => {
+                button.style.transition = 'all 0.2s ease';
+
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = 'var(--shadow-card)';
+                });
+
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+    </script>
+}

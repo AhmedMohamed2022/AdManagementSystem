@@ -1,0 +1,212 @@
+﻿@* @page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h2>Create a new account.</h2>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.DisplayName" class="form-control" aria-required="true" placeholder="Enter your display name" />
+                <label asp-for="Input.DisplayName">Display Name</label>
+                <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <select asp-for="Input.SelectedRole" class="form-control">
+                    <option value="Publisher">ناشر(Publisher)</option>
+                    <option value="Advertiser">معلن(Advertiser)</option>
+                </select>
+                <label asp-for="Input.SelectedRole">نوع الحساب</label>
+                <span asp-validation-for="Input.SelectedRole" class="text-danger"></span>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <label asp-for="Input.Email">Email</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.Password">Password</label>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
+        </form>
+    </div>
+    <div class="col-md-6 col-md-offset-2">
+        <section>
+            <h3>Use another service to register.</h3>
+            <hr />
+            @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">article
+                            about setting up this ASP.NET application to support logging in via external services</a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+        </section>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "إنشاء حساب جديد";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - منصة إدارة الإعلانات</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/register.css"  />
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Right Sidebar with Branding -->
+        <div class="auth-sidebar col-lg-5">
+            <div class="auth-sidebar-content">
+                <div class="auth-logo">
+                    <span> A3lanly أعلنلي</span>
+                </div>
+                <p style="font-size: 1.1rem; opacity: 0.95; margin-bottom: 2rem;">
+                    ابدأ رحلتك معنا اليوم
+                </p>
+
+                <svg class="auth-illustration" viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Illustration: Registration concept -->
+                    <rect x="80" y="60" width="340" height="280" rx="20" fill="white" opacity="0.1" />
+                    <circle cx="250" cy="140" r="40" fill="white" opacity="0.2" />
+                    <rect x="150" y="200" width="200" height="30" rx="6" fill="white" opacity="0.2" />
+                    <rect x="150" y="250" width="200" height="30" rx="6" fill="white" opacity="0.2" />
+                    <rect x="180" y="300" width="140" height="40" rx="8" fill="white" opacity="0.3" />
+                    <circle cx="390" cy="120" r="35" fill="white" opacity="0.15" />
+                    <circle cx="110" cy="300" r="25" fill="white" opacity="0.15" />
+                    <path d="M250 40L265 55L235 55Z" fill="white" opacity="0.2" />
+                </svg>
+
+                <div style="margin-top: 2rem; opacity: 0.9;">
+                    <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">✓ تسجيل سريع وآمن</p>
+                    <p style="font-size: 0.95rem; margin-bottom: 0.5rem;">✓ دعم للناشرين والمعلنين</p>
+                    <p style="font-size: 0.95rem;">✓ ابدأ بدون رسوم</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Registration Form -->
+        <div class="auth-main col-lg-7">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1 class="auth-title">إنشاء حساب جديد</h1>
+                    <p class="auth-subtitle">انضم إلى منصتنا وابدأ في إدارة إعلاناتك</p>
+                </div>
+
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.DisplayName" class="form-control" aria-required="true" placeholder="أدخل اسمك" />
+                        <label asp-for="Input.DisplayName">الاسم الكامل</label>
+                        <span asp-validation-for="Input.DisplayName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <select asp-for="Input.SelectedRole" class="form-select">
+                            <option value="Publisher">ناشر (Publisher) - لأصحاب المواقع والتطبيقات</option>
+                            <option value="Advertiser">معلن (Advertiser) - للشركات والمعلنين</option>
+                        </select>
+                        <label asp-for="Input.SelectedRole">نوع الحساب</label>
+                        <span asp-validation-for="Input.SelectedRole" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label asp-for="Input.Email">البريد الإلكتروني</label>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" type="password" />
+                        <label asp-for="Input.Password">كلمة المرور</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-floating mb-4">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" type="password" />
+                        <label asp-for="Input.ConfirmPassword">تأكيد كلمة المرور</label>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">
+                        إنشاء الحساب
+                    </button>
+
+                    @{
+                        if ((Model.ExternalLogins?.Count ?? 0) > 0)
+                        {
+                            <div class="divider">أو التسجيل باستخدام</div>
+
+                            <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="external-login-btn" name="provider" value="@provider.Name" title="التسجيل باستخدام @provider.DisplayName">
+                                        @provider.DisplayName
+                                    </button>
+                                }
+                            </form>
+                        }
+                    }
+
+                    <div class="auth-links">
+                        <p class="mb-0">
+                            لديك حساب بالفعل؟
+                            <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="auth-link">تسجيل الدخول</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>

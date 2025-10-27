@@ -1,0 +1,17 @@
+﻿@model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "Delete Website";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">⚠️ Confirm Delete</h4>
+        <p>Are you sure you want to delete the website <strong>@Model.Name</strong>?</p>
+    </div>
+
+    <form asp-action="DeleteConfirmed" method="post">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

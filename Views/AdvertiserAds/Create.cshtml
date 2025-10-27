@@ -1,0 +1,296 @@
+﻿@* @model AdSystem.Models.Ad
+@{
+    ViewData["Title"] = "Create Advertisement";
+}
+
+<h2>Create Advertisement</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ImageUrl" class="form-label"></label>
+        <input asp-for="ImageUrl" class="form-control" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TargetUrl" class="form-label"></label>
+        <input asp-for="TargetUrl" class="form-control" />
+        <span asp-validation-for="TargetUrl" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Create</button>
+</form> *@
+@model AdSystem.Models.Ad
+@{
+    ViewData["Title"] = "إنشاء إعلان جديد";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">إنشاء إعلان جديد</h1>
+            <p class="page-subtitle">أضف إعلانك وانتظر موافقة المسؤول</p>
+        </div>
+        <a asp-controller="AdvertiserAds" asp-action="Index" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-right"></i>
+            العودة للإعلانات
+        </a>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-megaphone text-primary"></i>
+                    معلومات الإعلان
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" id="adForm">
+                    <!-- Title -->
+                    <div class="mb-4">
+                        <label asp-for="Title" class="form-label">
+                            <i class="bi bi-type text-primary"></i>
+                            عنوان الإعلان
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Title" class="form-control" placeholder="أدخل عنوان الإعلان" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                        <div class="form-text">اختر عنواناً جذاباً ومختصراً للإعلان</div>
+                    </div>
+
+                    <!-- Image URL -->
+                    <div class="mb-4">
+                        <label asp-for="ImageUrl" class="form-label">
+                            <i class="bi bi-image text-success"></i>
+                            رابط الصورة
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" id="imageUrlInput" />
+                        <span asp-validation-for="ImageUrl" class="text-danger small"></span>
+                        <div class="form-text">أدخل رابط صورة الإعلان (يجب أن يكون رابط مباشر للصورة)</div>
+
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="mt-3" style="display: none;">
+                            <div class="alert alert-info d-flex align-items-center gap-2">
+                                <i class="bi bi-info-circle"></i>
+                                <span>معاينة الصورة:</span>
+                            </div>
+                            <div class="border rounded p-3 bg-light text-center">
+                                <img id="previewImg" src="" alt="Image Preview" class="img-fluid rounded" style="max-height: 300px; max-width: 100%;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Target URL -->
+                    <div class="mb-4">
+                        <label asp-for="TargetUrl" class="form-label">
+                            <i class="bi bi-link-45deg text-info"></i>
+                            رابط الهدف
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="TargetUrl" class="form-control" placeholder="https://example.com" />
+                        <span asp-validation-for="TargetUrl" class="text-danger small"></span>
+                        <div class="form-text">الرابط الذي سيتم توجيه المستخدمين إليه عند النقر على الإعلان</div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label">
+                            <i class="bi bi-text-paragraph text-warning"></i>
+                            وصف الإعلان
+                        </label>
+                        <textarea asp-for="Description" class="form-control" rows="5" placeholder="أدخل وصفاً تفصيلياً للإعلان (اختياري)" id="descriptionInput"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                        <div class="form-text d-flex justify-content-between">
+                            <span>وصف مختصر عن الإعلان والخدمة المقدمة</span>
+                            <span id="charCount" class="text-muted">0 حرف</span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a asp-controller="AdvertiserAds" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                            إلغاء
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="bi bi-check-circle"></i>
+                            إنشاء الإعلان
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="col-lg-4">
+        <!-- Tips Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-lightbulb text-primary"></i>
+                    نصائح لإعلان ناجح
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <strong>عنوان جذاب:</strong> استخدم عنواناً واضحاً ومختصراً
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <strong>صورة عالية الجودة:</strong> اختر صورة واضحة وجذابة
+                    </li>
+                    <li class="mb-3">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <strong>رابط صحيح:</strong> تأكد من صحة الرابط المستهدف
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <strong>وصف مفيد:</strong> اكتب وصفاً يوضح قيمة منتجك
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Status Info Card -->
+        <div class="card">
+            <div class="card-header bg-warning-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle text-warning"></i>
+                    معلومات هامة
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning mb-3">
+                    <i class="bi bi-clock-history"></i>
+                    <strong>انتظار الموافقة</strong>
+                    <p class="mb-0 small mt-2">سيتم مراجعة إعلانك من قبل المسؤول قبل نشره</p>
+                </div>
+
+                <h6 class="mb-2">متطلبات الإعلان:</h6>
+                <ul class="small mb-0">
+                    <li>يجب أن تكون الصورة بتنسيق (JPG, PNG, GIF)</li>
+                    <li>الحد الأقصى لحجم الصورة: 5 ميجابايت</li>
+                    <li>الأبعاد المقترحة: 1200x628 بكسل</li>
+                    <li>تجنب المحتوى المخالف</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Image Preview Functionality
+            const imageUrlInput = document.getElementById('imageUrlInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+
+            imageUrlInput.addEventListener('blur', function() {
+                const url = this.value.trim();
+                if (url) {
+                    // Check if it's a valid image URL
+                    if (url.match(/\.(jpeg|jpg|gif|png|webp)$/i) || url.includes('image')) {
+                        previewImg.src = url;
+                        imagePreview.style.display = 'block';
+
+                        // Handle image load error
+                        previewImg.onerror = function() {
+                            imagePreview.style.display = 'none';
+                        };
+                    } else {
+                        imagePreview.style.display = 'none';
+                    }
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            });
+
+            // Character Counter for Description
+            const descriptionInput = document.getElementById('descriptionInput');
+            const charCount = document.getElementById('charCount');
+
+            descriptionInput.addEventListener('input', function() {
+                const count = this.value.length;
+                charCount.textContent = count + ' حرف';
+
+                if (count > 500) {
+                    charCount.classList.add('text-danger');
+                    charCount.classList.remove('text-muted');
+                } else {
+                    charCount.classList.remove('text-danger');
+                    charCount.classList.add('text-muted');
+                }
+            });
+
+            // Form Validation Enhancement
+            const form = document.getElementById('adForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', function(e) {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                } else {
+                    // Disable submit button to prevent double submission
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري الإنشاء...';
+                }
+                form.classList.add('was-validated');
+            });
+
+            // URL Validation Helper
+            const urlInputs = document.querySelectorAll('input[type="text"]');
+            urlInputs.forEach(input => {
+                if (input.id === 'ImageUrl' || input.id === 'TargetUrl') {
+                    input.addEventListener('blur', function() {
+                        const value = this.value.trim();
+                        if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
+                            // Show warning
+                            const warning = document.createElement('div');
+                            warning.className = 'alert alert-warning alert-dismissible fade show mt-2';
+                            warning.innerHTML = '<i class="bi bi-exclamation-triangle"></i> تأكد من أن الرابط يبدأ بـ http:// أو https://';
+
+                            // Remove any existing warnings
+                            const existingWarning = this.parentElement.querySelector('.alert-warning');
+                            if (existingWarning) {
+                                existingWarning.remove();
+                            }
+
+                            this.parentElement.appendChild(warning);
+
+                            // Auto-remove after 5 seconds
+                            setTimeout(() => {
+                                warning.remove();
+                            }, 5000);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

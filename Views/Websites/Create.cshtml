@@ -1,0 +1,393 @@
+﻿@* @model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "Add Website";
+}
+
+<h2>Add Website</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-3">
+        <label asp-for="Domain"></label>
+        <input asp-for="Domain" class="form-control" placeholder="example.com" />
+        <span asp-validation-for="Domain" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Submit</button>
+</form> *@
+@* @model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "Add New Website";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">➕ Add New Website</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="My Blog or Site" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Domain" class="form-label"></label>
+            <input asp-for="Domain" class="form-control" placeholder="https://example.com" />
+            <span asp-validation-for="Domain" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success">💾 Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+} *@
+@model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "إضافة موقع جديد";
+}
+
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">إضافة موقع جديد</h1>
+            <p class="page-subtitle">سجل موقعك لبدء عرض الإعلانات</p>
+        </div>
+        <a asp-controller="Websites" asp-action="Index" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-right"></i>
+            العودة للمواقع
+        </a>
+    </div>
+</div>
+
+<!-- Form Card -->
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-globe text-primary"></i>
+                    معلومات الموقع
+                </h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Create" method="post" id="websiteForm">
+                    <!-- Website Name -->
+                    <div class="mb-4">
+                        <label asp-for="Name" class="form-label">
+                            <i class="bi bi-tag text-primary"></i>
+                            اسم الموقع
+                            <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Name" class="form-control" placeholder="مثال: مدونتي أو متجري الإلكتروني" id="nameInput" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                        <div class="form-text">اختر اسماً واضحاً يعبر عن محتوى موقعك</div>
+                    </div>
+
+                    <!-- Domain -->
+                    <div class="mb-4">
+                        <label asp-for="Domain" class="form-label">
+                            <i class="bi bi-link-45deg text-success"></i>
+                            رابط الموقع (Domain)
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-globe2"></i>
+                            </span>
+                            <input asp-for="Domain" class="form-control" placeholder="https://example.com" id="domainInput" />
+                        </div>
+                        <span asp-validation-for="Domain" class="text-danger small"></span>
+                        <div class="form-text">أدخل رابط الموقع الكامل مع البروتوكول (https://)</div>
+
+                        <!-- Domain Validation Status -->
+                        <div id="domainStatus" class="mt-2" style="display: none;"></div>
+
+                        <!-- Domain Preview -->
+                        <div id="domainPreview" class="mt-3" style="display: none;">
+                            <div class="alert alert-info d-flex align-items-center gap-2">
+                                <i class="bi bi-info-circle"></i>
+                                <span>معاينة الموقع:</span>
+                            </div>
+                            <div class="border rounded p-3 bg-light">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="bi bi-browser-chrome text-primary" style="font-size: 32px;"></i>
+                                    <div class="flex-grow-1">
+                                        <strong id="previewName">اسم الموقع</strong>
+                                        <div class="text-muted small" id="previewDomain">example.com</div>
+                                    </div>
+                                    <a href="#" id="previewLink" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-box-arrow-up-left"></i>
+                                        فتح الموقع
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Buttons -->
+                    <div class="d-flex gap-2 justify-content-end">
+                        <a asp-controller="Websites" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i>
+                            إلغاء
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="bi bi-check-circle"></i>
+                            حفظ الموقع
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <div class="col-lg-4">
+        <!-- Steps Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-list-ol text-primary"></i>
+                    خطوات التسجيل
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="stat-card-icon primary" style="width: 32px; height: 32px; font-size: 14px;">
+                            1
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 me-3">
+                        <strong class="d-block mb-1">املأ البيانات</strong>
+                        <small class="text-muted">أدخل اسم الموقع والرابط</small>
+                    </div>
+                </div>
+                <div class="d-flex mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="stat-card-icon warning" style="width: 32px; height: 32px; font-size: 14px;">
+                            2
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 me-3">
+                        <strong class="d-block mb-1">انتظر الموافقة</strong>
+                        <small class="text-muted">سيتم مراجعة موقعك من قبل المسؤول</small>
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="flex-shrink-0">
+                        <div class="stat-card-icon success" style="width: 32px; height: 32px; font-size: 14px;">
+                            3
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 me-3">
+                        <strong class="d-block mb-1">ابدأ العرض</strong>
+                        <small class="text-muted">ضع كود الإعلانات في موقعك</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Requirements Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-success-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-check-square text-success"></i>
+                    متطلبات القبول
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        موقع نشط وعامل
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        محتوى أصلي وجيد
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        لا يحتوي على محتوى مخالف
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        شهادة SSL (HTTPS)
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        زيارات حقيقية
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Important Info Card -->
+        <div class="card">
+            <div class="card-header bg-warning-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-info-circle text-warning"></i>
+                    معلومات هامة
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning mb-3">
+                    <i class="bi bi-clock-history"></i>
+                    <strong>وقت المراجعة</strong>
+                    <p class="mb-0 small mt-2">عادة ما تستغرق المراجعة من 24 إلى 48 ساعة</p>
+                </div>
+
+                <h6 class="mb-2 small">أسباب الرفض الشائعة:</h6>
+                <ul class="small mb-0 text-muted">
+                    <li>محتوى مخالف أو غير أخلاقي</li>
+                    <li>موقع غير عامل</li>
+                    <li>محتوى منسوخ أو مكرر</li>
+                    <li>عدم وجود محتوى كافٍ</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('nameInput');
+            const domainInput = document.getElementById('domainInput');
+            const domainStatus = document.getElementById('domainStatus');
+            const domainPreview = document.getElementById('domainPreview');
+            const previewName = document.getElementById('previewName');
+            const previewDomain = document.getElementById('previewDomain');
+            const previewLink = document.getElementById('previewLink');
+            const form = document.getElementById('websiteForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Domain Validation
+            function validateDomain(url) {
+                try {
+                    const urlObj = new URL(url);
+                    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            // Update Preview
+            function updatePreview() {
+                const name = nameInput.value.trim();
+                const domain = domainInput.value.trim();
+
+                if (name && domain) {
+                    previewName.textContent = name;
+                    try {
+                        const urlObj = new URL(domain);
+                        previewDomain.textContent = urlObj.hostname;
+                        previewLink.href = domain;
+                    } catch (e) {
+                        previewDomain.textContent = domain;
+                        previewLink.href = '#';
+                    }
+                    domainPreview.style.display = 'block';
+                } else {
+                    domainPreview.style.display = 'none';
+                }
+            }
+
+            // Domain Input Handler
+            domainInput.addEventListener('blur', function() {
+                const url = this.value.trim();
+
+                if (url) {
+                    if (validateDomain(url)) {
+                        domainStatus.innerHTML = '<div class="alert alert-success small py-2"><i class="bi bi-check-circle"></i> الرابط صحيح ✓</div>';
+                        domainStatus.style.display = 'block';
+                        updatePreview();
+                    } else {
+                        domainStatus.innerHTML = '<div class="alert alert-danger small py-2"><i class="bi bi-x-circle"></i> يرجى إدخال رابط صحيح يبدأ بـ https://</div>';
+                        domainStatus.style.display = 'block';
+                        domainPreview.style.display = 'none';
+                    }
+                } else {
+                    domainStatus.style.display = 'none';
+                    domainPreview.style.display = 'none';
+                }
+            });
+
+            // Name Input Handler
+            nameInput.addEventListener('input', updatePreview);
+
+            // Auto-format Domain
+            domainInput.addEventListener('blur', function() {
+                let url = this.value.trim();
+
+                // Add https:// if missing
+                if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                    this.value = url;
+
+                    // Re-validate after auto-format
+                    if (validateDomain(url)) {
+                        domainStatus.innerHTML = '<div class="alert alert-success small py-2"><i class="bi bi-check-circle"></i> تم إضافة https:// تلقائياً ✓</div>';
+                        domainStatus.style.display = 'block';
+                        updatePreview();
+                    }
+                }
+            });
+
+            // Form Submission
+            form.addEventListener('submit', function(e) {
+                if (!form.checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                } else {
+                    const domain = domainInput.value.trim();
+                    if (!validateDomain(domain)) {
+                        e.preventDefault();
+                        domainStatus.innerHTML = '<div class="alert alert-danger small py-2"><i class="bi bi-x-circle"></i> يرجى إدخال رابط صحيح قبل الحفظ</div>';
+                        domainStatus.style.display = 'block';
+                        domainInput.focus();
+                        return;
+                    }
+
+                    // Disable submit button
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري الحفظ...';
+                }
+                form.classList.add('was-validated');
+            });
+
+            // Real-time domain check
+            let typingTimer;
+            const doneTypingInterval = 1000;
+
+            domainInput.addEventListener('keyup', function() {
+                clearTimeout(typingTimer);
+                const url = this.value.trim();
+
+                if (url) {
+                    typingTimer = setTimeout(function() {
+                        if (validateDomain(url)) {
+                            domainStatus.innerHTML = '<div class="alert alert-success small py-2"><i class="bi bi-check-circle"></i> الرابط صحيح ✓</div>';
+                            domainStatus.style.display = 'block';
+                        }
+                    }, doneTypingInterval);
+                }
+            });
+
+            domainInput.addEventListener('keydown', function() {
+                clearTimeout(typingTimer);
+            });
+        });
+    </script>
+}

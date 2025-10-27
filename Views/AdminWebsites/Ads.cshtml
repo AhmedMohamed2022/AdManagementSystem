@@ -1,0 +1,397 @@
+﻿@* @model IEnumerable<AdSystem.Models.Ad>
+@{
+    ViewData["Title"] = "All Advertisers Ads";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">🌐 Advertisers Ads</h2>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>ImageUrl</th>
+                        <th>TargetUrl</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var site in Model)
+                    {
+                        <tr>
+                            <td>@site.Title</td>
+                            <td>
+                                <a href="@site.ImageUrl" target="_blank">GoToImage</a>
+                            </td>
+                            <td>
+                                <a href="@site.TargetUrl" target="_blank">GoToTarget</a>
+                            </td> *@
+                            @* <td>@(string.IsNullOrEmpty(site.Category) ? "—" : site.Category)</td> *@
+@*                             <td>
+                                @if (site.Status == AdManagementSystem.Models.Enums.AdStatus.Approved)
+                                {
+                                    <span class="badge bg-success">✅ Approved</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">⏳ Pending</span>
+                                }
+                            </td>
+                            <td>@site.StartDate.ToLocalTime().ToString("yyyy-MM-dd")</td>
+
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <a asp-action="AdDetails" asp-route-id="@site.Id" class="btn btn-sm btn-info text-white">
+                                        🔍 Details
+                                    </a>
+
+                                    @if (site.Status != AdManagementSystem.Models.Enums.AdStatus.Approved)
+                                    {
+                                        <form asp-action="ApproveAd" asp-route-id="@site.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success ms-1">✅ Approve</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="RejectAd" asp-route-id="@site.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-danger ms-1">🚫 Reject</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-4 text-muted">
+                    No Ads found yet.
+                </div>
+            }
+        </div>
+    </div>
+</div> *@
+@model IEnumerable<AdSystem.Models.Ad>
+@{
+    ViewData["Title"] = "إدارة إعلانات المعلنين";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h4 class="page-title mb-1">إدارة الإعلانات</h4>
+            <p class="page-subtitle mb-0">عرض وإدارة جميع إعلانات المعلنين في المنصة</p>
+        </div>
+        <div class="action-buttons">
+            <button class="btn btn-light" onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise ms-1"></i>
+                تحديث
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Overview -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--primary-lighter); color: var(--primary-main);">
+                <i class="bi bi-megaphone"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">إجمالي الإعلانات</div>
+                <div class="stat-value">@Model.Count()</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--success-lighter); color: var(--success-main);">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">إعلانات مفعّلة</div>
+                <div class="stat-value">@Model.Count(a => a.Status == AdManagementSystem.Models.Enums.AdStatus.Approved)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--warning-lighter); color: var(--warning-main);">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">قيد المراجعة</div>
+                <div class="stat-value">@Model.Count(a => a.Status != AdManagementSystem.Models.Enums.AdStatus.Approved)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--info-lighter); color: var(--info-main);">
+                <i class="bi bi-calendar-plus"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-label">إعلانات جديدة اليوم</div>
+                <div class="stat-value">@Model.Count(a => a.StartDate.Date == DateTime.Today)</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ads Table Card -->
+<div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
+    <div class="card-body p-0">
+        <!-- Card Header -->
+        <div class="p-4 border-bottom">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h5 class="mb-1 fw-semibold">قائمة الإعلانات</h5>
+                    <p class="text-muted small mb-0">إدارة ومراجعة إعلانات المعلنين</p>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <!-- Filter Buttons -->
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="statusFilter" id="filterAll" autocomplete="off" checked>
+                        <label class="btn btn-outline-secondary btn-sm" for="filterAll" onclick="filterAds('all')">
+                            الكل (@Model.Count())
+                        </label>
+
+                        <input type="radio" class="btn-check" name="statusFilter" id="filterApproved" autocomplete="off">
+                        <label class="btn btn-outline-success btn-sm" for="filterApproved" onclick="filterAds('approved')">
+                            مفعّل (@Model.Count(a => a.Status == AdManagementSystem.Models.Enums.AdStatus.Approved))
+                        </label>
+
+                        <input type="radio" class="btn-check" name="statusFilter" id="filterPending" autocomplete="off">
+                        <label class="btn btn-outline-warning btn-sm" for="filterPending" onclick="filterAds('pending')">
+                            معلّق (@Model.Count(a => a.Status != AdManagementSystem.Models.Enums.AdStatus.Approved))
+                        </label>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search text-muted"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="بحث في الإعلانات..." id="searchInput" onkeyup="searchAds()">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="adsTable">
+                    <thead style="background-color: var(--gray-100);">
+                        <tr>
+                            <th class="px-4 py-3 text-muted small fw-semibold" style="width: 25%;">عنوان الإعلان</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold" style="width: 15%;">صورة الإعلان</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold" style="width: 20%;">رابط الهدف</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold text-center" style="width: 12%;">الحالة</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold" style="width: 13%;">تاريخ البدء</th>
+                            <th class="px-4 py-3 text-muted small fw-semibold text-center" style="width: 15%;">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ad in Model)
+                        {
+                            <tr class="ad-row" data-status="@(ad.Status == AdManagementSystem.Models.Enums.AdStatus.Approved ? "approved" : "pending")">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center"
+                                                 style="width: 40px; height: 40px; background: var(--primary-lighter); color: var(--primary-main);">
+                                                <i class="bi bi-megaphone"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ad-title">
+                                            <div class="fw-semibold mb-0" style="color: var(--text-primary);">@ad.Title</div>
+                                            <small class="text-muted">ID: @ad.Id</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 ad-image">
+                                    <a href="@ad.ImageUrl" target="_blank" class="d-flex align-items-center gap-2 text-decoration-none">
+                                        <div class="rounded overflow-hidden border" style="width: 60px; height: 40px; background: var(--gray-100);">
+                                            <img src="@ad.ImageUrl" alt="@ad.Title" class="w-100 h-100" style="object-fit: cover;" onerror="this.parentElement.innerHTML='<div class=\'d-flex align-items-center justify-content-center h-100 w-100\' style=\'color: var(--text-disabled);\'><i class=\'bi bi-image\'></i></div>'">
+                                        </div>
+                                        <i class="bi bi-box-arrow-up-left" style="color: var(--primary-main);"></i>
+                                    </a>
+                                </td>
+                                <td class="px-4 py-3 ad-target">
+                                    <a href="@ad.TargetUrl" target="_blank" class="text-decoration-none d-flex align-items-center gap-2" style="color: var(--primary-main);">
+                                        <i class="bi bi-link-45deg"></i>
+                                        <span class="text-truncate" style="max-width: 200px;">@ad.TargetUrl</span>
+                                    </a>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    @if (ad.Status == AdManagementSystem.Models.Enums.AdStatus.Approved)
+                                    {
+                                        <span class="badge rounded-pill" style="background: var(--success-lighter); color: var(--success-dark); font-weight: 600; padding: 6px 12px;">
+                                            <i class="bi bi-check-circle-fill ms-1"></i>
+                                            مفعّل
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill" style="background: var(--warning-lighter); color: var(--warning-dark); font-weight: 600; padding: 6px 12px;">
+                                            <i class="bi bi-clock-fill ms-1"></i>
+                                            قيد المراجعة
+                                        </span>
+                                    }
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex flex-column">
+                                        <span class="small" style="color: var(--text-primary);">@ad.StartDate.ToLocalTime().ToString("yyyy-MM-dd")</span>
+                                        <span class="text-muted" style="font-size: 11px;">@ad.StartDate.ToLocalTime().ToString("hh:mm tt")</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a asp-action="AdDetails" asp-route-id="@ad.Id"
+                                           class="btn btn-sm btn-light rounded-pill"
+                                           style="padding: 6px 12px;"
+                                           title="عرض التفاصيل">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+
+                                        @if (ad.Status != AdManagementSystem.Models.Enums.AdStatus.Approved)
+                                        {
+                                            <form asp-action="ApproveAd" asp-route-id="@ad.Id" method="post" class="d-inline">
+                                                <button type="submit"
+                                                        class="btn btn-sm rounded-pill"
+                                                        style="background: var(--success-lighter); color: var(--success-dark); padding: 6px 12px;"
+                                                        title="تفعيل الإعلان"
+                                                        onclick="return confirm('هل أنت متأكد من تفعيل هذا الإعلان؟')">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="RejectAd" asp-route-id="@ad.Id" method="post" class="d-inline">
+                                                <button type="submit"
+                                                        class="btn btn-sm rounded-pill"
+                                                        style="background: var(--error-lighter); color: var(--error-dark); padding: 6px 12px;"
+                                                        title="إلغاء تفعيل الإعلان"
+                                                        onclick="return confirm('هل أنت متأكد من إلغاء تفعيل هذا الإعلان؟')">
+                                                    <i class="bi bi-x-circle"></i>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state py-5">
+                <div class="empty-icon mb-3">
+                    <i class="bi bi-megaphone"></i>
+                </div>
+                <h5 class="mb-2">لا توجد إعلانات بعد</h5>
+                <p class="text-muted mb-0">لم يتم إضافة أي إعلانات من قبل المعلنين حتى الآن</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Filter ads by status
+        function filterAds(status) {
+            const rows = document.querySelectorAll('.ad-row');
+
+            rows.forEach(row => {
+                if (status === 'all') {
+                    row.style.display = '';
+                } else {
+                    const rowStatus = row.getAttribute('data-status');
+                    row.style.display = rowStatus === status ? '' : 'none';
+                }
+            });
+
+            checkEmptyResults();
+        }
+
+        // Search ads
+        function searchAds() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('.ad-row');
+
+            rows.forEach(row => {
+                const title = row.querySelector('.ad-title').textContent.toLowerCase();
+                const target = row.querySelector('.ad-target').textContent.toLowerCase();
+
+                if (title.includes(filter) || target.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            checkEmptyResults();
+        }
+
+        // Check if results are empty and show message
+        function checkEmptyResults() {
+            const table = document.getElementById('adsTable');
+            if (!table) return;
+
+            const rows = document.querySelectorAll('.ad-row');
+            const visibleRows = Array.from(rows).filter(row => row.style.display !== 'none');
+
+            // Remove existing empty message
+            const existingMsg = document.getElementById('noResultsMessage');
+            if (existingMsg) existingMsg.remove();
+
+            if (visibleRows.length === 0) {
+                const tbody = table.querySelector('tbody');
+                const colCount = table.querySelector('thead tr').children.length;
+
+                const emptyRow = document.createElement('tr');
+                emptyRow.id = 'noResultsMessage';
+                emptyRow.innerHTML = `
+                    <td colspan="${colCount}" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="bi bi-search mb-2" style="font-size: 2rem;"></i>
+                            <p class="mb-0">لا توجد نتائج مطابقة للبحث</p>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(emptyRow);
+            }
+        }
+
+        // Add hover effect to action buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const actionButtons = document.querySelectorAll('.btn-sm');
+
+            actionButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                    this.style.transition = 'transform 0.2s ease';
+                });
+
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+}

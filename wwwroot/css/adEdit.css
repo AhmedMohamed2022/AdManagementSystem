@@ -1,0 +1,123 @@
+﻿/* Custom styles for Edit page */
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.breadcrumb-item a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+    .breadcrumb-item a:hover {
+        color: var(--primary-main);
+    }
+
+.breadcrumb-item.active {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "‹";
+    padding: 0 0.5rem;
+    color: var(--text-disabled);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--primary-main);
+    box-shadow: 0 0 0 0.2rem rgba(32, 101, 209, 0.15);
+}
+
+.form-check-input:checked {
+    background-color: var(--success-main);
+    border-color: var(--success-main);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 171, 85, 0.15);
+}
+
+.input-group-text {
+    color: var(--text-secondary);
+}
+
+.img-thumbnail {
+    transition: transform 0.2s;
+}
+
+    .img-thumbnail:hover {
+        transform: scale(1.02);
+    }
+
+/* Status dots from theme.css enhancement */
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--gray-400);
+}
+
+.status-dot-active {
+    background-color: var(--success-main);
+    box-shadow: 0 0 0 3px rgba(0, 171, 85, 0.2);
+}
+
+.status-dot-inactive {
+    background-color: var(--gray-400);
+}
+
+/* Smooth animations */
+.card {
+    transition: box-shadow 0.3s ease;
+}
+
+    .card:hover {
+        box-shadow: var(--shadow-card);
+    }
+
+.btn {
+    transition: all 0.2s ease;
+}
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+/* Alert improvements */
+.alert {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .page-header .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .d-flex.gap-2.pt-3 {
+        flex-direction: column;
+    }
+
+        .d-flex.gap-2.pt-3 .btn {
+            width: 100%;
+        }
+}
