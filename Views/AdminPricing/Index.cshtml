@@ -1,0 +1,457 @@
+﻿@using AdSystem.Models
+@* @model IEnumerable<AdSystem.Models.AdPricingRule>
+
+<h2>Pricing Rules</h2>
+
+<a class="btn btn-success mb-3" href="/AdminPricing/Create">Add Pricing Rule</a>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Country</th>
+            <th>City</th>
+            <th>Advertiser</th>
+            <th>CPM</th>
+            <th>CPC</th>
+            <th>Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.RuleType</td>
+                <td>@r.Country</td>
+                <td>@r.City</td>
+                <td>@r.AdvertiserId</td>
+                <td>@r.CPM</td>
+                <td>@r.CPC</td>
+                <td>@r.CreatedAt.ToShortDateString()</td>
+                <td>
+                    <a href="/AdminPricing/Edit/@r.Id" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="/AdminPricing/Delete/@r.Id" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+@* @model List<AdPricingRule>
+
+<h2>Pricing Rules</h2>
+
+<a class="btn btn-primary" href="/AdminPricing/Create">+ Add New Rule</a>
+<br />
+<br />
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Rule Type</th>
+            <th>Advertiser</th>
+            <th>Country</th>
+            <th>City</th>
+            <th>CPM</th>
+            <th>CPC</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.RuleType</td>
+                <td>@r.AdvertiserId</td>
+                <td>@r.Country</td>
+                <td>@r.City</td>
+                <td>@r.CPM</td>
+                <td>@r.CPC</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" href="/AdminPricing/Edit/@r.Id">Edit</a>
+                    <a class="btn btn-sm btn-danger" href="/AdminPricing/Delete/@r.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+@model List<AdSystem.Models.AdPricingRule>
+@{
+    ViewData["Title"] = "قواعد التسعير";
+}
+<link rel="stylesheet" href="~/css/AdminPricingIndex.css" />
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">قواعد التسعير</h1>
+            <p class="page-subtitle">إدارة أسعار الإعلانات حسب الموقع الجغرافي والمعلنين</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary btn-lg">
+            <i class="bi bi-plus-circle me-2"></i>
+            إضافة قاعدة جديدة
+        </a>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-card-icon" style="background: var(--primary-lighter); color: var(--primary-main);">
+                <i class="bi bi-tag-fill"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-value">@Model.Count</h3>
+                <p class="stat-card-label">إجمالي القواعد</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-card-icon" style="background: var(--success-lighter); color: var(--success-main);">
+                <i class="bi bi-globe"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-value">@Model.Count(r => r.RuleType == "Global")</h3>
+                <p class="stat-card-label">قواعد عامة</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-card-icon" style="background: var(--warning-lighter); color: var(--warning-main);">
+                <i class="bi bi-flag"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-value">@Model.Count(r => r.RuleType == "Country" || r.RuleType == "City")</h3>
+                <p class="stat-card-label">قواعد جغرافية</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="stat-card-icon" style="background: var(--info-lighter); color: var(--info-main);">
+                <i class="bi bi-person-badge"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-value">@Model.Count(r => r.RuleType == "Advertiser")</h3>
+                <p class="stat-card-label">قواعد المعلنين</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Search Card -->
+<div class="card shadow-card mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold small" style="color: var(--text-secondary);">
+                    <i class="bi bi-search me-1"></i>
+                    البحث
+                </label>
+                <input type="text" class="form-control" id="searchInput" placeholder="ابحث في القواعد...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold small" style="color: var(--text-secondary);">
+                    <i class="bi bi-funnel me-1"></i>
+                    نوع القاعدة
+                </label>
+                <select class="form-select" id="filterType">
+                    <option value="">الكل</option>
+                    <option value="Global">عامة (Global)</option>
+                    <option value="Country">دولة (Country)</option>
+                    <option value="City">مدينة (City)</option>
+                    <option value="Advertiser">معلن (Advertiser)</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold small" style="color: var(--text-secondary);">
+                    <i class="bi bi-sort-down me-1"></i>
+                    الترتيب حسب
+                </label>
+                <select class="form-select" id="sortBy">
+                    <option value="date-desc">الأحدث أولاً</option>
+                    <option value="date-asc">الأقدم أولاً</option>
+                    <option value="cpm-desc">أعلى CPM</option>
+                    <option value="cpm-asc">أقل CPM</option>
+                    <option value="cpc-desc">أعلى CPC</option>
+                    <option value="cpc-asc">أقل CPC</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-outline-secondary w-100" id="resetFilters">
+                    <i class="bi bi-arrow-clockwise me-1"></i>
+                    إعادة تعيين
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Rules Table Card -->
+<div class="card shadow-card">
+    <div class="card-body p-0">
+        <!-- Table Header -->
+        <div class="d-flex align-items-center justify-content-between p-4 border-bottom">
+            <div>
+                <h5 class="mb-1 fw-semibold" style="color: var(--text-primary);">قائمة القواعد</h5>
+                <p class="text-muted mb-0 small">عرض <span class="fw-semibold" id="visibleCount">@Model.Count</span> من @Model.Count قاعدة</p>
+            </div>
+        </div>
+
+        <!-- Table -->
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="pricingTable">
+                    <thead style="background-color: var(--gray-100);">
+                        <tr>
+                            <th class="px-4 py-3 text-muted fw-semibold small">النوع</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small">التفاصيل</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small text-center">CPM</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small text-center">CPC</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small">تاريخ الإنشاء</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small text-end">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rule in Model.OrderByDescending(r => r.CreatedAt))
+                        {
+                            var ruleTypeIcon = rule.RuleType switch
+                            {
+                                "Global" => "bi-globe",
+                                "Country" => "bi-flag",
+                                "City" => "bi-building",
+                                "Advertiser" => "bi-person-badge",
+                                _ => "bi-tag"
+                            };
+
+                            var ruleTypeColor = rule.RuleType switch
+                            {
+                                "Global" => "primary",
+                                "Country" => "success",
+                                "City" => "warning",
+                                "Advertiser" => "info",
+                                _ => "secondary"
+                            };
+
+                            var ruleTypeText = rule.RuleType switch
+                            {
+                                "Global" => "عامة",
+                                "Country" => "دولة",
+                                "City" => "مدينة",
+                                "Advertiser" => "معلن",
+                                _ => rule.RuleType
+                            };
+
+                            <tr class="rule-row"
+                                data-type="@rule.RuleType"
+                                data-cpm="@rule.CPM"
+                                data-cpc="@rule.CPC"
+                                data-date="@rule.CreatedAt.ToString("yyyyMMdd")"
+                                data-search="@rule.RuleType @rule.Country @rule.City @rule.AdvertiserId">
+                                <td class="px-4 py-3">
+                                    <span class="badge-custom badge-@ruleTypeColor">
+                                        <i class="bi @ruleTypeIcon"></i>
+                                        @ruleTypeText
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    @if (rule.RuleType == "Global")
+                                    {
+                                        <div class="text-muted small">
+                                            <i class="bi bi-asterisk me-1"></i>
+                                            ينطبق على الجميع
+                                        </div>
+                                    }
+                                    else if (rule.RuleType == "Country")
+                                    {
+                                        <div class="fw-semibold" style="color: var(--text-primary);">
+                                            <i class="bi bi-flag me-1"></i>
+                                            @rule.Country
+                                        </div>
+                                    }
+                                    else if (rule.RuleType == "City")
+                                    {
+                                        <div class="fw-semibold" style="color: var(--text-primary);">
+                                            <i class="bi bi-building me-1"></i>
+                                            @rule.City
+                                        </div>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-flag me-1"></i>
+                                            @rule.Country
+                                        </div>
+                                    }
+                                    else if (rule.RuleType == "Advertiser")
+                                    {
+                                        <div class="fw-semibold" style="color: var(--text-primary);">
+                                            <i class="bi bi-person-circle me-1"></i>
+                                            معلن مخصص
+                                        </div>
+                                        <div class="text-muted small">
+                                            ID: @(rule.AdvertiserId?.Substring(0, 8) ?? "N/A")...
+                                        </div>
+                                    }
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="pricing-badge pricing-badge-cpm">
+                                        <i class="bi bi-bar-chart-fill"></i>
+                                        <span class="fw-bold">$@rule.CPM.ToString("N2")</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="pricing-badge pricing-badge-cpc">
+                                        <i class="bi bi-cursor-fill"></i>
+                                        <span class="fw-bold">$@rule.CPC.ToString("N2")</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="text-muted small">
+                                        <i class="bi bi-calendar-check me-1"></i>
+                                        @rule.CreatedAt.ToString("dd/MM/yyyy")
+                                    </div>
+                                    <div class="text-muted small">
+                                        @rule.CreatedAt.ToString("hh:mm tt")
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="action-buttons justify-content-end">
+                                        <a asp-action="Edit" asp-route-id="@rule.Id"
+                                           class="btn-icon btn-icon-warning"
+                                           data-bs-toggle="tooltip"
+                                           title="تعديل">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@rule.Id"
+                                           class="btn-icon btn-icon-danger"
+                                           data-bs-toggle="tooltip"
+                                           title="حذف">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Footer -->
+            <div class="d-flex align-items-center justify-content-between p-4 border-top">
+                <div class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    آخر تحديث: @DateTime.Now.ToString("dd/MM/yyyy - hh:mm tt")
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state py-5">
+                <div class="empty-state-icon">
+                    <i class="bi bi-tag"></i>
+                </div>
+                <h5 class="empty-state-title">لا توجد قواعد تسعير</h5>
+                <p class="empty-state-message">ابدأ بإضافة قاعدة تسعير جديدة لإدارة أسعار الإعلانات</p>
+                <a asp-action="Create" class="btn btn-primary mt-3">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    إضافة قاعدة جديدة
+                </a>
+            </div>
+        }
+    </div>
+</div>
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Get elements
+        const searchInput = document.getElementById('searchInput');
+        const filterType = document.getElementById('filterType');
+        const sortBy = document.getElementById('sortBy');
+        const resetFilters = document.getElementById('resetFilters');
+        const table = document.getElementById('pricingTable');
+        const visibleCountSpan = document.getElementById('visibleCount');
+        const rows = table ? Array.from(table.querySelectorAll('tbody tr')) : [];
+
+        if (!table) return; // Exit if no table
+
+        // Filter and search function
+        function filterAndSort() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const typeFilter = filterType.value;
+            let visibleRows = [];
+
+            // Filter rows
+            rows.forEach(row => {
+                const rowType = row.dataset.type;
+                const rowSearch = row.dataset.search.toLowerCase();
+
+                const matchesSearch = searchTerm === '' || rowSearch.includes(searchTerm);
+                const matchesType = typeFilter === '' || rowType === typeFilter;
+
+                if (matchesSearch && matchesType) {
+                    row.style.display = '';
+                    visibleRows.push(row);
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Sort visible rows
+            const sortValue = sortBy.value;
+            visibleRows.sort((a, b) => {
+                switch(sortValue) {
+                    case 'date-desc':
+                        return b.dataset.date.localeCompare(a.dataset.date);
+                    case 'date-asc':
+                        return a.dataset.date.localeCompare(b.dataset.date);
+                    case 'cpm-desc':
+                        return parseFloat(b.dataset.cpm) - parseFloat(a.dataset.cpm);
+                    case 'cpm-asc':
+                        return parseFloat(a.dataset.cpm) - parseFloat(b.dataset.cpm);
+                    case 'cpc-desc':
+                        return parseFloat(b.dataset.cpc) - parseFloat(a.dataset.cpc);
+                    case 'cpc-asc':
+                        return parseFloat(a.dataset.cpc) - parseFloat(b.dataset.cpc);
+                    default:
+                        return 0;
+                }
+            });
+
+            // Reorder rows
+            const tbody = table.querySelector('tbody');
+            visibleRows.forEach(row => tbody.appendChild(row));
+
+            // Update count
+            if (visibleCountSpan) {
+                visibleCountSpan.textContent = visibleRows.length;
+            }
+        }
+
+        // Reset filters
+        function resetAllFilters() {
+            searchInput.value = '';
+            filterType.value = '';
+            sortBy.value = 'date-desc';
+            filterAndSort();
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', filterAndSort);
+        filterType.addEventListener('change', filterAndSort);
+        sortBy.addEventListener('change', filterAndSort);
+        resetFilters.addEventListener('click', resetAllFilters);
+
+        // Initial sort
+        filterAndSort();
+    });
+</script>
+}

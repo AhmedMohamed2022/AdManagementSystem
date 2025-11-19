@@ -38,6 +38,9 @@ namespace AdManagementSystem.Areas.Identity.Pages.Account.Manage
         /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
+        public bool HasAuthenticator { get; set; }
+        public bool IsEmailConfirmed { get; set; }
+
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -59,18 +62,22 @@ namespace AdManagementSystem.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+            public string Email { get; set; }
+
         }
 
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var email = await _userManager.GetEmailAsync(user);
 
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                Email = email
             };
         }
 
@@ -99,6 +106,7 @@ namespace AdManagementSystem.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+            IsEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
@@ -110,6 +118,7 @@ namespace AdManagementSystem.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+            HasAuthenticator = await _userManager.GetAuthenticatorKeyAsync(user) != null;
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

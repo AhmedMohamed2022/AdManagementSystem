@@ -81,30 +81,78 @@
                                 <span>إدارة الإعلانات</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdminUsers" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="AdminUsers" asp-action="Index">
+                                <i class="bi bi-people"></i>
+                                <span>إدارة المستخدمين</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdminFinance" && currentAction == "Advertisers" ? "active" : "")"
+                               asp-controller="AdminFinance" asp-action="Advertisers">
+                                <i class="bi bi-wallet2"></i>
+                                <span>إدارة الأموال</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdminPricing" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="AdminPricing" asp-action="Index">
+                                <i class="bi bi-tag"></i>
+                                <span>إدارة الأسعار</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdminReports" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="AdminReports" asp-action="Index">
+                                <i class="bi bi-file-earmark-bar-graph"></i>
+                                <span>التقارير</span>
+                            </a>
+                        </li>
                     }
 
                     <!-- Advertiser Links -->
                     @if (User.IsInRole("Advertiser"))
                     {
+                        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
                         <li class="nav-section">
                             <span class="nav-section-title">المعلن</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="AdvertiserDashboard" asp-action="Index">
+                            <a class="nav-link @(currentController == "AdvertiserDashboard" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="AdvertiserDashboard" asp-action="Index">
                                 <i class="bi bi-graph-up-arrow"></i>
                                 <span>لوحة المعلن</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="AdvertiserAds" asp-action="Index">
+                            <a class="nav-link @(currentController == "AdvertiserAds" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="AdvertiserAds" asp-action="Index">
                                 <i class="bi bi-megaphone"></i>
                                 <span>إعلاناتي</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="AdvertiserAds" asp-action="Create">
+                            <a class="nav-link @(currentController == "AdvertiserAds" && currentAction == "Create" ? "active" : "")"
+                               asp-controller="AdvertiserAds" asp-action="Create">
                                 <i class="bi bi-plus-circle"></i>
                                 <span>إضافة إعلان</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdvertiserWallet" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="AdvertiserWallet" asp-action="Index">
+                                <i class="bi bi-wallet2"></i>
+                                <span>المحفظة</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "AdvertiserReports" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="AdvertiserReports" asp-action="Index">
+                                <i class="bi bi-file-earmark-bar-graph"></i>
+                                <span>التقارير</span>
                             </a>
                         </li>
                     }
@@ -112,25 +160,45 @@
                     <!-- Publisher Links -->
                     @if (User.IsInRole("Publisher"))
                     {
+                        var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+                        var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
                         <li class="nav-section">
                             <span class="nav-section-title">الناشر</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="PublisherDashboard" asp-action="Index">
+                            <a class="nav-link @(currentController == "PublisherDashboard" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="PublisherDashboard" asp-action="Index">
                                 <i class="bi bi-bar-chart-line"></i>
                                 <span>لوحة الناشر</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Websites" asp-action="Index">
+                            <a class="nav-link @(currentController == "Websites" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="Websites" asp-action="Index">
                                 <i class="bi bi-globe"></i>
                                 <span>مواقعي</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Websites" asp-action="Create">
+                            <a class="nav-link @(currentController == "Websites" && currentAction == "Create" ? "active" : "")"
+                               asp-controller="Websites" asp-action="Create">
                                 <i class="bi bi-plus-circle"></i>
                                 <span>إضافة موقع</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "PublisherWallet" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="PublisherWallet" asp-action="Index">
+                                <i class="bi bi-wallet2"></i>
+                                <span>المحفظة</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "PublisherReports" && currentAction == "Index" ? "active" : "")"
+                               asp-controller="PublisherReports" asp-action="Index">
+                                <i class="bi bi-file-earmark-bar-graph"></i>
+                                <span>التقارير</span>
                             </a>
                         </li>
                     }

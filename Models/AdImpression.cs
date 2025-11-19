@@ -3,24 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AdSystem.Models
 {
-    //public class AdImpression
-    //{
-    //    public int Id { get; set; }
-
-    //    public int AdId { get; set; }
-    //    public Ad Ad { get; set; }
-
-    //    // NEW: Which website generated the impression
-    //    public int WebsiteId { get; set; }
-    //    public Website Website { get; set; }
-
-    //    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-
-    //    public string? ViewerIp { get; set; }
-    //}
-    /// <summary>
-    /// Represents a record of a single ad view (impression).
-    /// </summary>
     public class AdImpression
     {
         [Key]
@@ -45,7 +27,17 @@ namespace AdSystem.Models
 
         [StringLength(512)]
         public string? UserAgent { get; set; }
+        /// ✅ Country resolved from IP or request
+        [StringLength(100)]
+        public string? Country { get; set; }
 
+        /// ✅ City resolved from IP or request
+        [StringLength(100)]
+        public string? City { get; set; }
+
+        /// ✅ Money earned for this single impression
+        [Column(TypeName = "decimal(18,6)")]
+        public decimal EarnedAmount { get; set; }
         public DateTime ViewedAt { get; set; } = DateTime.UtcNow;
     }
 }

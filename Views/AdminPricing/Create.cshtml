@@ -1,0 +1,497 @@
+﻿@using AdSystem.Models
+@* @model AdSystem.Models.AdPricingRule
+
+<h2>Create Pricing Rule</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label">Rule Type</label>
+        <select asp-for="RuleType" class="form-control">
+            <option>Global</option>
+            <option>Country</option>
+            <option>City</option>
+            <option>Advertiser</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Country (optional)</label>
+        <input asp-for="Country" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">City (optional)</label>
+        <input asp-for="City" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Advertiser ID (optional)</label>
+        <input asp-for="AdvertiserId" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">CPM</label>
+        <input asp-for="CPM" type="number" step="0.01" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">CPC</label>
+        <input asp-for="CPC" type="number" step="0.01" class="form-control" />
+    </div>
+
+    <button class="btn btn-success">Save</button>
+    <a href="/AdminPricing/Index" class="btn btn-secondary">Cancel</a>
+</form> *@
+@* @model AdPricingRule
+
+<h2>Add Pricing Rule</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label>Rule Type</label>
+        <select asp-for="RuleType" class="form-control">
+            <option value="Global">Global</option>
+            <option value="Country">Country</option>
+            <option value="City">City</option>
+            <option value="Advertiser">Advertiser Override</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Advertiser (optional)</label>
+        <select asp-for="AdvertiserId" class="form-control">
+            <option value="">-- No Advertiser Override --</option>
+            @foreach (var u in ViewBag.Advertisers)
+            {
+                <option value="@u.Id">@u.Email</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Country</label>
+        <input asp-for="Country" class="form-control" placeholder="Example: Egypt" />
+    </div>
+
+    <div class="mb-3">
+        <label>City</label>
+        <input asp-for="City" class="form-control" placeholder="Example: Cairo" />
+    </div>
+
+    <div class="mb-3">
+        <label>CPM (cost per 1000 impressions)</label>
+        <input asp-for="CPM" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>CPC (cost per click)</label>
+        <input asp-for="CPC" class="form-control" />
+    </div>
+
+    <button class="btn btn-success">Save</button>
+</form> *@
+@model AdSystem.Models.AdPricingRule
+@{
+    ViewData["Title"] = "إضافة قاعدة تسعير";
+}
+<link rel="stylesheet" href="~/css/AdminPricingCreate.css" />
+<!-- Page Header -->
+<div class="page-header mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item"><a asp-action="Index">قواعد التسعير</a></li>
+            <li class="breadcrumb-item active">إضافة قاعدة جديدة</li>
+        </ol>
+    </nav>
+    <h1 class="page-title">إضافة قاعدة تسعير جديدة</h1>
+    <p class="page-subtitle">قم بإنشاء قواعد تسعير مخصصة بناءً على الموقع الجغرافي أو المعلن</p>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Info & Preview -->
+    <div class="col-lg-4">
+        <!-- Rule Type Info Card -->
+        <div class="card shadow-card mb-4">
+            <div class="card-body">
+                <h6 class="fw-semibold mb-3" style="color: var(--text-primary);">
+                    <i class="bi bi-info-circle me-2"></i>
+                    نوع القاعدة
+                </h6>
+
+                <div id="ruleTypeInfo">
+                    <!-- Info will be dynamically updated -->
+                    <div class="rule-info-content" data-type="Global">
+                        <div class="rule-info-icon" style="background: var(--primary-lighter); color: var(--primary-main);">
+                            <i class="bi bi-globe"></i>
+                        </div>
+                        <h6 class="fw-semibold mb-2" style="color: var(--text-primary);">قاعدة عامة</h6>
+                        <p class="text-muted small mb-0">
+                            تطبق على جميع الإعلانات والمعلنين بشكل افتراضي. هذه هي القاعدة الأساسية للتسعير.
+                        </p>
+                    </div>
+
+                    <div class="rule-info-content" data-type="Country" style="display: none;">
+                        <div class="rule-info-icon" style="background: var(--success-lighter); color: var(--success-main);">
+                            <i class="bi bi-flag"></i>
+                        </div>
+                        <h6 class="fw-semibold mb-2" style="color: var(--text-primary);">قاعدة حسب الدولة</h6>
+                        <p class="text-muted small mb-0">
+                            تطبق على دولة معينة فقط. يمكنك تحديد أسعار مختلفة لكل دولة.
+                        </p>
+                    </div>
+
+                    <div class="rule-info-content" data-type="City" style="display: none;">
+                        <div class="rule-info-icon" style="background: var(--warning-lighter); color: var(--warning-main);">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h6 class="fw-semibold mb-2" style="color: var(--text-primary);">قاعدة حسب المدينة</h6>
+                        <p class="text-muted small mb-0">
+                            تطبق على مدينة معينة داخل دولة محددة. الأكثر تحديداً.
+                        </p>
+                    </div>
+
+                    <div class="rule-info-content" data-type="Advertiser" style="display: none;">
+                        <div class="rule-info-icon" style="background: var(--info-lighter); color: var(--info-main);">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <h6 class="fw-semibold mb-2" style="color: var(--text-primary);">قاعدة مخصصة للمعلن</h6>
+                        <p class="text-muted small mb-0">
+                            تطبق أسعار خاصة لمعلن محدد، تتجاوز القواعد العامة.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pricing Preview Card -->
+        <div class="card shadow-card">
+            <div class="card-body">
+                <h6 class="fw-semibold mb-3" style="color: var(--text-primary);">
+                    <i class="bi bi-eye me-2"></i>
+                    معاينة الأسعار
+                </h6>
+
+                <div class="pricing-preview-item">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-bar-chart-fill" style="color: var(--primary-main);"></i>
+                        <span class="fw-semibold" style="color: var(--text-primary);">CPM</span>
+                    </div>
+                    <div class="pricing-value" id="cpmPreview">
+                        <span class="currency">$</span>
+                        <span class="amount">1.00</span>
+                        <span class="label">لكل 1000 ظهور</span>
+                    </div>
+                </div>
+
+                <hr class="my-3">
+
+                <div class="pricing-preview-item">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-cursor-fill" style="color: var(--success-main);"></i>
+                        <span class="fw-semibold" style="color: var(--text-primary);">CPC</span>
+                    </div>
+                    <div class="pricing-value" id="cpcPreview">
+                        <span class="currency">$</span>
+                        <span class="amount">0.05</span>
+                        <span class="label">لكل نقرة</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Form -->
+    <div class="col-lg-8">
+        <div class="card shadow-card">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="icon-wrapper-lg" style="background: var(--primary-lighter); color: var(--primary-main);">
+                        <i class="bi bi-tag-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1 fw-semibold" style="color: var(--text-primary);">بيانات القاعدة</h5>
+                        <p class="text-muted mb-0 small">املأ البيانات المطلوبة حسب نوع القاعدة</p>
+                    </div>
+                </div>
+
+                <form asp-action="Create" method="post" id="pricingForm">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Rule Type Selection (Always Visible) -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold" style="color: var(--text-primary);">
+                            <i class="bi bi-bookmark me-1"></i>
+                            نوع القاعدة
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="row g-2">
+                            <div class="col-md-6 col-lg-3">
+                                <input type="radio" class="btn-check" name="RuleType" id="ruleGlobal" value="Global" checked asp-for="RuleType">
+                                <label class="btn btn-outline-primary w-100 py-3 rule-type-btn" for="ruleGlobal">
+                                    <i class="bi bi-globe d-block fs-4 mb-2"></i>
+                                    <span class="fw-semibold d-block">عام</span>
+                                    <small class="text-muted">Global</small>
+                                </label>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <input type="radio" class="btn-check" name="RuleType" id="ruleCountry" value="Country" asp-for="RuleType">
+                                <label class="btn btn-outline-success w-100 py-3 rule-type-btn" for="ruleCountry">
+                                    <i class="bi bi-flag d-block fs-4 mb-2"></i>
+                                    <span class="fw-semibold d-block">دولة</span>
+                                    <small class="text-muted">Country</small>
+                                </label>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <input type="radio" class="btn-check" name="RuleType" id="ruleCity" value="City" asp-for="RuleType">
+                                <label class="btn btn-outline-warning w-100 py-3 rule-type-btn" for="ruleCity">
+                                    <i class="bi bi-building d-block fs-4 mb-2"></i>
+                                    <span class="fw-semibold d-block">مدينة</span>
+                                    <small class="text-muted">City</small>
+                                </label>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <input type="radio" class="btn-check" name="RuleType" id="ruleAdvertiser" value="Advertiser" asp-for="RuleType">
+                                <label class="btn btn-outline-info w-100 py-3 rule-type-btn" for="ruleAdvertiser">
+                                    <i class="bi bi-person-badge d-block fs-4 mb-2"></i>
+                                    <span class="fw-semibold d-block">معلن</span>
+                                    <small class="text-muted">Advertiser</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Fields Container -->
+                    <div id="dynamicFields">
+                        <!-- Advertiser Field (Hidden by default) -->
+                        <div class="form-group-animated mb-4" id="advertiserField" style="display: none;">
+                            <label class="form-label fw-semibold" style="color: var(--text-primary);">
+                                <i class="bi bi-person-circle me-1"></i>
+                                اختر المعلن
+                                <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="AdvertiserId" class="form-select form-select-lg">
+                                <option value="">-- اختر معلناً --</option>
+                                @foreach (var u in ViewBag.Advertisers)
+                                {
+                                    <option value="@u.Id">@(u.DisplayName ?? u.Email)</option>
+                                }
+                            </select>
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                سيتم تطبيق هذه الأسعار على المعلن المحدد فقط
+                            </small>
+                        </div>
+
+                        <!-- Country Field (Hidden by default) -->
+                        <div class="form-group-animated mb-4" id="countryField" style="display: none;">
+                            <label class="form-label fw-semibold" style="color: var(--text-primary);">
+                                <i class="bi bi-flag me-1"></i>
+                                اسم الدولة
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Country"
+                                   class="form-control form-control-lg"
+                                   placeholder="مثال: Egypt, Saudi Arabia, UAE" />
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                أدخل اسم الدولة بالإنجليزية
+                            </small>
+                        </div>
+
+                        <!-- City Field (Hidden by default) -->
+                        <div class="form-group-animated mb-4" id="cityField" style="display: none;">
+                            <label class="form-label fw-semibold" style="color: var(--text-primary);">
+                                <i class="bi bi-building me-1"></i>
+                                اسم المدينة
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="City"
+                                   class="form-control form-control-lg"
+                                   placeholder="مثال: Cairo, Riyadh, Dubai" />
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-info-circle me-1"></i>
+                                أدخل اسم المدينة بالإنجليزية
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Fields (Always Visible) -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label for="cpmInput" class="form-label fw-semibold" style="color: var(--text-primary);">
+                                <i class="bi bi-bar-chart-fill me-1"></i>
+                                CPM (تكلفة لكل 1000 ظهور)
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-currency-dollar text-muted"></i>
+                                </span>
+                                <input asp-for="CPM"
+                                       type="number"
+                                       step="0.01"
+                                       min="0.01"
+                                       max="10000"
+                                       class="form-control form-control-lg"
+                                       id="cpmInput"
+                                       placeholder="1.00"
+                                       required />
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                القيمة الموصى بها: 0.50 - 5.00 دولار
+                            </small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="cpcInput" class="form-label fw-semibold" style="color: var(--text-primary);">
+                                <i class="bi bi-cursor-fill me-1"></i>
+                                CPC (تكلفة لكل نقرة)
+                                <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light">
+                                    <i class="bi bi-currency-dollar text-muted"></i>
+                                </span>
+                                <input asp-for="CPC"
+                                       type="number"
+                                       step="0.01"
+                                       min="0.01"
+                                       max="10000"
+                                       class="form-control form-control-lg"
+                                       id="cpcInput"
+                                       placeholder="0.05"
+                                       required />
+                            </div>
+                            <small class="text-muted d-block mt-2">
+                                القيمة الموصى بها: 0.05 - 2.00 دولار
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Info Alert -->
+                    <div class="alert alert-info border-0 mb-4" style="background-color: var(--info-lighter);">
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="bi bi-lightbulb fs-4" style="color: var(--info-main);"></i>
+                            <div>
+                                <div class="fw-semibold mb-1" style="color: var(--text-primary);">نصيحة</div>
+                                <p class="mb-0 small text-muted" id="dynamicTip">
+                                    القواعد الأكثر تحديداً لها الأولوية. مثال: قاعدة المدينة تتجاوز قاعدة الدولة.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-3 pt-3 border-top">
+                        <button type="submit" class="btn btn-primary btn-lg px-4 flex-grow-1">
+                            <i class="bi bi-check-circle me-2"></i>
+                            حفظ القاعدة
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="bi bi-x-circle me-2"></i>
+                            إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all elements
+        const ruleTypeRadios = document.querySelectorAll('input[name="RuleType"]');
+        const advertiserField = document.getElementById('advertiserField');
+        const countryField = document.getElementById('countryField');
+        const cityField = document.getElementById('cityField');
+        const cpmInput = document.getElementById('cpmInput');
+        const cpcInput = document.getElementById('cpcInput');
+        const cpmPreview = document.getElementById('cpmPreview').querySelector('.amount');
+        const cpcPreview = document.getElementById('cpcPreview').querySelector('.amount');
+        const dynamicTip = document.getElementById('dynamicTip');
+
+        // Rule type info content
+        const ruleInfoContents = document.querySelectorAll('.rule-info-content');
+
+        // Tips for each rule type
+        const tips = {
+            'Global': 'القواعد الأكثر تحديداً لها الأولوية. مثال: قاعدة المدينة تتجاوز قاعدة الدولة.',
+            'Country': 'هذه القاعدة ستطبق على جميع الزوار من الدولة المحددة، ما لم تكن هناك قاعدة أكثر تحديداً.',
+            'City': 'هذه هي القاعدة الأكثر تحديداً ولها أعلى أولوية. تأكد من إدخال اسم الدولة والمدينة بشكل صحيح.',
+            'Advertiser': 'هذه القاعدة ستتجاوز جميع القواعد الأخرى للمعلن المحدد فقط.'
+        };
+
+        // Function to show/hide fields based on rule type
+        function updateFields(ruleType) {
+            // Hide all dynamic fields first
+            advertiserField.style.display = 'none';
+            countryField.style.display = 'none';
+            cityField.style.display = 'none';
+
+            // Remove required attributes
+            advertiserField.querySelector('select').removeAttribute('required');
+            countryField.querySelector('input').removeAttribute('required');
+            cityField.querySelector('input').removeAttribute('required');
+
+            // Show appropriate fields based on rule type
+            switch(ruleType) {
+                case 'Global':
+                    // No additional fields needed
+                    break;
+
+                case 'Country':
+                    countryField.style.display = 'block';
+                    countryField.querySelector('input').setAttribute('required', 'required');
+                    break;
+
+                case 'City':
+                    countryField.style.display = 'block';
+                    cityField.style.display = 'block';
+                    countryField.querySelector('input').setAttribute('required', 'required');
+                    cityField.querySelector('input').setAttribute('required', 'required');
+                    break;
+
+                case 'Advertiser':
+                    advertiserField.style.display = 'block';
+                    advertiserField.querySelector('select').setAttribute('required', 'required');
+                    break;
+            }
+
+            // Update rule type info
+            ruleInfoContents.forEach(content => {
+                content.style.display = content.dataset.type === ruleType ? 'block' : 'none';
+            });
+
+            // Update tip
+            dynamicTip.textContent = tips[ruleType];
+        }
+
+        // Function to update pricing preview
+        function updatePricingPreview() {
+            const cpmValue = parseFloat(cpmInput.value) || 0;
+            const cpcValue = parseFloat(cpcInput.value) || 0;
+
+            cpmPreview.textContent = cpmValue.toFixed(2);
+            cpcPreview.textContent = cpcValue.toFixed(2);
+        }
+
+        // Listen for rule type changes
+        ruleTypeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                updateFields(this.value);
+            });
+        });
+
+        // Listen for pricing input changes
+        cpmInput.addEventListener('input', updatePricingPreview);
+        cpcInput.addEventListener('input', updatePricingPreview);
+
+        // Initialize on page load
+        const checkedRadio = document.querySelector('input[name="RuleType"]:checked');
+        if (checkedRadio) {
+            updateFields(checkedRadio.value);
+        }
+
+        updatePricingPreview();
+    });
+</script>

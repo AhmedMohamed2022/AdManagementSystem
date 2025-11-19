@@ -1,0 +1,200 @@
+﻿@model AdSystem.ViewModels.EditUserViewModel
+@{
+    ViewData["Title"] = "تعديل المستخدم";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">تعديل المستخدم</h1>
+            <p class="page-subtitle mb-0">تحديث معلومات وصلاحيات المستخدم</p>
+        </div>
+        <div class="action-buttons">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+        <form asp-action="Edit" method="post" id="editUserForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <!-- Basic Information Card -->
+            <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--primary-lighter), white); border-bottom: 1px solid var(--gray-200); padding: 20px; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                    <h5 class="mb-0 fw-semibold" style="color: var(--text-primary);">
+                        <i class="bi bi-person-lines-fill ms-2"></i>
+                        المعلومات الأساسية
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="border-radius: var(--radius-md);"></div>
+
+                    <div class="row g-4">
+                        <!-- Full Name -->
+                        <div class="col-md-6">
+                            <label asp-for="DisplayName" class="form-label fw-semibold">
+                                <i class="bi bi-person ms-2"></i>
+                                الاسم الكامل
+                            </label>
+                            <input asp-for="DisplayName" class="form-control form-control-lg" style="border-radius: var(--radius-sm);" />
+                            <span asp-validation-for="DisplayName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold">
+                                <i class="bi bi-envelope ms-2"></i>
+                                البريد الإلكتروني
+                            </label>
+                            <input asp-for="Email" class="form-control form-control-lg" type="email" style="border-radius: var(--radius-sm);" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Balance (Read-only) -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-cash-stack ms-2"></i>
+                                الرصيد الحالي
+                            </label>
+                            <div class="input-group input-group-lg">
+                                <input type="text" value="@Model.Balance.ToString("C")" class="form-control" readonly style="border-radius: var(--radius-sm) 0 0 var(--radius-sm); background-color: var(--gray-100);" />
+                                <a asp-action="AdjustBalance" asp-route-id="@Model.Id" class="btn btn-outline-primary" style="border-radius: 0 var(--radius-sm) var(--radius-sm) 0;">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            </div>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle ms-1"></i>
+                                لتعديل الرصيد، استخدم صفحة تعديل الرصيد
+                            </small>
+                        </div>
+
+                        <!-- Account Status -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-toggle-on ms-2"></i>
+                                حالة الحساب
+                            </label>
+                            <div class="form-check form-switch" style="padding-top: 8px;">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" style="width: 50px; height: 25px; cursor: pointer;" />
+                                <label asp-for="IsActive" class="form-check-label fw-semibold ms-2" style="cursor: pointer;">
+                                    الحساب نشط
+                                </label>
+                            </div>
+                            <small class="form-text text-muted d-block mt-2">
+                                <i class="bi bi-info-circle ms-1"></i>
+                                إلغاء التفعيل سيمنع المستخدم من تسجيل الدخول
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roles Card -->
+            <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+                <div class="card-header" style="background: linear-gradient(135deg, var(--success-lighter), white); border-bottom: 1px solid var(--gray-200); padding: 20px; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                    <h5 class="mb-0 fw-semibold" style="color: var(--text-primary);">
+                        <i class="bi bi-shield-check ms-2"></i>
+                        الأدوار والصلاحيات
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <p class="text-muted mb-3">اختر الأدوار المناسبة للمستخدم (يمكن اختيار أكثر من دور)</p>
+
+                    <div class="row g-3">
+                        @foreach (var role in Model.AllRoles)
+                        {
+                            var isChecked = Model.CurrentRoles.Contains(role);
+                            <div class="col-md-4">
+                                <input type="checkbox"
+                                       class="btn-check"
+                                       name="SelectedRoles"
+                                       id="role_@role"
+                                       value="@role"
+                                       @(isChecked ? "checked" : "") />
+                                <label class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3"
+                                       for="role_@role"
+                                       style="border-radius: var(--radius-md); min-height: 100px; transition: all 0.2s ease;">
+                                    <i class="bi bi-@(role == "Admin" ? "shield-fill-check" : role == "Advertiser" ? "megaphone" : "globe") mb-2" style="font-size: 28px;"></i>
+                                    <span class="fw-semibold d-block">@role</span>
+                                    <small class="text-muted mt-1">
+                                        @(role == "Admin" ? "صلاحيات كاملة" : role == "Advertiser" ? "إدارة الإعلانات" : "إدارة المواقع")
+                                    </small>
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning Info -->
+            <div class="alert alert-warning d-flex align-items-start mb-4" style="background-color: var(--warning-lighter); border: none; border-radius: var(--radius-md); border-right: 4px solid var(--warning-main);">
+                <i class="bi bi-exclamation-triangle flex-shrink-0 ms-3" style="font-size: 24px; color: var(--warning-main);"></i>
+                <div>
+                    <h6 class="mb-1 fw-semibold" style="color: var(--warning-dark);">تنبيه</h6>
+                    <p class="mb-0" style="color: var(--warning-dark); font-size: 0.875rem;">
+                        تغيير الأدوار قد يؤثر على صلاحيات المستخدم في النظام. تأكد من منح الصلاحيات المناسبة فقط.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3 justify-content-center">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-5" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-x-circle ms-2"></i>
+                    إلغاء
+                </a>
+                <button type="submit" class="btn btn-primary btn-lg px-5" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-check-circle ms-2"></i>
+                    حفظ التغييرات
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .btn-check:checked + .btn-outline-primary {
+        background-color: var(--primary-main) !important;
+        border-color: var(--primary-main) !important;
+        color: white !important;
+        box-shadow: 0 4px 8px rgba(32, 101, 209, 0.3);
+    }
+
+    .btn-check + .btn-outline-primary:hover {
+        background-color: var(--primary-lighter);
+        border-color: var(--primary-main);
+        color: var(--primary-main);
+        transform: translateY(-2px);
+    }
+
+    .form-control:focus, .form-check-input:focus {
+        border-color: var(--primary-main);
+        box-shadow: 0 0 0 3px rgba(32, 101, 209, 0.1);
+    }
+
+    .form-check-input:checked {
+        background-color: var(--success-main);
+        border-color: var(--success-main);
+    }
+</style>
+
+<script>
+    document.getElementById('editUserForm').addEventListener('submit', function(e) {
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري الحفظ...';
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

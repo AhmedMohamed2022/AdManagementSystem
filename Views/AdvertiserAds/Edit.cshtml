@@ -78,13 +78,54 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-} *@
+}
+ @* <!-- Status -->
+                    <div class="mb-4">
+                        <label asp-for="Status" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
+                            <i class="bi bi-toggle-on ms-1"></i>
+                            حالة الإعلان
+                        </label>
+                        <select asp-for="Status"
+                                class="form-select form-select-lg"
+                                asp-items="Html.GetEnumSelectList<AdManagementSystem.Models.Enums.AdStatus>()"
+                                style="border-radius: var(--radius-sm); border-color: var(--gray-300);"></select>
+                        <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
+                    </div> *@
+<!-- Limits -->
+@* <div class="row">
+    <div class="col-12 col-md-6 mb-3 mb-md-0">
+        <label asp-for="Width" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
+            <i class="bi bi-eye ms-1"></i>
+            العرض
+        </label>
+        <input asp-for="Width"
+               type="number"
+               min="0"
+               class="form-control form-control-lg"
+               placeholder="0 = غير محدود"
+               style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
+        <span asp-validation-for="Width" class="text-danger small mt-1 d-block"></span>
+    </div>
+    <div class="col-12 col-md-6">
+        <label asp-for="Height" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
+            <i class="bi bi-cursor ms-1"></i>
+            الارتفاع
+        </label>
+        <input asp-for="Height"
+               type="number"
+               min="0"
+               class="form-control form-control-lg"
+               placeholder="0 = غير محدود"
+               style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
+        <span asp-validation-for="Height" class="text-danger small mt-1 d-block"></span>
+    </div>
+</div> 
+*@
 @model AdSystem.Models.Ad
 @{
     ViewData["Title"] = "تعديل الإعلان";
 }
 
-<!-- Page Header -->
 <div class="page-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
         <div>
@@ -98,20 +139,18 @@
         </div>
         <div class="action-buttons">
             <a asp-action="Index" class="btn btn-light">
-                <i class="bi bi-x ms-1"></i>
-                إلغاء
+                <i class="bi bi-x ms-1"></i> إلغاء
             </a>
         </div>
     </div>
 </div>
 
-<!-- Edit Form -->
 <div class="row">
     <div class="col-12 col-lg-8">
-        <form asp-action="Edit" method="post" id="editForm">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" id="editForm">
             <input type="hidden" asp-for="Id" />
 
-            <!-- Basic Info Card -->
+            <!-- BASIC INFO -->
             <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-lg);">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
@@ -125,50 +164,33 @@
                         </div>
                     </div>
 
-                    <!-- Title -->
                     <div class="mb-4">
-                        <label asp-for="Title" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                            <i class="bi bi-text-left ms-1"></i>
-                            عنوان الإعلان
+                        <label asp-for="Title" class="form-label fw-semibold mb-2">
+                            <i class="bi bi-text-left ms-1"></i> عنوان الإعلان
                         </label>
-                        <input asp-for="Title"
-                               class="form-control form-control-lg"
-                               placeholder="أدخل عنوان الإعلان"
-                               style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
-                        <span asp-validation-for="Title" class="text-danger small mt-1 d-block"></span>
+                        <input asp-for="Title" class="form-control form-control-lg" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
                     </div>
 
-                    <!-- Description -->
                     <div class="mb-4">
-                        <label asp-for="Description" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                            <i class="bi bi-card-text ms-1"></i>
-                            وصف الإعلان
-                            <span class="text-muted fw-normal small">(اختياري)</span>
+                        <label asp-for="Description" class="form-label fw-semibold mb-2">
+                            <i class="bi bi-card-text ms-1"></i> وصف الإعلان
                         </label>
-                        <textarea asp-for="Description"
-                                  class="form-control"
-                                  rows="4"
-                                  placeholder="أدخل وصفاً تفصيلياً للإعلان"
-                                  style="border-radius: var(--radius-sm); border-color: var(--gray-300);"></textarea>
-                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
                     </div>
 
-                    <!-- Category -->
                     <div class="mb-0">
-                        <label asp-for="Category" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                            <i class="bi bi-tag ms-1"></i>
-                            التصنيف
+                        <label asp-for="Category" class="form-label fw-semibold mb-2">
+                            <i class="bi bi-tag ms-1"></i> التصنيف
                         </label>
-                        <input asp-for="Category"
-                               class="form-control"
-                               placeholder="مثال: تقنية، أزياء، رياضة"
-                               style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
-                        <span asp-validation-for="Category" class="text-danger small mt-1 d-block"></span>
+                        <input asp-for="Category" class="form-control" />
+                        <span asp-validation-for="Category" class="text-danger small"></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Media & Links Card -->
+            <!-- IMAGE UPLOAD -->
             <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-lg);">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
@@ -177,198 +199,102 @@
                             <i class="bi bi-image" style="font-size: 20px;"></i>
                         </div>
                         <div>
-                            <h5 class="mb-1 fw-semibold">الصور والروابط</h5>
-                            <p class="text-muted small mb-0">روابط الصورة والهدف</p>
+                            <h5 class="mb-1 fw-semibold">صورة الإعلان</h5>
+                            <p class="text-muted small mb-0">ارفع صورة جديدة أو احتفظ الحالية</p>
                         </div>
                     </div>
 
-                    <!-- Image URL -->
-                    <div class="mb-4">
-                        <label asp-for="ImageUrl" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                            <i class="bi bi-image ms-1"></i>
-                            رابط صورة الإعلان
-                        </label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-white" style="border-color: var(--gray-300);">
-                                <i class="bi bi-link-45deg text-muted"></i>
-                            </span>
-                            <input asp-for="ImageUrl"
-                                   class="form-control"
-                                   placeholder="https://example.com/image.jpg"
-                                   style="border-color: var(--gray-300);" />
-                        </div>
-                        <span asp-validation-for="ImageUrl" class="text-danger small mt-1 d-block"></span>
-                        <small class="text-muted d-block mt-2">
-                            <i class="bi bi-info-circle ms-1"></i>
-                            رابط URL مباشر لصورة الإعلان
-                        </small>
+                    <!-- Current Image Preview -->
+                    <div class="mb-3 text-center">
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <img src="@Model.ImagePath" class="rounded border" style="max-width: 300px; max-height: 200px; object-fit: contain;" />
+                        }
+                        else
+                        {
+                            <div class="text-muted small">لا توجد صورة حالياً</div>
+                        }
                     </div>
 
-                    <!-- Target URL -->
-                    <div class="mb-0">
-                        <label asp-for="TargetUrl" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                            <i class="bi bi-cursor ms-1"></i>
-                            رابط الهدف
-                        </label>
-                        <div class="input-group input-group-lg">
-                            <span class="input-group-text bg-white" style="border-color: var(--gray-300);">
-                                <i class="bi bi-link-45deg text-muted"></i>
-                            </span>
-                            <input asp-for="TargetUrl"
-                                   class="form-control"
-                                   placeholder="https://targetsite.com"
-                                   style="border-color: var(--gray-300);" />
-                        </div>
-                        <span asp-validation-for="TargetUrl" class="text-danger small mt-1 d-block"></span>
-                        <small class="text-muted d-block mt-2">
-                            <i class="bi bi-info-circle ms-1"></i>
-                            الرابط الذي سيتم توجيه المستخدم إليه عند النقر
-                        </small>
-                    </div>
+                    <label class="form-label fw-semibold mb-2">
+                        <i class="bi bi-upload ms-1"></i> رفع صورة جديدة
+                    </label>
+                    <input type="file" name="image" accept="image/png,image/jpeg,image/webp" class="form-control" />
+                    <small class="text-muted mt-2 d-block">
+                        يُسمح بـ PNG, JPG, WEBP — ويتم تعديل الصورة تلقائياً حسب الحجم المختار
+                    </small>
                 </div>
             </div>
 
-            <!-- Settings Card -->
+            <!-- TARGET URL -->
             <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-lg);">
                 <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center"
-                             style="width: 48px; height: 48px; background: var(--success-lighter); color: var(--success-main);">
-                            <i class="bi bi-sliders" style="font-size: 20px;"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-1 fw-semibold">إعدادات الإعلان</h5>
-                            <p class="text-muted small mb-0">الحالة والتواريخ والحدود</p>
-                        </div>
-                    </div>
+                    <label asp-for="TargetUrl" class="form-label fw-semibold mb-2">
+                        <i class="bi bi-cursor ms-1"></i> رابط الهدف
+                    </label>
+                    <input asp-for="TargetUrl" class="form-control" placeholder="https://targetsite.com" />
+                    <span asp-validation-for="TargetUrl" class="text-danger small"></span>
+                </div>
+            </div>
 
-                    @* <!-- Status -->
-                    <div class="mb-4">
-                        <label asp-for="Status" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                            <i class="bi bi-toggle-on ms-1"></i>
-                            حالة الإعلان
-                        </label>
-                        <select asp-for="Status"
-                                class="form-select form-select-lg"
-                                asp-items="Html.GetEnumSelectList<AdManagementSystem.Models.Enums.AdStatus>()"
-                                style="border-radius: var(--radius-sm); border-color: var(--gray-300);"></select>
-                        <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
-                    </div> *@
+            <!-- SETTINGS -->
+            <div class="card shadow-sm border-0 mb-4" style="border-radius: var(--radius-lg);">
+                <div class="card-body p-4">
+                    <label class="form-label fw-semibold mb-2">
+                        <i class="bi bi-aspect-ratio ms-1"></i> حجم البانر
+                    </label>
+                    <select asp-for="BannerSizeId" class="form-control">
+                        @foreach (var size in (List<BannerSize>)ViewBag.Sizes)
+                        {
+                            <option value="@size.Id" selected="@(Model.BannerSizeId == size.Id)">
+                                @size.Name (@size.Width x @size.Height)
+                            </option>
+                        }
+                    </select>
 
-                    <!-- Date Range -->
-                    <div class="row mb-4">
-                        <div class="col-12 col-md-6 mb-3 mb-md-0">
-                            <label asp-for="StartDate" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                                <i class="bi bi-calendar-event ms-1"></i>
-                                تاريخ البدء
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <label asp-for="MaxImpressions" class="form-label fw-semibold mb-2">
+                                <i class="bi bi-eye ms-1"></i> الحد الأقصى للظهور
                             </label>
-                            <input asp-for="StartDate"
-                                   type="date"
-                                   class="form-control form-control-lg"
-                                   style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
-                            <span asp-validation-for="StartDate" class="text-danger small mt-1 d-block"></span>
+                            <input asp-for="MaxImpressions" type="number" class="form-control" placeholder="0 = غير محدود" />
+                            <span asp-validation-for="MaxImpressions" class="text-danger small"></span>
                         </div>
-                        <div class="col-12 col-md-6">
-                            <label asp-for="EndDate" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                                <i class="bi bi-calendar-x ms-1"></i>
-                                تاريخ الانتهاء
+                        <div class="col-md-6">
+                            <label asp-for="MaxClicks" class="form-label fw-semibold mb-2">
+                                <i class="bi bi-cursor ms-1"></i> الحد الأقصى للنقرات
                             </label>
-                            <input asp-for="EndDate"
-                                   type="date"
-                                   class="form-control form-control-lg"
-                                   style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
-                            <span asp-validation-for="EndDate" class="text-danger small mt-1 d-block"></span>
-                        </div>
-                    </div>
-
-                    <!-- Limits -->
-                    <div class="row">
-                        <div class="col-12 col-md-6 mb-3 mb-md-0">
-                            <label asp-for="MaxImpressions" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                                <i class="bi bi-eye ms-1"></i>
-                                الحد الأقصى للظهور
-                            </label>
-                            <input asp-for="MaxImpressions"
-                                   type="number"
-                                   min="0"
-                                   class="form-control form-control-lg"
-                                   placeholder="0 = غير محدود"
-                                   style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
-                            <span asp-validation-for="MaxImpressions" class="text-danger small mt-1 d-block"></span>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <label asp-for="MaxClicks" class="form-label fw-semibold mb-2" style="color: var(--text-primary);">
-                                <i class="bi bi-cursor ms-1"></i>
-                                الحد الأقصى للنقرات
-                            </label>
-                            <input asp-for="MaxClicks"
-                                   type="number"
-                                   min="0"
-                                   class="form-control form-control-lg"
-                                   placeholder="0 = غير محدود"
-                                   style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
-                            <span asp-validation-for="MaxClicks" class="text-danger small mt-1 d-block"></span>
+                            <input asp-for="MaxClicks" type="number" class="form-control" placeholder="0 = غير محدود" />
+                            <span asp-validation-for="MaxClicks" class="text-danger small"></span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
-                <div class="card-body p-4">
-                    <div class="d-flex gap-2 justify-content-end">
-                        <a asp-action="Index" class="btn btn-light px-4">
-                            <i class="bi bi-x ms-1"></i>
-                            إلغاء
-                        </a>
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="bi bi-check-circle ms-1"></i>
-                            حفظ التغييرات
-                        </button>
-                    </div>
+            <!-- SAVE BUTTON -->
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 text-end">
+                    <a asp-action="Index" class="btn btn-light px-4">
+                        إلغاء
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        حفظ التغييرات
+                    </button>
                 </div>
             </div>
         </form>
     </div>
 
-    <!-- Sidebar -->
     <div class="col-12 col-lg-4">
-        <!-- Preview Card -->
-        <div class="card shadow-sm border-0 mb-3" style="border-radius: var(--radius-lg);">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <i class="bi bi-eye" style="font-size: 20px; color: var(--primary-main);"></i>
-                    <h6 class="mb-0 fw-semibold">معاينة الإعلان</h6>
-                </div>
-                <div class="rounded overflow-hidden border" style="background: var(--gray-50); min-height: 200px;">
-                    <img src="@Model.ImageUrl" alt="@Model.Title" class="w-100" style="max-height: 300px; object-fit: contain;" id="previewImage" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="d-none align-items-center justify-content-center" style="height: 200px; color: var(--text-disabled);">
-                        <div class="text-center">
-                            <i class="bi bi-image" style="font-size: 3rem;"></i>
-                            <p class="mt-2 mb-0 small">معاينة الصورة</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Tips Card -->
         <div class="card shadow-sm border-0" style="border-radius: var(--radius-lg); background: var(--warning-lighter);">
             <div class="card-body p-4">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="flex-shrink-0">
-                        <i class="bi bi-lightbulb-fill" style="font-size: 24px; color: var(--warning-main);"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="mb-2 fw-semibold" style="color: var(--warning-dark);">نصائح مهمة</h6>
-                        <ul class="small mb-0 pe-3" style="color: var(--warning-dark); line-height: 1.8;">
-                            <li class="mb-2">استخدم صوراً عالية الجودة</li>
-                            <li class="mb-2">تأكد من صحة الروابط</li>
-                            <li class="mb-2">حدد تواريخ منطقية للعرض</li>
-                            <li>اختر تصنيفاً مناسباً للإعلان</li>
-                        </ul>
-                    </div>
-                </div>
+                <h6 class="fw-semibold mb-2" style="color: var(--warning-dark);">نصائح مهمة</h6>
+                <ul class="small mb-0" style="color: var(--warning-dark); line-height: 1.8;">
+                    <li>استخدم صوراً بجودة جيدة</li>
+                    <li>تأكد من صحة الروابط</li>
+                    <li>اختر حجم بانر مناسب للموقع المستهدف</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -376,71 +302,4 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('editForm');
-            const inputs = form.querySelectorAll('input, textarea, select');
-            const imageUrlInput = document.querySelector('input[name="ImageUrl"]');
-            const previewImage = document.getElementById('previewImage');
-
-            // Add focus effects to inputs
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.style.borderColor = 'var(--primary-main)';
-                    this.style.boxShadow = '0 0 0 3px var(--primary-lighter)';
-                    this.style.transition = 'all 0.2s ease';
-                });
-
-                input.addEventListener('blur', function() {
-                    this.style.borderColor = 'var(--gray-300)';
-                    this.style.boxShadow = 'none';
-                });
-            });
-
-            // Update image preview on URL change
-            if (imageUrlInput && previewImage) {
-                imageUrlInput.addEventListener('input', function() {
-                    if (this.value.trim()) {
-                        previewImage.src = this.value;
-                        previewImage.style.display = 'block';
-                        previewImage.nextElementSibling.style.display = 'none';
-                    }
-                });
-            }
-
-            // Add smooth transitions to buttons
-            const buttons = form.querySelectorAll('.btn');
-            buttons.forEach(button => {
-                button.style.transition = 'all 0.2s ease';
-
-                button.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-2px)';
-                    this.style.boxShadow = 'var(--shadow-card)';
-                });
-
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = '';
-                });
-            });
-
-            // Form submission loading state
-            form.addEventListener('submit', function(e) {
-                const submitBtn = this.querySelector('button[type="submit"]');
-                const originalHTML = submitBtn.innerHTML;
-
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري الحفظ...';
-
-                // Re-enable if validation fails
-                setTimeout(() => {
-                    if (!form.checkValidity()) {
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalHTML;
-                    }
-                }, 100);
-            });
-        });
-    </script>
 }

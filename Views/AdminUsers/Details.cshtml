@@ -1,0 +1,204 @@
+﻿@model AdSystem.ViewModels.UserDetailsViewModel
+@{
+    ViewData["Title"] = "تفاصيل المستخدم";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">تفاصيل المستخدم</h1>
+            <p class="page-subtitle mb-0">معلومات كاملة عن المستخدم</p>
+        </div>
+        <div class="action-buttons">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-right ms-2"></i>
+                العودة للقائمة
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                <i class="bi bi-pencil ms-2"></i>
+                تعديل
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" style="border-radius: var(--radius-md); border-right: 4px solid var(--success-main);">
+        <i class="bi bi-check-circle me-2"></i>
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row g-4">
+    <!-- User Info Card -->
+    <div class="col-lg-8">
+        <div class="card" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+            <div class="card-body p-4">
+                <!-- User Header -->
+                <div class="d-flex align-items-center gap-3 mb-4 pb-4" style="border-bottom: 1px solid var(--gray-200);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-light), var(--primary-main)); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-person text-white" style="font-size: 40px;"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h3 class="mb-1 fw-bold" style="color: var(--text-primary);">@Model.DisplayName</h3>
+                        <p class="mb-2 text-muted">@Model.Email</p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @foreach (var role in Model.Roles)
+                            {
+                                <span class="badge" style="background-color: @(role == "Admin" ? "var(--error-main)" : role == "Advertiser" ? "var(--primary-main)" : "var(--success-main)"); padding: 6px 12px; border-radius: 8px;">
+                                    @role
+                                </span>
+                            }
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: var(--success-lighter); color: var(--success-main); padding: 6px 12px; border-radius: 8px;">
+                                    <span class="status-dot" style="background-color: var(--success-main);"></span>
+                                    نشط
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge d-inline-flex align-items-center gap-1" style="background-color: var(--error-lighter); color: var(--error-main); padding: 6px 12px; border-radius: 8px;">
+                                    <span class="status-dot" style="background-color: var(--error-main);"></span>
+                                    معطل
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Details -->
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 40px; height: 40px; background-color: var(--primary-lighter); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-person-badge" style="color: var(--primary-main); font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block mb-1">اسم المستخدم</small>
+                                <p class="mb-0 fw-semibold" style="color: var(--text-primary);">@Model.UserName</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 40px; height: 40px; background-color: var(--info-lighter); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-envelope" style="color: var(--info-main); font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block mb-1">البريد الإلكتروني</small>
+                                <p class="mb-0 fw-semibold" style="color: var(--text-primary); word-break: break-all;">@Model.Email</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 40px; height: 40px; background-color: var(--success-lighter); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-cash-stack" style="color: var(--success-main); font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block mb-1">الرصيد الحالي</small>
+                                <p class="mb-0 fw-bold" style="color: var(--success-main); font-size: 1.25rem;">@Model.Balance.ToString("C")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 40px; height: 40px; background-color: var(--warning-lighter); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-calendar-check" style="color: var(--warning-main); font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block mb-1">تاريخ الإنشاء</small>
+                                <p class="mb-0 fw-semibold" style="color: var(--text-primary);">@Model.CreatedAt.ToString("dd MMMM yyyy")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+            <div class="card-body p-4">
+                <h5 class="mb-4 fw-semibold" style="color: var(--text-primary);">
+                    <i class="bi bi-lightning ms-2"></i>
+                    إجراءات سريعة
+                </h5>
+
+                <div class="d-flex flex-column gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary w-100 text-start">
+                        <i class="bi bi-pencil ms-2"></i>
+                        تعديل المعلومات
+                    </a>
+
+                    <a asp-action="AdjustBalance" asp-controller="AdminFinance" asp-route-id="@Model.Id" class="btn btn-outline-success w-100 text-start">
+                        <i class="bi bi-cash-coin ms-2"></i>
+                        تعديل الرصيد
+                    </a>
+
+                    @* <form method="post" asp-action="ResetPassword" asp-route-id="@Model.Id" onsubmit="return confirm('هل أنت متأكد من إعادة تعيين كلمة المرور؟');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-warning w-100 text-start">
+                            <i class="bi bi-key ms-2"></i>
+                            إعادة تعيين كلمة المرور
+                        </button>
+                    </form> *@
+
+                    <form method="post" asp-action="ToggleStatus" asp-route-id="@Model.Id" onsubmit="return confirm('@(Model.IsActive ? "هل تريد تعطيل هذا المستخدم؟" : "هل تريد تفعيل هذا المستخدم؟")');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-@(Model.IsActive ? "warning" : "success") w-100 text-start">
+                            <i class="bi bi-@(Model.IsActive ? "pause-circle" : "play-circle") ms-2"></i>
+                            @(Model.IsActive ? "تعطيل الحساب" : "تفعيل الحساب")
+                        </button>
+                    </form>
+
+                    <hr class="my-2">
+
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger w-100 text-start">
+                        <i class="bi bi-trash ms-2"></i>
+                        حذف المستخدم
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="card mt-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); background: linear-gradient(135deg, var(--info-lighter), white);">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-info-circle flex-shrink-0" style="font-size: 24px; color: var(--info-main);"></i>
+                    <div>
+                        <h6 class="mb-1 fw-semibold" style="color: var(--info-dark);">معلومة</h6>
+                        <p class="mb-0" style="color: var(--info-dark); font-size: 0.875rem;">
+                            يمكنك تعديل معلومات المستخدم وصلاحياته من خلال الإجراءات السريعة
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .btn-outline-primary:hover,
+    .btn-outline-success:hover,
+    .btn-outline-warning:hover,
+    .btn-outline-danger:hover {
+        transform: translateX(-4px);
+    }
+</style>

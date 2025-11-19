@@ -28,7 +28,8 @@ namespace AdManagementSystem.Services
             var query = _context.Ads
                 .Where(a => a.Status == AdStatus.Approved)
                 .Where(a => a.StartDate <= now)
-                .Where(a => a.EndDate == null || a.EndDate >= now);
+                .Where(a => a.EndDate == null || a.EndDate >= now)
+                .Where(a => a.Advertiser.Balance > 0);
 
             // Step 2: Optional filtering by category or domain (future use).
             // (We'll keep this line ready for future targeting support.)

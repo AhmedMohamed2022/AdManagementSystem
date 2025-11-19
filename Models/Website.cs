@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AdManagementSystem.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace AdSystem.Models
 {
@@ -35,7 +36,9 @@ namespace AdSystem.Models
         public string Name { get; set; } = string.Empty;
 
         [Required, StringLength(300)]
-        [Url]
+        //[Url]
+        [RegularExpression(@"^(https?:\/\/)([a-zA-Z0-9\.\-]+|\blocalhost\b|\b127\.0\.0\.1\b)(:[0-9]+)?(\/.*)?$",
+    ErrorMessage = "Please enter a valid URL including http:// or https://")]
         public string Domain { get; set; } = string.Empty;
 
        
@@ -44,8 +47,8 @@ namespace AdSystem.Models
         /// <summary>
         /// Public unique key used to embed the script in publisher sites.
         /// </summary>
-        [Required, StringLength(64)]
-        public string ScriptKey { get; set; } = Guid.NewGuid().ToString("N");
+        [StringLength(64)]
+        public string? ScriptKey { get; set; } = Guid.NewGuid().ToString("N");
 
         /// <summary>
         /// Indicates whether this website has been approved by the admin.
@@ -63,5 +66,7 @@ namespace AdSystem.Models
         /// Date when the website was submitted/added.
         /// </summary>
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public List<AdPlacement> ?Placements { get; set; }
+
     }
 }

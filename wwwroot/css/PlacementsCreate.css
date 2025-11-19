@@ -1,0 +1,35 @@
+﻿.btn-check:checked + .btn-outline-primary {
+    background-color: var(--primary-main) !important;
+    border-color: var(--primary-main) !important;
+    color: white !important;
+    box-shadow: 0 4px 8px rgba(32, 101, 209, 0.3);
+}
+
+.btn-check + .btn-outline-primary:hover {
+    background-color: var(--primary-lighter);
+    border-color: var(--primary-main);
+    color: var(--primary-main);
+    transform: translateY(-2px);
+}
+
+.form-control:focus {
+    border-color: var(--primary-main);
+    box-shadow: 0 0 0 3px rgba(32, 101, 209, 0.1);
+}
+
+.alert-info {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

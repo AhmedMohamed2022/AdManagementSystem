@@ -73,22 +73,43 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// ========================================
-// Smooth Scroll for Anchor Links
-// ========================================
+//// ========================================
+//// Smooth Scroll for Anchor Links
+//// ========================================
 
+//document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+//    anchor.addEventListener('click', function (e) {
+//        const href = this.getAttribute('href');
+//        if (href !== '#' && document.querySelector(href)) {
+//            e.preventDefault();
+//            document.querySelector(href).scrollIntoView({
+//                behavior: 'smooth',
+//                block: 'start'
+//            });
+//        }
+//    });
+//});
+// ========================================
+// Smooth Scroll for Anchor Links (Fixed)
+// ========================================
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         const href = this.getAttribute('href');
-        if (href !== '#' && document.querySelector(href)) {
-            e.preventDefault();
-            document.querySelector(href).scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
+
+        // ✅ Only handle internal anchor links, not external URLs
+        if (href && href.startsWith('#') && href.length > 1) {
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
         }
     });
 });
+
 
 // ========================================
 // Chart.js Default Configuration

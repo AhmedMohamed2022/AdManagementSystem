@@ -1,0 +1,589 @@
+﻿@* @model AdSystem.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Publisher Wallet";
+    var tx = ViewBag.Transactions as List<AdManagementSystem.Models.WalletTransaction>;
+}
+<h2>Publisher Wallet</h2>
+<div class="mb-3">
+    <strong>Balance:</strong> @Model.Balance.ToString("N2")
+</div>
+
+<form asp-action="RequestWithdrawal" method="post" class="mb-4">
+    <div class="mb-3">
+        <label>Amount</label>
+        <input type="number" step="0.01" name="amount" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label>Payout Details (bank/account)</label>
+        <input type="text" name="payoutDetails" class="form-control" />
+    </div>
+    <button class="btn btn-primary">Request Withdrawal (Processed Automatically)</button>
+</form>
+
+<h4>Recent Transactions</h4>
+@if (tx?.Any() ?? false)
+{
+    <table class="table">
+        <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Description</th></tr></thead>
+        <tbody>
+            @foreach (var t in tx)
+            {
+                <tr>
+                    <td>@t.CreatedAt</td>
+                    <td>@t.Type</td>
+                    <td>@t.Amount</td>
+                    <td>@t.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No transactions yet.</p>
+} *@
+@model AdSystem.Models.ApplicationUser
+@{
+    ViewData["Title"] = "محفظة الناشر";
+    var tx = ViewBag.Transactions as List<AdManagementSystem.Models.WalletTransaction>;
+
+    // Pagination settings
+    var pageSize = 10;
+    var page = Context.Request.Query["page"].ToString();
+    var currentPage = string.IsNullOrEmpty(page) ? 1 : int.Parse(page);
+    var totalTransactions = tx?.Count ?? 0;
+    var totalPages = (int)Math.Ceiling(totalTransactions / (double)pageSize);
+    var pagedTransactions = tx?.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+
+    // Calculate stats
+    var totalEarnings = tx?.Where(t => t.Type == AdManagementSystem.Models.Enums.TransactionType.Impression ||
+                                       t.Type == AdManagementSystem.Models.Enums.TransactionType.Click ||
+                                       t.Type == AdManagementSystem.Models.Enums.TransactionType.ManualCredit)
+                           .Sum(t => t.Amount) ?? 0;
+    var totalWithdrawals = tx?.Where(t => t.Type == AdManagementSystem.Models.Enums.TransactionType.Withdrawal)
+                              .Sum(t => t.Amount) ?? 0;
+    var impressionEarnings = tx?.Where(t => t.Type == AdManagementSystem.Models.Enums.TransactionType.Impression)
+                                .Sum(t => t.Amount) ?? 0;
+    var clickEarnings = tx?.Where(t => t.Type == AdManagementSystem.Models.Enums.TransactionType.Click)
+                           .Sum(t => t.Amount) ?? 0;
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-wallet2 ms-2"></i>
+            محفظة الناشر
+        </h1>
+        <p class="page-subtitle">إدارة أرباحك ومعاملاتك المالية</p>
+    </div>
+</div>
+
+<!-- Balance & Withdrawal Card -->
+<div class="row mb-4">
+    <div class="col-12 col-lg-7">
+        <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, var(--success-main) 0%, var(--success-dark) 100%); border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.2);">
+                            <i class="bi bi-wallet2" style="font-size: 36px; color: white;"></i>
+                        </div>
+                    </div>
+                    <div class="col text-white">
+                        <div style="opacity: 0.9; font-size: 0.9rem; margin-bottom: 0.5rem;">الرصيد المتاح</div>
+                        <div style="font-size: 2.5rem; font-weight: 700; line-height: 1;">
+                            $@Model.Balance.ToString("N2") <span style="font-size: 1rem; opacity: 0.9;">دولار أمريكي</span>
+                        </div>
+                        <div class="mt-3 d-flex gap-2 flex-wrap">
+                            <span class="badge" style="background: rgba(255, 255, 255, 0.2); padding: 8px 16px; font-weight: 500;">
+                                <i class="bi bi-graph-up ms-1"></i>
+                                إجمالي الأرباح: $@totalEarnings.ToString("N2")
+                            </span>
+                            <span class="badge" style="background: rgba(255, 255, 255, 0.2); padding: 8px 16px; font-weight: 500;">
+                                <i class="bi bi-arrow-up-circle ms-1"></i>
+                                إجمالي السحوبات: $@totalWithdrawals.ToString("N2")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-5 mt-3 mt-lg-0">
+        <div class="card border-0 shadow-sm h-100" style="border-radius: var(--radius-lg);">
+            <div class="card-body p-4">
+                <h6 class="fw-semibold mb-3" style="color: var(--text-primary);">
+                    <i class="bi bi-cash-coin ms-2"></i>
+                    طلب سحب
+                </h6>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: var(--radius-sm);">
+                        <i class="bi bi-check-circle-fill ms-2"></i>
+                        @TempData["Success"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="border-radius: var(--radius-sm);">
+                        <i class="bi bi-exclamation-triangle-fill ms-2"></i>
+                        @TempData["Error"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+
+                <form asp-action="RequestWithdrawal" method="post" id="withdrawalForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="color: var(--text-secondary);">
+                            <i class="bi bi-currency-dollar ms-1"></i>
+                            المبلغ (دولار أمريكي)
+                        </label>
+                        <input type="number" step="0.01" name="amount" class="form-control" required
+                               placeholder="0.00" min="1" max="@Model.Balance"
+                               style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
+                        <small class="text-muted">الحد الأقصى: $@Model.Balance.ToString("N2")</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold" style="color: var(--text-secondary);">
+                            <i class="bi bi-bank ms-1"></i>
+                            تفاصيل الحساب البنكي
+                        </label>
+                        <textarea name="payoutDetails" class="form-control" rows="2"
+                                  placeholder="رقم الحساب، اسم البنك، أو PayPal..."
+                                  style="border-radius: var(--radius-sm); border-color: var(--gray-300);"></textarea>
+                        <small class="text-muted">اختياري - أضف تفاصيل الدفع</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100" style="border-radius: var(--radius-sm);">
+                        <i class="bi bi-send ms-2"></i>
+                        طلب السحب (معالجة فورية)
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Earnings Breakdown -->
+<div class="row mb-4">
+    <div class="col-12 col-md-4 mb-3 mb-md-0">
+        <div class="stat-card" style="border-right: 4px solid var(--info-main);">
+            <div class="stat-icon" style="background: var(--info-lighter);">
+                <i class="bi bi-eye" style="color: var(--info-main);"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">أرباح المشاهدات</div>
+                <div class="stat-value">$@impressionEarnings.ToString("N2")</div>
+                <div class="stat-change text-muted small">
+                    <i class="bi bi-bar-chart-line ms-1"></i>
+                    من إجمالي الأرباح
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4 mb-3 mb-md-0">
+        <div class="stat-card" style="border-right: 4px solid var(--success-main);">
+            <div class="stat-icon" style="background: var(--success-lighter);">
+                <i class="bi bi-cursor" style="color: var(--success-main);"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">أرباح النقرات</div>
+                <div class="stat-value">$@clickEarnings.ToString("N2")</div>
+                <div class="stat-change text-muted small">
+                    <i class="bi bi-hand-index ms-1"></i>
+                    نقرات المستخدمين
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="stat-card" style="border-right: 4px solid var(--warning-main);">
+            <div class="stat-icon" style="background: var(--warning-lighter);">
+                <i class="bi bi-receipt" style="color: var(--warning-main);"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">إجمالي المعاملات</div>
+                <div class="stat-value">@totalTransactions</div>
+                <div class="stat-change text-muted small">
+                    <i class="bi bi-clock-history ms-1"></i>
+                    جميع الأوقات
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Table -->
+<div class="card border-0 shadow-sm" style="border-radius: var(--radius-lg);">
+    <div class="card-header bg-white" style="border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 1.5rem;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h5 class="mb-1 fw-semibold" style="color: var(--text-primary);">
+                    <i class="bi bi-clock-history ms-2"></i>
+                    سجل المعاملات
+                </h5>
+                <p class="mb-0 text-muted small">عرض جميع المعاملات المالية والأرباح</p>
+            </div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-secondary" onclick="window.print()" style="border-radius: var(--radius-sm);">
+                    <i class="bi bi-printer ms-1"></i>
+                    طباعة
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" id="exportBtn" style="border-radius: var(--radius-sm);">
+                    <i class="bi bi-download ms-1"></i>
+                    تصدير CSV
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-0">
+        @if (pagedTransactions?.Any() ?? false)
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="transactionsTable">
+                    <thead style="background: var(--gray-50); border-bottom: 2px solid var(--gray-200);">
+                        <tr>
+                            <th class="px-4 py-3" style="font-weight: 600; color: var(--text-secondary);">التاريخ</th>
+                            <th class="px-4 py-3" style="font-weight: 600; color: var(--text-secondary);">نوع المعاملة</th>
+                            <th class="px-4 py-3" style="font-weight: 600; color: var(--text-secondary);">المبلغ</th>
+                            <th class="px-4 py-3" style="font-weight: 600; color: var(--text-secondary);">الوصف</th>
+                            <th class="px-4 py-3" style="font-weight: 600; color: var(--text-secondary);">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in pagedTransactions)
+                        {
+                            var typeInfo = t.Type switch
+                            {
+                                AdManagementSystem.Models.Enums.TransactionType.Impression => new
+                                {
+                                    Icon = "eye-fill",
+                                    Color = "info",
+                                    Text = "ربح مشاهدة",
+                                    IsCredit = true
+                                },
+                                AdManagementSystem.Models.Enums.TransactionType.Click => new
+                                {
+                                    Icon = "cursor-fill",
+                                    Color = "success",
+                                    Text = "ربح نقرة",
+                                    IsCredit = true
+                                },
+                                AdManagementSystem.Models.Enums.TransactionType.Withdrawal => new
+                                {
+                                    Icon = "arrow-up-circle-fill",
+                                    Color = "error",
+                                    Text = "سحب",
+                                    IsCredit = false
+                                },
+                                AdManagementSystem.Models.Enums.TransactionType.ManualCredit => new
+                                {
+                                    Icon = "plus-circle-fill",
+                                    Color = "primary",
+                                    Text = "إضافة يدوية",
+                                    IsCredit = true
+                                },
+                                AdManagementSystem.Models.Enums.TransactionType.ManualDebit => new
+                                {
+                                    Icon = "dash-circle-fill",
+                                    Color = "warning",
+                                    Text = "خصم يدوي",
+                                    IsCredit = false
+                                },
+                                AdManagementSystem.Models.Enums.TransactionType.Adjustment => new
+                                {
+                                    Icon = "arrow-repeat",
+                                    Color = "secondary",
+                                    Text = "تعديل",
+                                    IsCredit = true
+                                },
+                                _ => new
+                                {
+                                    Icon = "circle-fill",
+                                    Color = "secondary",
+                                    Text = "أخرى",
+                                    IsCredit = true
+                                }
+                            };
+
+                            var amountClass = typeInfo.IsCredit ? "text-success" : "text-danger";
+                            var amountSign = typeInfo.IsCredit ? "+" : "-";
+
+                            <tr style="border-bottom: 1px solid var(--gray-100);">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-calendar3" style="color: var(--text-secondary);"></i>
+                                        <div>
+                                            <div style="font-weight: 500; color: var(--text-primary);">
+                                                @t.CreatedAt.ToString("dd/MM/yyyy")
+                                            </div>
+                                            <small class="text-muted">@t.CreatedAt.ToString("hh:mm tt")</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-2"
+                                         style="background: var(--@(typeInfo.Color)-lighter); border-radius: var(--radius-sm);">
+                                        <i class="bi bi-@typeInfo.Icon" style="color: var(--@(typeInfo.Color)-main);"></i>
+                                        <span style="font-weight: 500; color: var(--@(typeInfo.Color)-main);">@typeInfo.Text</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="fw-bold @amountClass" style="font-size: 1.1rem;">
+                                        @amountSign$@t.Amount.ToString("N2")
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span style="color: var(--text-secondary);">@(t.Description ?? "لا يوجد وصف")</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="badge" style="background: var(--success-lighter); color: var(--success-main); padding: 6px 12px; border-radius: var(--radius-sm); font-weight: 500;">
+                                        <i class="bi bi-check-circle-fill ms-1"></i>
+                                        مكتمل
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (totalPages > 1)
+            {
+                <div class="d-flex justify-content-between align-items-center p-4" style="background: var(--gray-50); border-top: 1px solid var(--gray-200);">
+                    <div class="text-muted small">
+                        عرض @((currentPage - 1) * pageSize + 1) إلى @(Math.Min(currentPage * pageSize, totalTransactions)) من @totalTransactions معاملة
+                    </div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            @if (currentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(currentPage - 1)" style="border-radius: var(--radius-sm); margin-left: 4px;">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+
+                            @for (var i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="?page=@i"
+                                       style="border-radius: var(--radius-sm); margin-left: 4px; @(i == currentPage ? "background: var(--success-main); border-color: var(--success-main);" : "")">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+
+                            @if (currentPage < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=@(currentPage + 1)" style="border-radius: var(--radius-sm); margin-left: 4px;">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            }
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <div class="empty-state-title">لا توجد معاملات بعد</div>
+                <div class="empty-state-text">
+                    لم يتم تسجيل أي معاملات مالية في محفظتك حتى الآن. ابدأ بإضافة مواقعك لتحقيق الأرباح!
+                </div>
+                <a href="@Url.Action("Create", "Websites")" class="btn btn-primary mt-3" style="border-radius: var(--radius-sm);">
+                    <i class="bi bi-plus-circle ms-2"></i>
+                    إضافة موقع جديد
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    /* Print Styles */
+    @@media print {
+        .page-header,
+        .btn,
+        .pagination,
+        .sidebar,
+        .navbar,
+        form {
+            display: none !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #ddd !important;
+        }
+
+        table {
+            font-size: 12px;
+        }
+    }
+
+    /* Smooth animations */
+    .stat-card,
+    .table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+        .table tbody tr:hover {
+            background: var(--gray-50);
+            transform: scale(1.01);
+        }
+
+    /* Pagination styles */
+    .pagination .page-link {
+        color: var(--text-primary);
+        border: 1px solid var(--gray-300);
+    }
+
+        .pagination .page-link:hover {
+            background: var(--success-lighter);
+            border-color: var(--success-main);
+            color: var(--success-main);
+        }
+
+    .pagination .page-item.active .page-link {
+        background: var(--success-main);
+        border-color: var(--success-main);
+        color: white;
+    }
+
+    /* Form validation styles */
+    .form-control:invalid:focus {
+        border-color: var(--error-main);
+        box-shadow: 0 0 0 3px rgba(255, 86, 48, 0.1);
+    }
+
+    .form-control:valid:focus {
+        border-color: var(--success-main);
+        box-shadow: 0 0 0 3px rgba(0, 171, 85, 0.1);
+    }
+</style>
+
+@section Scripts { <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Export to CSV functionality
+        document.getElementById('exportBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            const originalText = this.innerHTML;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm ms-1"></span> جاري التصدير...';
+            this.disabled = true;
+
+            // Get transaction data from table
+            const transactions = [];
+            const rows = document.querySelectorAll('#transactionsTable tbody tr');
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 4) {
+                    transactions.push({
+                        date: cells[0].textContent.trim().replace(/\s+/g, ' '),
+                        type: cells[1].textContent.trim(),
+                        amount: cells[2].textContent.trim(),
+                        description: cells[3].textContent.trim(),
+                        status: cells[4]?.textContent.trim() || 'مكتمل'
+                    });
+                }
+            });
+
+            // Create CSV content with BOM for UTF-8
+            let csvContent = '\uFEFF';
+            csvContent += 'التاريخ,نوع المعاملة,المبلغ,الوصف,الحالة\n';
+
+            transactions.forEach(t => {
+                csvContent += `"${t.date}","${t.type}","${t.amount}","${t.description}","${t.status}"\n`;
+            });
+
+            // Create download link
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', `publisher_wallet_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Reset button
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.disabled = false;
+            }, 1000);
+        });
+
+        // Form validation
+        const withdrawalForm = document.getElementById('withdrawalForm');
+        if (withdrawalForm) {
+            withdrawalForm.addEventListener('submit', function(e) {
+                const amountInput = this.querySelector('input[name="amount"]');
+                const maxBalance = parseFloat(amountInput.getAttribute('max'));
+                const amount = parseFloat(amountInput.value);
+
+                if (amount > maxBalance) {
+                    e.preventDefault();
+                    alert(`المبلغ المطلوب ($${amount.toFixed(2)}) أكبر من الرصيد المتاح ($${maxBalance.toFixed(2)})`);
+                    amountInput.focus();
+                    return false;
+                }
+
+                if (amount < 1) {
+                    e.preventDefault();
+                    alert('الحد الأدنى للسحب هو $1.00');
+                    amountInput.focus();
+                    return false;
+                }
+
+                // Add loading state to button
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري المعالجة...';
+                submitBtn.disabled = true;
+            });
+        }
+
+        // Smooth scroll to top for pagination
+        const paginationLinks = document.querySelectorAll('.pagination .page-link');
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>
+}

@@ -1,0 +1,168 @@
+﻿@model IEnumerable<AdManagementSystem.Models.WalletTransaction>
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "All Wallet Transactions";
+    var request = Context.Request;
+}
+
+<h2 class="mb-3">💰 All Wallet Transactions</h2>
+
+<!-- Summary Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-success text-white p-3">
+            <h6>Total Credits</h6>
+            <h3>@ViewBag.TotalCredits.ToString("0.00")</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-danger text-white p-3">
+            <h6>Total Debits</h6>
+            <h3>@ViewBag.TotalDebits.ToString("0.00")</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-primary text-white p-3">
+            <h6>Net Flow</h6>
+            <h3>@ViewBag.NetFlow.ToString("0.00")</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Export Buttons -->
+<div class="mb-3 d-flex gap-2">
+    <a class="btn btn-success btn-sm"
+       href="@Url.Action("ExportCsv", new {
+           search = request.Query["search"],
+           from = request.Query["from"],
+           to = request.Query["to"]
+       })">Export CSV</a>
+
+    <a class="btn btn-danger btn-sm"
+       href="@Url.Action("ExportPdf", new {
+           search = request.Query["search"],
+           from = request.Query["from"],
+           to = request.Query["to"]
+       })">Export PDF</a>
+</div>
+
+<!-- Filters -->
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-3">
+        <input name="search" class="form-control" placeholder="User email..." value="@request.Query["search"]" />
+    </div>
+
+    <div class="col-md-3">
+        <input type="date" name="from" class="form-control" value="@request.Query["from"]" />
+    </div>
+
+    <div class="col-md-3">
+        <input type="date" name="to" class="form-control" value="@request.Query["to"]" />
+    </div>
+
+    <div class="col-md-3 d-flex gap-2">
+        <button class="btn btn-primary">Filter</button>
+        <a class="btn btn-outline-secondary" href="@Url.Action("Transactions")">Reset</a>
+    </div>
+</form>
+
+<!-- Quick Filters -->
+<div class="mb-3">
+    <a class="btn btn-sm btn-outline-dark"
+       href="@Url.Action("Transactions", new { from = DateTime.UtcNow.Date })">
+        Today
+    </a>
+
+    <a class="btn btn-sm btn-outline-dark"
+       href="@Url.Action("Transactions", new {
+           from = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1)
+       })">
+        This Month
+    </a>
+
+    <a class="btn btn-sm btn-outline-dark"
+       href="@Url.Action("Transactions", new {
+           from = DateTime.UtcNow.AddDays(-7)
+       })">
+        Last 7 Days
+    </a>
+</div>
+
+<!-- Table -->
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>#</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>From User</th>
+            <th>To User</th>
+            <th>Ad</th>
+            <th>Website</th>            
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="9" class="text-center text-muted">No transactions found.</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var t in Model)
+            {
+                <tr>
+                    <td>@t.Id</td>
+                    <td>@t.Type</td>
+
+                    <td>
+                        @if (t.Amount > 0)
+                        {
+                            <span class="text-success fw-bold">+ @t.Amount.ToString("0.00")</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger fw-bold">@t.Amount.ToString("0.00")</span>
+                        }
+                    </td>
+
+                    <td>@t.Description</td>
+
+                    <td>@(t.FromUser?.Email ?? "-")</td>
+                    <td>@(t.ToUser?.Email ?? "-")</td>
+
+                    <td>@(t.AdId?.ToString() ?? "-")</td>
+                    <td>@(t.WebsiteId?.ToString() ?? "-")</td>
+
+                    <td>@t.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<!-- Pagination -->
+@if (ViewBag.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Transactions", new {
+                        page = i,
+                        search = request.Query["search"],
+                        from = request.Query["from"],
+                        to = request.Query["to"]
+                    })">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

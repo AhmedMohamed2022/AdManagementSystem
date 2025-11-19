@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AdManagementSystem.Models;
 using AdSystem.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace AdSystem.Data
 {
@@ -18,6 +20,13 @@ namespace AdSystem.Data
         public DbSet<Ad> Ads { get; set; }
         public DbSet<AdImpression> AdImpressions { get; set; }
         public DbSet<AdClick> AdClicks { get; set; }
+        public DbSet<AdPricingRule> AdPricingRules { get; set; }
+        public DbSet<WalletTransaction> WalletTransactions { get; set; }
+        public DbSet<AdPlacement> AdPlacements { get; set; }
+        public DbSet<BannerSize> BannerSizes { get; set; }
+        public DbSet<ClickTokenUsage> ClickTokenUsages { get; set; }
+
+
 
         // ==========================
         // 🔹 Model Configuration
@@ -50,10 +59,11 @@ namespace AdSystem.Data
 
             // Ensure cascade delete does not remove ads when advertiser is deleted
             builder.Entity<Ad>()
-                .HasOne<ApplicationUser>()
-                .WithMany()
+                .HasOne(a => a.Advertiser)
+                .WithMany(u => u.Ads)
                 .HasForeignKey(a => a.AdvertiserId)
                 .OnDelete(DeleteBehavior.Restrict);
+
 
             // -----------------------------
             // AdImpression Configuration
@@ -81,7 +91,27 @@ namespace AdSystem.Data
             builder.Entity<Website>()
                 .HasIndex(w => w.ScriptKey)
                 .IsUnique();
+            builder.Entity<AdPricingRule>()
+                .HasIndex(p => new { p.RuleType, p.Country, p.City, p.AdvertiserId })
+                .IsUnique(false);
 
+            builder.Entity<WalletTransaction>()
+               .Property(t => t.Amount)
+               .HasColumnType("decimal(18,4)");
+            builder.Entity<WalletTransaction>()
+                .HasOne(t => t.FromUser)
+                .WithMany()
+                .HasForeignKey(t => t.FromUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<WalletTransaction>()
+                .HasOne(t => t.ToUser)
+                .WithMany()
+                .HasForeignKey(t => t.ToUserId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<ClickTokenUsage>()
+                .HasIndex(c => c.Jti)
+                .IsUnique();
 
             // -----------------------------
             // Seed data (optional)

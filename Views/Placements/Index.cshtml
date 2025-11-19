@@ -1,0 +1,214 @@
+﻿@* @model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "Ad Placements";
+}
+
+<h2>Ad Placements for @Model.Domain</h2>
+
+<p>
+    <a class="btn btn-primary" href="/Placements/Create?websiteId=@Model.Id">+ Add New Placement</a>
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>ZoneKey</th>
+            <th>Size</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Placements ?? new List<AdPlacement>())
+        {
+            <tr>
+                <td>@p.Name</td>
+                <td><code>@p.ZoneKey</code></td>
+                <td>@p.BannerSize.Width x @p.BannerSize.Height</td>
+                <td>
+                    <a class="btn btn-sm btn-info" href="/Placements/Script/@p.Id">Script</a>
+                    <a class="btn btn-sm btn-warning" href="/Placements/Edit/@p.Id">Edit</a>
+                    <a class="btn btn-sm btn-danger" href="/Placements/Delete/@p.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a href="/Websites" class="btn btn-secondary">Back to Websites</a>
+</p> *@
+@model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "مواقع الإعلانات";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">مواقع الإعلانات</h1>
+            <p class="page-subtitle mb-0">
+                <i class="bi bi-globe2 ms-2"></i>
+                @Model.Domain
+            </p>
+        </div>
+        <div class="action-buttons">
+            <a href="/Websites" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-right ms-2"></i>
+                العودة للمواقع
+            </a>
+            <a href="/Placements/Create?websiteId=@Model.Id" class="btn btn-primary">
+                <i class="bi bi-plus-circle ms-2"></i>
+                إضافة موقع جديد
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (Model.Placements == null || !Model.Placements.Any())
+{
+    <!-- Empty State -->
+    <div class="card" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+        <div class="card-body">
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-pin-map"></i>
+                </div>
+                <h3 class="empty-title">لا توجد مواقع إعلانات</h3>
+                <p class="empty-description">
+                    ابدأ بإضافة موقع إعلان جديد لموقعك الإلكتروني
+                </p>
+                <a href="/Placements/Create?websiteId=@Model.Id" class="btn btn-primary mt-3">
+                    <i class="bi bi-plus-circle ms-2"></i>
+                    إضافة موقع إعلان
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Placements Grid -->
+    <div class="row g-3">
+        @foreach (var placement in Model.Placements)
+        {
+            <div class="col-12 col-md-6 col-xl-4">
+                <div class="card h-100" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); transition: all 0.3s ease;">
+                    <div class="card-body">
+                        <!-- Placement Header -->
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1 fw-semibold" style="color: var(--text-primary);">
+                                    @placement.Name
+                                </h5>
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <span class="badge" style="background-color: var(--primary-lighter); color: var(--primary-main); font-weight: 500; padding: 6px 12px; border-radius: 8px;">
+                                        @placement.BannerSize.Width × @placement.BannerSize.Height
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="placement-icon" style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary-light), var(--primary-main)); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-pin-map text-white" style="font-size: 24px;"></i>
+                            </div>
+                        </div>
+
+                        <!-- Zone Key -->
+                        <div class="mb-3 p-3" style="background-color: var(--gray-100); border-radius: var(--radius-sm); border-right: 3px solid var(--primary-main);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-muted d-block mb-1">مفتاح المنطقة</small>
+                                    <code style="color: var(--primary-main); font-size: 0.875rem; background: transparent; padding: 0;">@placement.ZoneKey</code>
+                                </div>
+                                <button class="btn btn-sm btn-icon" onclick="copyToClipboard('@placement.ZoneKey', this)" style="background-color: white; border: 1px solid var(--gray-300);">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-2 mt-3">
+                            <a href="/Placements/Script/@placement.Id" class="btn btn-sm btn-outline-primary flex-grow-1" style="border-radius: var(--radius-sm);">
+                                <i class="bi bi-code-slash ms-1"></i>
+                                الكود
+                            </a>
+                            <a href="/Placements/Edit/@placement.Id" class="btn btn-sm btn-icon" style="background-color: var(--warning-lighter); color: var(--warning-main); border: none;">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="/Placements/Delete/@placement.Id"
+                               class="btn btn-sm btn-icon"
+                               style="background-color: var(--error-lighter); color: var(--error-main); border: none;"
+                               onclick="return confirm('هل أنت متأكد من حذف هذا الموقع؟');">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Summary Card -->
+    <div class="card mt-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); background: linear-gradient(135deg, var(--primary-lighter), white);">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <div style="width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary-light), var(--primary-main)); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-pin-map text-white" style="font-size: 28px;"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1 fw-bold" style="color: var(--text-primary);">@Model.Placements.Count</h4>
+                        <p class="mb-0 text-muted">إجمالي مواقع الإعلانات</p>
+                    </div>
+                </div>
+                <a href="/Placements/Create?websiteId=@Model.Id" class="btn btn-primary">
+                    <i class="bi bi-plus-circle ms-2"></i>
+                    إضافة المزيد
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(145, 158, 171, 0.2) !important;
+    }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-sm);
+    }
+
+        .btn-icon:hover {
+            transform: scale(1.05);
+        }
+
+    code {
+        font-family: 'Courier New', monospace;
+    }
+</style>
+
+<script>
+    function copyToClipboard(text, button) {
+        navigator.clipboard.writeText(text).then(function() {
+            const icon = button.querySelector('i');
+            const originalClass = icon.className;
+            icon.className = 'bi bi-check2';
+            button.style.backgroundColor = 'var(--success-lighter)';
+            button.style.color = 'var(--success-main)';
+
+            setTimeout(function() {
+                icon.className = originalClass;
+                button.style.backgroundColor = 'white';
+                button.style.color = '';
+            }, 2000);
+        });
+    }
+</script>

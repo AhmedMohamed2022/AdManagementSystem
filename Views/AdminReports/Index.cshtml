@@ -1,0 +1,483 @@
+﻿@* @using AdManagementSystem.ViewModels
+@model AdminReportViewModel
+@{
+    var filter = (ReportFilterViewModel)ViewBag.Filter;
+    ViewData["Title"] = "Admin Reports";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">📊 Admin Reports</h2>
+    <div class="d-flex justify-content-end mb-3">
+    <a href="@Url.Action("ExportCsv", "AdminReports", new {
+        StartDate = ViewBag.Filter?.StartDate?.ToString("yyyy-MM-dd"),
+        EndDate = ViewBag.Filter?.EndDate?.ToString("yyyy-MM-dd"),
+        Country = ViewBag.Filter?.Country,
+        City = ViewBag.Filter?.City,
+        AdId = ViewBag.Filter?.AdId
+    })" class="btn btn-outline-primary me-2">
+        <i class="bi bi-file-earmark-spreadsheet"></i> Export CSV
+    </a>
+
+    <a href="@Url.Action("ExportPdf", "AdminReports", new {
+        StartDate = ViewBag.Filter?.StartDate?.ToString("yyyy-MM-dd"),
+        EndDate = ViewBag.Filter?.EndDate?.ToString("yyyy-MM-dd"),
+        Country = ViewBag.Filter?.Country,
+        City = ViewBag.Filter?.City,
+        AdId = ViewBag.Filter?.AdId
+    })" class="btn btn-outline-danger">
+        <i class="bi bi-file-earmark-pdf"></i> Export PDF
+    </a>
+</div>
+
+    <!-- Filter Form -->
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-3">
+            <label>Start Date</label>
+            <input type="date" class="form-control" name="StartDate" value="@filter?.StartDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-3">
+            <label>End Date</label>
+            <input type="date" class="form-control" name="EndDate" value="@filter?.EndDate?.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-2">
+            <label>Country</label>
+            <input type="text" class="form-control" name="Country" value="@filter?.Country" />
+        </div>
+        <div class="col-md-2">
+            <label>City</label>
+            <input type="text" class="form-control" name="City" value="@filter?.City" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- Summary Cards -->
+    <div class="row text-center mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm"><h5>Total Impressions</h5><h4>@Model.TotalImpressions</h4></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm"><h5>Total Clicks</h5><h4>@Model.TotalClicks</h4></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm"><h5>CTR</h5><h4>@Model.CTR %</h4></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm"><h5>Platform Profit</h5><h4>$@Model.PlatformProfit</h4></div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <canvas id="regionChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="topAdsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Top Entities Table -->
+    <h5>Top Publishers</h5>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr><th>Name</th><th>Impressions</th><th>Clicks</th><th>CTR</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model.TopPublishers)
+            {
+                <tr><td>@p.Name</td><td>@p.Impressions</td><td>@p.Clicks</td><td>@p.CTR%</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const regionCtx = document.getElementById('regionChart');
+        const topAdsCtx = document.getElementById('topAdsChart');
+
+        new Chart(regionCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.Regions.Select(r => r.Country))),
+                datasets: [{
+                    label: 'Impressions',
+                    data: @Html.Raw(Json.Serialize(Model.Regions.Select(r => r.Impressions)))
+                }]
+            }
+        });
+
+        new Chart(topAdsCtx, {
+            type: 'pie',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.TopAds.Select(a => a.Name))),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.TopAds.Select(a => a.Clicks)))
+                }]
+            }
+        });
+    </script>
+} *@
+@using AdManagementSystem.ViewModels
+@model AdminReportViewModel
+@{
+    var filter = (ReportFilterViewModel)ViewBag.Filter;
+    ViewData["Title"] = "التقارير الإدارية";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h4 class="page-title">📊 التقارير الإدارية</h4>
+        <p class="page-subtitle">تحليل شامل لأداء المنصة والإعلانات</p>
+    </div>
+    <div class="action-buttons">
+        <a href="@Url.Action("ExportCsv", "AdminReports", new {
+            StartDate = ViewBag.Filter?.StartDate?.ToString("yyyy-MM-dd"),
+            EndDate = ViewBag.Filter?.EndDate?.ToString("yyyy-MM-dd"),
+            Country = ViewBag.Filter?.Country,
+            City = ViewBag.Filter?.City,
+            AdId = ViewBag.Filter?.AdId
+        })" class="btn btn-outline-primary">
+            <i class="bi bi-file-earmark-spreadsheet ms-1"></i>
+            تصدير CSV
+        </a>
+        <a href="@Url.Action("ExportPdf", "AdminReports", new {
+            StartDate = ViewBag.Filter?.StartDate?.ToString("yyyy-MM-dd"),
+            EndDate = ViewBag.Filter?.EndDate?.ToString("yyyy-MM-dd"),
+            Country = ViewBag.Filter?.Country,
+            City = ViewBag.Filter?.City,
+            AdId = ViewBag.Filter?.AdId
+        })" class="btn btn-primary">
+            <i class="bi bi-file-earmark-pdf ms-1"></i>
+            تصدير PDF
+        </a>
+    </div>
+</div>
+
+<!-- Filter Card -->
+<div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+    <div class="card-body">
+        <h6 class="mb-3" style="color: var(--text-primary); font-weight: 600;">
+            <i class="bi bi-funnel ms-2"></i>
+            تصفية البيانات
+        </h6>
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label" style="color: var(--text-secondary); font-size: 14px; font-weight: 500;">تاريخ البداية</label>
+                <input type="date" class="form-control" name="StartDate" 
+                       value="@filter?.StartDate?.ToString("yyyy-MM-dd")" 
+                       style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" style="color: var(--text-secondary); font-size: 14px; font-weight: 500;">تاريخ النهاية</label>
+                <input type="date" class="form-control" name="EndDate" 
+                       value="@filter?.EndDate?.ToString("yyyy-MM-dd")" 
+                       style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" style="color: var(--text-secondary); font-size: 14px; font-weight: 500;">الدولة</label>
+                <input type="text" class="form-control" name="Country" 
+                       value="@filter?.Country" 
+                       placeholder="مصر"
+                       style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label" style="color: var(--text-secondary); font-size: 14px; font-weight: 500;">المدينة</label>
+                <input type="text" class="form-control" name="City" 
+                       value="@filter?.City" 
+                       placeholder="القاهرة"
+                       style="border-radius: var(--radius-sm); border-color: var(--gray-300);" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100" style="border-radius: var(--radius-sm);">
+                    <i class="bi bi-search ms-1"></i>
+                    بحث
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--primary-lighter);">
+                <i class="bi bi-eye-fill" style="color: var(--primary-main);"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@Model.TotalImpressions.ToString("N0")</div>
+                <div class="stat-label">إجمالي المشاهدات</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--success-lighter);">
+                <i class="bi bi-cursor-fill" style="color: var(--success-main);"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@Model.TotalClicks.ToString("N0")</div>
+                <div class="stat-label">إجمالي النقرات</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: var(--warning-lighter);">
+                <i class="bi bi-graph-up-arrow" style="color: var(--warning-main);"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@Model.CTR.ToString("F2")%</div>
+                <div class="stat-label">معدل النقر (CTR)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.12);">
+                <i class="bi bi-cash-stack" style="color: #10B981;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">$@Model.PlatformProfit.ToString("N2")</div>
+                <div class="stat-label">أرباح المنصة</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-6">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h6>المشاهدات حسب المنطقة</h6>
+                <span class="chart-subtitle">توزيع المشاهدات الجغرافي</span>
+            </div>
+            <div style="position: relative; height: 320px; padding: 20px;">
+                <canvas id="regionChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="chart-container">
+            <div class="chart-header">
+                <h6>أفضل الإعلانات</h6>
+                <span class="chart-subtitle">توزيع النقرات حسب الإعلان</span>
+            </div>
+            <div style="position: relative; height: 320px; padding: 20px;">
+                <canvas id="topAdsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Publishers Table -->
+<div class="card" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+    <div class="card-body">
+        <h6 class="mb-3" style="color: var(--text-primary); font-weight: 600;">
+            <i class="bi bi-trophy-fill ms-2" style="color: var(--warning-main);"></i>
+            أفضل الناشرين
+        </h6>
+        @if (Model.TopPublishers != null && Model.TopPublishers.Any())
+        {
+            <div class="table-responsive">
+                <table class="table align-middle" style="margin-bottom: 0;">
+                    <thead style="background: var(--gray-100); border-bottom: 2px solid var(--gray-200);">
+                        <tr>
+                            <th style="color: var(--text-secondary); font-weight: 600; font-size: 14px; padding: 12px; border: none; border-radius: var(--radius-sm) 0 0 0;">الاسم</th>
+                            <th style="color: var(--text-secondary); font-weight: 600; font-size: 14px; padding: 12px; text-align: center; border: none;">المشاهدات</th>
+                            <th style="color: var(--text-secondary); font-weight: 600; font-size: 14px; padding: 12px; text-align: center; border: none;">النقرات</th>
+                            <th style="color: var(--text-secondary); font-weight: 600; font-size: 14px; padding: 12px; text-align: center; border: none; border-radius: 0 var(--radius-sm) 0 0;">معدل النقر</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.TopPublishers)
+                        {
+                            <tr style="border-bottom: 1px solid var(--gray-200);">
+                                <td style="padding: 16px; font-weight: 500; color: var(--text-primary);">
+                                    <i class="bi bi-person-circle ms-2" style="color: var(--primary-main);"></i>
+                                    @p.Name
+                                </td>
+                                <td style="padding: 16px; text-align: center; color: var(--text-secondary);">
+                                    @p.Impressions.ToString("N0")
+                                </td>
+                                <td style="padding: 16px; text-align: center; color: var(--text-secondary);">
+                                    @p.Clicks.ToString("N0")
+                                </td>
+                                <td style="padding: 16px; text-align: center;">
+                                    <span class="badge" style="background: var(--success-lighter); color: var(--success-main); padding: 6px 12px; border-radius: var(--radius-sm); font-weight: 600;">
+                                        @p.CTR.ToString("F2")%
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state" style="padding: 40px 20px;">
+                <i class="bi bi-inbox" style="font-size: 48px; color: var(--gray-400);"></i>
+                <p style="color: var(--text-secondary); margin-top: 16px;">لا توجد بيانات للناشرين في الفترة المحددة</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chart.js Color Palette (matching sidebar.js)
+        const chartColors = {
+            primary: '#2065D1',
+            success: '#00AB55',
+            warning: '#FFAB00',
+            error: '#FF5630',
+            info: '#00B8D9',
+            purple: '#7635DC',
+            pink: '#E91E63',
+            orange: '#FF9800',
+            teal: '#009688',
+            cyan: '#00BCD4'
+        };
+
+        const colorPalette = [
+            chartColors.primary,
+            chartColors.success,
+            chartColors.warning,
+            chartColors.info,
+            chartColors.purple,
+            chartColors.pink,
+            chartColors.orange,
+            chartColors.teal,
+            chartColors.cyan,
+            chartColors.error
+        ];
+
+        // Chart.js Global Configuration
+        Chart.defaults.font.family = 'Cairo, sans-serif';
+        Chart.defaults.color = '#637381';
+        Chart.defaults.plugins.legend.rtl = true;
+        Chart.defaults.plugins.tooltip.rtl = true;
+        Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(33, 43, 54, 0.95)';
+        Chart.defaults.plugins.tooltip.padding = 12;
+        Chart.defaults.plugins.tooltip.cornerRadius = 8;
+        Chart.defaults.plugins.tooltip.titleFont = { size: 13, weight: '600' };
+        Chart.defaults.plugins.tooltip.bodyFont = { size: 13 };
+
+        // Region Chart (Bar Chart)
+        const regionCtx = document.getElementById('regionChart');
+        if (regionCtx) {
+            const regionLabels = @Html.Raw(Json.Serialize(Model.Regions?.Select(r => r.Country + " - " + r.City) ?? Array.Empty<string>()));
+            const regionData = @Html.Raw(Json.Serialize(Model.Regions?.Select(r => r.Impressions).ToArray() ?? Array.Empty<long>()));
+
+            new Chart(regionCtx, {
+                type: 'bar',
+                data: {
+                    labels: regionLabels,
+                    datasets: [{
+                        label: 'المشاهدات',
+                        data: regionData,
+                        backgroundColor: chartColors.primary,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        barThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' المشاهدات: ' + context.parsed.y.toLocaleString('ar-EG');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#F4F6F8',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('ar-EG');
+                                },
+                                padding: 8
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                padding: 8
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Top Ads Chart (Doughnut Chart)
+        const topAdsCtx = document.getElementById('topAdsChart');
+        if (topAdsCtx) {
+            const topAdsLabels = @Html.Raw(Json.Serialize(Model.TopAds?.Select(a => a.Name) ?? Array.Empty<string>()));
+            const topAdsData = @Html.Raw(Json.Serialize(Model.TopAds?.Select(a => a.Clicks).ToArray() ?? Array.Empty<long>()));
+
+            new Chart(topAdsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: topAdsLabels,
+                    datasets: [{
+                        data: topAdsData,
+                        backgroundColor: colorPalette,
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 16,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                    return ' النقرات: ' + context.parsed.toLocaleString('ar-EG') + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}

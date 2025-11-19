@@ -13,6 +13,8 @@
 
         // Optional future: website-level metrics
         public List<PublisherWebsiteStat>? WebsiteStats { get; set; }
+        public List<PublisherWebsiteEarning> Earnings { get; set; } = new();
+        public decimal TotalEarnings { get; set; }
     }
 
     /// <summary>
@@ -24,5 +26,15 @@
         public bool IsApproved { get; set; }
         public int Impressions { get; set; }
         public int Clicks { get; set; }
+    }
+    public class PublisherWebsiteEarning
+    {
+        public string WebsiteName { get; set; } = "";
+        public string Domain { get; set; } = "";
+        public bool IsApproved { get; set; }
+        public int Impressions { get; set; }
+        public int Clicks { get; set; }
+
+        public decimal TotalEarned { get; set; }
     }
 }

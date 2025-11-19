@@ -587,9 +587,9 @@
                                     <div class="fw-semibold" style="color: var(--text-primary);">@ad.Title</div>
                                 </td>
                                 <td>
-                                    @if (!string.IsNullOrEmpty(ad.ImageUrl))
+                                    @if (!string.IsNullOrEmpty(ad.ImagePath))
                                     {
-                                        <img src="@ad.ImageUrl" alt="@ad.Title"
+                                        <img src="@ad.ImagePath" alt="@ad.Title"
                                              style="max-width:100px; max-height:60px; border-radius: var(--radius-sm); object-fit: cover;"
                                              class="shadow-sm" />
                                     }

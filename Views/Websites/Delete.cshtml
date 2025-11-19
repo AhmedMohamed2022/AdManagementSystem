@@ -1,4 +1,4 @@
-﻿@model AdSystem.Models.Website
+﻿@* @model AdSystem.Models.Website
 @{
     ViewData["Title"] = "Delete Website";
 }
@@ -14,4 +14,213 @@
         <button type="submit" class="btn btn-danger">🗑️ Delete</button>
         <a asp-action="Index" class="btn btn-secondary">Cancel</a>
     </form>
+</div> *@
+@model AdSystem.Models.Website
+@{
+    ViewData["Title"] = "حذف الموقع";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">حذف الموقع الإلكتروني</h1>
+            <p class="page-subtitle mb-0">تأكيد حذف الموقع وجميع مواقع الإعلانات المرتبطة به</p>
+        </div>
+    </div>
 </div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-6">
+        <!-- Warning Card -->
+        <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); border: 2px solid var(--error-main);">
+            <div class="card-body p-4">
+                <!-- Warning Icon -->
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--error-light), var(--error-main)); border-radius: 50%; margin-bottom: 16px;">
+                        <i class="bi bi-exclamation-triangle-fill text-white" style="font-size: 40px;"></i>
+                    </div>
+                    <h3 class="fw-bold mb-2" style="color: var(--error-main);">تحذير خطير: حذف دائم</h3>
+                    <p class="text-muted mb-0">هل أنت متأكد من حذف هذا الموقع وجميع البيانات المرتبطة به؟</p>
+                </div>
+
+                <!-- Website Details -->
+                <div class="alert alert-danger mb-0" style="background-color: var(--error-lighter); border: none; border-radius: var(--radius-md); border-right: 4px solid var(--error-main);">
+                    <h5 class="mb-3 fw-semibold" style="color: var(--error-dark);">
+                        <i class="bi bi-info-circle ms-2"></i>
+                        تفاصيل الموقع المراد حذفه
+                    </h5>
+
+                    <div class="d-flex flex-column gap-3">
+                        <!-- Website Name -->
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 36px; height: 36px; background-color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-globe2" style="color: var(--error-main); font-size: 18px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block mb-1">اسم الموقع</small>
+                                <p class="mb-0 fw-semibold" style="color: var(--error-dark);">@Model.Name</p>
+                            </div>
+                        </div>
+
+                        <!-- Domain -->
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 36px; height: 36px; background-color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-link-45deg" style="color: var(--error-main); font-size: 18px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block mb-1">النطاق</small>
+                                <p class="mb-0 fw-semibold" style="color: var(--error-dark); word-break: break-all;">@Model.Domain</p>
+                            </div>
+                        </div>
+
+                        <!-- Placements Count (if available) -->
+                        @if (Model.Placements != null && Model.Placements.Any())
+                        {
+                            <div class="d-flex align-items-start gap-3">
+                                <div style="width: 36px; height: 36px; background-color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <i class="bi bi-pin-map" style="color: var(--error-main); font-size: 18px;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <small class="text-muted d-block mb-1">مواقع الإعلانات المرتبطة</small>
+                                    <p class="mb-0 fw-semibold" style="color: var(--error-dark);">@Model.Placements.Count موقع إعلان</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consequences Warning -->
+        <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); background: linear-gradient(135deg, var(--warning-lighter), white);">
+            <div class="card-body p-4">
+                <h5 class="mb-3 fw-semibold" style="color: var(--text-primary);">
+                    <i class="bi bi-exclamation-octagon ms-2"></i>
+                    ماذا يحدث عند الحذف؟
+                </h5>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">سيتم حذف الموقع بشكل نهائي من النظام</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">سيتم حذف جميع مواقع الإعلانات (Placements) المرتبطة بالموقع</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">سيتوقف عرض جميع الإعلانات في هذا الموقع فوراً</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">سيتم فقدان جميع الإحصائيات والبيانات المرتبطة</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">لن تتمكن من استعادة أي بيانات بعد الحذف</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Critical Warning -->
+        @if (Model.Placements != null && Model.Placements.Any())
+        {
+            <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); background: linear-gradient(135deg, #fff5f5, white); border: 2px solid var(--error-main);">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div style="width: 48px; height: 48px; background-color: var(--error-main); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-exclamation-octagon-fill text-white" style="font-size: 24px;"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-2 fw-bold" style="color: var(--error-main);">تحذير: مواقع إعلانات نشطة</h6>
+                            <p class="mb-2" style="color: var(--error-dark); font-size: 0.875rem;">
+                                هذا الموقع يحتوي على <strong>@Model.Placements.Count موقع إعلان</strong>. حذف الموقع سيؤدي لحذف جميع مواقع الإعلانات تلقائياً.
+                            </p>
+                            <p class="mb-0" style="color: var(--error-dark); font-size: 0.875rem;">
+                                تأكد من إزالة أكواد الإعلانات من صفحات الويب قبل الحذف لتجنب الأخطاء.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Alternative Suggestion -->
+        <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); background: linear-gradient(135deg, var(--info-lighter), white);">
+            <div class="card-body p-3">
+                <div class="d-flex align-items-start gap-3">
+                    <div style="width: 40px; height: 40px; background-color: var(--info-main); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="bi bi-lightbulb text-white" style="font-size: 20px;"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-1 fw-semibold" style="color: var(--info-dark);">بديل: تعطيل مؤقت</h6>
+                        <p class="mb-0" style="color: var(--info-dark); font-size: 0.875rem;">
+                            إذا كنت تريد إيقاف الموقع مؤقتاً، يمكنك حذف مواقع الإعلانات فقط والاحتفاظ بالموقع في النظام.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <form asp-action="DeleteConfirmed" method="post" id="deleteForm">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-5" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-x-circle ms-2"></i>
+                    إلغاء
+                </a>
+                <button type="submit" class="btn btn-danger btn-lg px-5" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-trash ms-2"></i>
+                    تأكيد الحذف النهائي
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(255, 86, 48, 0.3);
+    }
+
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+    document.getElementById('deleteForm').addEventListener('submit', function(e) {
+        const websiteName = '@Model.Name';
+        @if (Model.Placements != null && Model.Placements.Any())
+        {
+                <text>
+                const placementCount = @Model.Placements.Count;
+                const confirmed = confirm(`تحذير خطير!\n\nأنت على وشك حذف الموقع "${websiteName}" وجميع مواقع الإعلانات المرتبطة به (${placementCount} موقع).\n\nهذا الإجراء لا يمكن التراجع عنه!\n\nهل أنت متأكد تماماً؟`);
+                </text>
+        }
+        else
+        {
+                <text>
+                const confirmed = confirm(`هل أنت متأكد تماماً من حذف الموقع "${websiteName}"؟\n\nهذا الإجراء لا يمكن التراجع عنه!`);
+                </text>
+        }
+
+        if (!confirmed) {
+            e.preventDefault();
+            return false;
+        }
+
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري الحذف...';
+    });
+</script>

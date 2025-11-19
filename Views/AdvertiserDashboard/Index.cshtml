@@ -217,6 +217,79 @@
         </div>
     </div>
 </div>
+<div class="col-xl-4 col-md-6">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <div class="text-secondary small mb-1">تكلفة الإعلان</div>
+                    <h3 class="mb-0">@Model.EstimatedSpend.ToString("N2") <small>دولار</small></h3>
+                </div>
+                <div class="stat-card-icon primary" style="width: 56px; height: 56px; font-size: 24px;">
+                    <i class="bi bi-cash-stack"></i>
+                </div>
+            </div>
+
+            <ul class="list-unstyled small text-secondary">
+                <li>تكلفة لكل ألف ظهور (CPM): <strong>@Model.AppliedCPM.ToString("N2") دولار</strong></li>
+                <li>تكلفة لكل نقرة (CPC): <strong>@Model.AppliedCPC.ToString("N2") دولار</strong></li>
+                <li>نوع التسعير المستخدم: <strong>@Model.PricingRuleType</strong></li>
+
+                @if (Model.PricingRuleType == "Country")
+                {
+                    <li>الدولة: <strong>@Model.PricingCountry</strong></li>
+                }
+                @if (Model.PricingRuleType == "City")
+                {
+                    <li>المدينة: <strong>@Model.PricingCity</strong></li>
+                }
+            </ul>
+
+            <div class="alert alert-info mt-3 mb-0 small">
+                <i class="bi bi-info-circle"></i>
+                هذا مبلغ تقديري بناءً على المشاهدات والنقرات الحالية.
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">تفاصيل التكلفة لكل إعلان</h5>
+    </div>
+    <div class="card-body table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>الإعلان</th>
+                    <th>الظهور</th>
+                    <th>النقرات</th>
+                    <th>CPM (دولار)</th>
+                    <th>CPC (دولار)</th>
+                    <th>التكلفة الإجمالية</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.BillingRows)
+                {
+                    <tr>
+                        <td>@row.AdName</td>
+                        <td>@row.Impressions</td>
+                        <td>@row.Clicks</td>
+                        <td>@row.CPM.ToString("N2")</td>
+                        <td>@row.CPC.ToString("N2")</td>
+                        <td><strong>@row.TotalCost.ToString("N2") دولار</strong></td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr class="table-secondary">
+                    <th colspan="5" class="text-end">الإجمالي:</th>
+                    <th><strong>@Model.EstimatedSpend.ToString("N2") دولار</strong></th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
 
 <!-- Charts Row -->
 <div class="row g-4 mb-4">

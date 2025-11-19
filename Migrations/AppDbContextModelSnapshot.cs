@@ -22,6 +22,135 @@ namespace AdManagementSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AdManagementSystem.Models.AdPlacement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BannerSizeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("WebsiteId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ZoneKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BannerSizeId");
+
+                    b.HasIndex("WebsiteId");
+
+                    b.ToTable("AdPlacements");
+                });
+
+            modelBuilder.Entity("AdManagementSystem.Models.BannerSize", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Height")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Width")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BannerSizes");
+                });
+
+            modelBuilder.Entity("AdManagementSystem.Models.ClickTokenUsage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AdId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Jti")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("UsedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UsedByIp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WebsiteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Jti")
+                        .IsUnique();
+
+                    b.ToTable("ClickTokenUsages");
+                });
+
+            modelBuilder.Entity("AdManagementSystem.Models.WalletTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AdId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,4)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ToUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WebsiteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FromUserId");
+
+                    b.HasIndex("ToUserId");
+
+                    b.ToTable("WalletTransactions");
+                });
+
             modelBuilder.Entity("AdSystem.Models.Ad", b =>
                 {
                     b.Property<int>("Id")
@@ -34,8 +163,8 @@ namespace AdManagementSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("BannerSizeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Category")
                         .HasMaxLength(100)
@@ -48,8 +177,7 @@ namespace AdManagementSystem.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
+                    b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("MaxClicks")
@@ -58,7 +186,7 @@ namespace AdManagementSystem.Migrations
                     b.Property<int?>("MaxImpressions")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
@@ -77,7 +205,7 @@ namespace AdManagementSystem.Migrations
 
                     b.HasIndex("AdvertiserId");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("BannerSizeId");
 
                     b.HasIndex("Status");
 
@@ -95,8 +223,19 @@ namespace AdManagementSystem.Migrations
                     b.Property<int>("AdId")
                         .HasColumnType("int");
 
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<DateTime>("ClickedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("EarnedAmount")
+                        .HasColumnType("decimal(18,6)");
 
                     b.Property<string>("HostDomain")
                         .HasMaxLength(300)
@@ -133,6 +272,17 @@ namespace AdManagementSystem.Migrations
                     b.Property<int>("AdId")
                         .HasColumnType("int");
 
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("EarnedAmount")
+                        .HasColumnType("decimal(18,6)");
+
                     b.Property<string>("HostDomain")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
@@ -160,6 +310,49 @@ namespace AdManagementSystem.Migrations
                     b.ToTable("AdImpressions");
                 });
 
+            modelBuilder.Entity("AdSystem.Models.AdPricingRule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdvertiserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("CPC")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("CPM")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("City")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RuleType")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RuleType", "Country", "City", "AdvertiserId");
+
+                    b.ToTable("AdPricingRules");
+                });
+
             modelBuilder.Entity("AdSystem.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -168,9 +361,15 @@ namespace AdManagementSystem.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,4)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -180,6 +379,9 @@ namespace AdManagementSystem.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -264,7 +466,6 @@ namespace AdManagementSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ScriptKey")
-                        .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
@@ -276,7 +477,8 @@ namespace AdManagementSystem.Migrations
                         .IsUnique();
 
                     b.HasIndex("ScriptKey")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[ScriptKey] IS NOT NULL");
 
                     b.ToTable("Websites");
                 });
@@ -414,17 +616,59 @@ namespace AdManagementSystem.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("AdManagementSystem.Models.AdPlacement", b =>
+                {
+                    b.HasOne("AdManagementSystem.Models.BannerSize", "BannerSize")
+                        .WithMany()
+                        .HasForeignKey("BannerSizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AdSystem.Models.Website", "Website")
+                        .WithMany("Placements")
+                        .HasForeignKey("WebsiteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BannerSize");
+
+                    b.Navigation("Website");
+                });
+
+            modelBuilder.Entity("AdManagementSystem.Models.WalletTransaction", b =>
+                {
+                    b.HasOne("AdSystem.Models.ApplicationUser", "FromUser")
+                        .WithMany()
+                        .HasForeignKey("FromUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("AdSystem.Models.ApplicationUser", "ToUser")
+                        .WithMany()
+                        .HasForeignKey("ToUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("FromUser");
+
+                    b.Navigation("ToUser");
+                });
+
             modelBuilder.Entity("AdSystem.Models.Ad", b =>
                 {
-                    b.HasOne("AdSystem.Models.ApplicationUser", null)
-                        .WithMany()
+                    b.HasOne("AdSystem.Models.ApplicationUser", "Advertiser")
+                        .WithMany("Ads")
                         .HasForeignKey("AdvertiserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("AdSystem.Models.ApplicationUser", null)
-                        .WithMany("Ads")
-                        .HasForeignKey("ApplicationUserId");
+                    b.HasOne("AdManagementSystem.Models.BannerSize", "BannerSize")
+                        .WithMany()
+                        .HasForeignKey("BannerSizeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Advertiser");
+
+                    b.Navigation("BannerSize");
                 });
 
             modelBuilder.Entity("AdSystem.Models.AdClick", b =>
@@ -535,6 +779,11 @@ namespace AdManagementSystem.Migrations
                     b.Navigation("Ads");
 
                     b.Navigation("Websites");
+                });
+
+            modelBuilder.Entity("AdSystem.Models.Website", b =>
+                {
+                    b.Navigation("Placements");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,265 @@
+﻿@model List<AdSystem.ViewModels.UserViewModel>
+@{
+    ViewData["Title"] = "إدارة المستخدمين";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">إدارة المستخدمين</h1>
+            <p class="page-subtitle mb-0">عرض وإدارة جميع مستخدمي النظام</p>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Messages -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" style="border-radius: var(--radius-md); border-right: 4px solid var(--success-main);">
+        <i class="bi bi-check-circle me-2"></i>
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" style="border-radius: var(--radius-md); border-right: 4px solid var(--error-main);">
+        <i class="bi bi-exclamation-circle me-2"></i>
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Statistics Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, var(--primary-light), var(--primary-main));">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">@Model.Count</h3>
+                <p class="stat-label">إجمالي المستخدمين</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, var(--success-light), var(--success-main));">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">@Model.Count(u => u.IsActive)</h3>
+                <p class="stat-label">مستخدمين نشطين</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, var(--warning-light), var(--warning-main));">
+                <i class="bi bi-x-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">@Model.Count(u => !u.IsActive)</h3>
+                <p class="stat-label">مستخدمين معطلين</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, var(--info-light), var(--info-main));">
+                <i class="bi bi-cash-stack"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">@Model.Sum(u => u.Balance).ToString("C0")</h3>
+                <p class="stat-label">إجمالي الأرصدة</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters Card -->
+<div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+    <div class="card-body p-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label fw-semibold">
+                    <i class="bi bi-search ms-2"></i>
+                    البحث
+                </label>
+                <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="اسم المستخدم، البريد، أو الاسم الكامل..." style="border-radius: var(--radius-sm);">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">
+                    <i class="bi bi-filter ms-2"></i>
+                    تصفية حسب الدور
+                </label>
+                <select name="roleFilter" class="form-select" style="border-radius: var(--radius-sm);">
+                    <option value="">جميع الأدوار</option>
+                    @foreach (var role in ViewBag.AllRoles as List<string>)
+                    {
+                        <option value="@role" selected="@(ViewBag.RoleFilter == role)">@role</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">
+                        <i class="bi bi-search ms-2"></i>
+                        بحث
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <!-- Empty State -->
+    <div class="card" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+        <div class="card-body">
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h3 class="empty-title">لا توجد نتائج</h3>
+                <p class="empty-description">
+                    لم يتم العثور على مستخدمين مطابقين لمعايير البحث
+                </p>
+                <a href="@Url.Action("Index")" class="btn btn-primary mt-3">
+                    <i class="bi bi-arrow-clockwise ms-2"></i>
+                    إعادة تعيين الفلاتر
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Users Table -->
+    <div class="card" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead style="background-color: var(--gray-100); border-bottom: 2px solid var(--gray-200);">
+                        <tr>
+                            <th class="px-4 py-3 fw-semibold" style="color: var(--text-primary);">المستخدم</th>
+                            <th class="px-4 py-3 fw-semibold" style="color: var(--text-primary);">الأدوار</th>
+                            <th class="px-4 py-3 fw-semibold" style="color: var(--text-primary);">الرصيد</th>
+                            <th class="px-4 py-3 fw-semibold" style="color: var(--text-primary);">الحالة</th>
+                            <th class="px-4 py-3 fw-semibold" style="color: var(--text-primary);">تاريخ الإنشاء</th>
+                            <th class="px-4 py-3 fw-semibold text-center" style="color: var(--text-primary);">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr style="border-bottom: 1px solid var(--gray-200);">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-lighter), var(--primary-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <i class="bi bi-person" style="color: var(--primary-main); font-size: 20px;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold" style="color: var(--text-primary);">@user.DisplayName</div>
+                                            <small class="text-muted">@user.Email</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        @foreach (var role in user.Roles)
+                                        {
+                                            <span class="badge" style="background-color: @(role == "Admin" ? "var(--error-main)" : role == "Advertiser" ? "var(--primary-main)" : "var(--success-main)"); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem;">
+                                                @role
+                                            </span>
+                                        }
+                                        @if (!user.Roles.Any())
+                                        {
+                                            <span class="text-muted" style="font-size: 0.875rem;">لا يوجد دور</span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="fw-semibold" style="color: var(--success-main);">@user.Balance.ToString("C")</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge d-inline-flex align-items-center gap-1" style="background-color: var(--success-lighter); color: var(--success-main); padding: 6px 12px; border-radius: 8px; font-weight: 500;">
+                                            <span class="status-dot" style="background-color: var(--success-main);"></span>
+                                            نشط
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge d-inline-flex align-items-center gap-1" style="background-color: var(--error-lighter); color: var(--error-main); padding: 6px 12px; border-radius: 8px; font-weight: 500;">
+                                            <span class="status-dot" style="background-color: var(--error-main);"></span>
+                                            معطل
+                                        </span>
+                                    }
+                                </td>
+                                <td class="px-4 py-3">
+                                    <small class="text-muted">@user.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a href="@Url.Action("Details", new { id = user.Id })" class="btn btn-sm btn-icon" style="background-color: var(--info-lighter); color: var(--info-main);" title="التفاصيل">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="@Url.Action("Edit", new { id = user.Id })" class="btn btn-sm btn-icon" style="background-color: var(--warning-lighter); color: var(--warning-main);" title="تعديل">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form method="post" asp-action="ToggleStatus" asp-route-id="@user.Id" style="display: inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-icon" style="background-color: @(user.IsActive ? "var(--warning-lighter)" : "var(--success-lighter)"); color: @(user.IsActive ? "var(--warning-main)" : "var(--success-main)");" title="@(user.IsActive ? "تعطيل" : "تفعيل")">
+                                                <i class="bi bi-@(user.IsActive ? "pause-circle" : "play-circle")"></i>
+                                            </button>
+                                        </form>
+                                        <a href="@Url.Action("Delete", new { id = user.Id })" class="btn btn-sm btn-icon" style="background-color: var(--error-lighter); color: var(--error-main);" title="حذف">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-sm);
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+        .btn-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+    .table tbody tr:hover {
+        background-color: var(--gray-50);
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+</style>

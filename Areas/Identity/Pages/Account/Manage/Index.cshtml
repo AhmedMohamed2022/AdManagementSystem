@@ -1,4 +1,4 @@
-﻿@page
+﻿@* @page
 @model IndexModel
 @{
     ViewData["Title"] = "Profile";
@@ -27,4 +27,252 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+} *@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "الملف الشخصي";
+    ViewData["ActivePage"] = ManageNavPages.Index;
+}
+<link rel="stylesheet" href="~/css/Profile.css" />
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">الملف الشخصي</h1>
+        <p class="page-subtitle">إدارة معلوماتك الشخصية وإعدادات الحساب</p>
+    </div>
+</div>
+
+<!-- Status Message -->
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <!-- Profile Form Card -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-1">المعلومات الشخصية</h5>
+                <p class="card-subtitle text-muted mb-0">قم بتحديث معلومات حسابك الأساسية</p>
+            </div>
+            <div class="card-body">
+                <form id="profile-form" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle ms-2"></i>
+                        <span>يرجى تصحيح الأخطاء التالية:</span>
+                    </div>
+
+                    <!-- Username Field (Disabled) -->
+                    <div class="form-group mb-4">
+                        <label asp-for="Username" class="form-label">
+                            <i class="bi bi-person ms-1"></i>
+                            اسم المستخدم
+                        </label>
+                        <input asp-for="Username" class="form-control form-control-lg" disabled />
+                        <div class="form-text">
+                            <i class="bi bi-lock ms-1"></i>
+                            لا يمكن تغيير اسم المستخدم بعد إنشاء الحساب
+                        </div>
+                    </div>
+
+                    <!-- Phone Number Field -->
+                    <div class="form-group mb-4">
+                        <label asp-for="Input.PhoneNumber" class="form-label">
+                            <i class="bi bi-telephone ms-1"></i>
+                            رقم الهاتف
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light">
+                                <i class="bi bi-phone"></i>
+                            </span>
+                            <input asp-for="Input.PhoneNumber"
+                                   class="form-control"
+                                   placeholder="أدخل رقم هاتفك"
+                                   type="tel" />
+                        </div>
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle ms-1"></i>
+                            سيتم استخدام رقم الهاتف للتحقق والإشعارات المهمة
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-flex gap-2 pt-3">
+                        <button id="update-profile-button" type="submit" class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-check-circle ms-2"></i>
+                            حفظ التغييرات
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="bi bi-arrow-counterclockwise ms-2"></i>
+                            إعادة تعيين
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div class="col-lg-4">
+        <!-- Account Info Card -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">معلومات الحساب</h5>
+            </div>
+            <div class="card-body">
+                <div class="metadata-list">
+                    <div class="metadata-item">
+                        <span class="metadata-label">
+                            <i class="bi bi-person-badge ms-1"></i>
+                            اسم المستخدم
+                        </span>
+                        <span class="metadata-value">@Model.Username</span>
+                    </div>
+
+                    <div class="metadata-item">
+                        <span class="metadata-label">
+                            <i class="bi bi-envelope ms-1"></i>
+                            البريد الإلكتروني
+                        </span>
+                        <span class="metadata-value text-truncate" style="max-width: 180px;" title="@Model.Input?.Email">
+                            @Model.Input?.Email
+                        </span>
+                    </div>
+
+                    <div class="metadata-item">
+                        <span class="metadata-label">
+                            <i class="bi bi-telephone ms-1"></i>
+                            رقم الهاتف
+                        </span>
+                        <span class="metadata-value">
+                            @if (!string.IsNullOrEmpty(Model.Input?.PhoneNumber))
+                            {
+                                @Model.Input.PhoneNumber
+                            }
+                            else
+                            {
+                                <span class="text-muted">غير محدد</span>
+                            }
+                        </span>
+                    </div>
+
+                    <div class="metadata-item border-0">
+                        <span class="metadata-label">
+                            <i class="bi bi-shield-check ms-1"></i>
+                            حالة التحقق
+                        </span>
+                        <span class="metadata-value">
+                            @if (Model.IsEmailConfirmed)
+                            {
+                                <span class="badge bg-success-lighter text-success">
+                                    <i class="bi bi-check-circle ms-1"></i>
+                                    مُفعّل
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning-lighter text-warning">
+                                    <i class="bi bi-exclamation-circle ms-1"></i>
+                                    غير مُفعّل
+                                </span>
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">إجراءات سريعة</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-column gap-2">
+                    <a asp-page="./Email" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-envelope ms-2"></i>
+                        تغيير البريد الإلكتروني
+                    </a>
+                    <a asp-page="./ChangePassword" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-key ms-2"></i>
+                        تغيير كلمة المرور
+                    </a>
+                    @* @if (Model.HasAuthenticator)
+                    {
+                        <a asp-page="./TwoFactorAuthentication" class="btn btn-outline-success w-100">
+                            <i class="bi bi-shield-lock ms-2"></i>
+                            المصادقة الثنائية
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-page="./TwoFactorAuthentication" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-shield-plus ms-2"></i>
+                            تفعيل المصادقة الثنائية
+                        </a>
+                    }
+                    <a asp-page="./PersonalData" class="btn btn-outline-info w-100">
+                        <i class="bi bi-database ms-2"></i>
+                        البيانات الشخصية *@
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tips Card -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="stat-icon bg-warning-lighter">
+                        <i class="bi bi-shield-exclamation" style="color: var(--warning-main);"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-2" style="color: var(--text-primary);">نصائح الأمان</h6>
+                        <ul class="text-muted small mb-0 pe-3" style="line-height: 1.8;">
+                            <li>استخدم كلمة مرور قوية ومعقدة</li>
+                            <li>فعّل المصادقة الثنائية لحماية إضافية</li>
+                            <li>لا تشارك معلومات حسابك مع الآخرين</li>
+                            <li>قم بتحديث معلوماتك بانتظام</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Form enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('profile-form');
+            const submitBtn = document.getElementById('update-profile-button');
+            const phoneInput = document.querySelector('input[name="Input.PhoneNumber"]');
+
+            if (form && submitBtn) {
+                // Disable submit button while processing
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري الحفظ...';
+                });
+
+                // Re-enable button if validation fails
+                form.addEventListener('invalid', function() {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="bi bi-check-circle ms-2"></i> حفظ التغييرات';
+                }, true);
+            }
+
+            // Phone number formatting (optional)
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    // Remove non-numeric characters except + and spaces
+                    let value = this.value.replace(/[^\d\+\s]/g, '');
+                    this.value = value;
+                });
+            }
+        });
+    </script>
 }

@@ -1,0 +1,583 @@
+﻿@* @model IEnumerable<Microsoft.AspNetCore.Identity.IdentityUser> *@
+@* @{
+    ViewData["Title"] = "Advertisers (Balances)";
+}
+<h2>Advertisers</h2>
+
+<table class="table">
+    <thead><tr><th>Email</th><th>Balance</th><th>Actions</th></tr></thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Email</td>
+                <td>@((u as AdSystem.Models.ApplicationUser)?.Balance ?? 0m)</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" asp-action="AdjustBalance" asp-route-id="@u.Id">Adjust</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+@* @model AdSystem.Models.ApplicationUser 
+@{
+    ViewData["Title"] = "تعديل الرصيد";
+}
+<link rel="stylesheet" href="~/css/AdminFinanceAdvertiser.css" />
+<!-- Page Header with Breadcrumb -->
+<div class="page-header mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item"><a asp-action="Advertisers">إدارة المعلنين</a></li>
+            <li class="breadcrumb-item active">تعديل الرصيد</li>
+        </ol>
+    </nav>
+    <h1 class="page-title">تعديل رصيد المعلن</h1>
+    <p class="page-subtitle">إدارة الرصيد المالي للمعلن وإضافة معاملات يدوية</p>
+</div>
+
+<div class="row g-4">
+    <!-- User Info Card -->
+    <div class="col-lg-4">
+        <div class="card shadow-card sticky-top" style="top: 80px;">
+            <div class="card-body">
+                <!-- User Avatar & Name -->
+                <div class="text-center mb-4">
+                    <div class="avatar-circle-lg mx-auto mb-3">
+                        @if (!string.IsNullOrEmpty(Model.DisplayName))
+                        {
+                            <span>@Model.DisplayName.Substring(0, 1).ToUpper()</span>
+                        }
+                        else if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <span>@Model.Email.Substring(0, 1).ToUpper()</span>
+                        }
+                    </div>
+                    <h5 class="fw-bold mb-1" style="color: var(--text-primary);">
+                        @(Model.DisplayName ?? "معلن")
+                    </h5>
+                    <p class="text-muted small mb-0">@Model.Email</p>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Current Balance -->
+                <div class="balance-display text-center mb-4">
+                    <p class="text-muted small mb-2">الرصيد الحالي</p>
+                    <h2 class="fw-bold mb-0" style="color: var(--@(Model.Balance >= 0 ? "success" : "error")-main);">
+                        <i class="bi bi-currency-dollar"></i>
+                        <span id="currentBalance">@Model.Balance.ToString("N2")</span>
+                    </h2>
+                </div>
+
+                <!-- Balance Status Badge -->
+                <div class="text-center mb-4">
+                    @if (Model.Balance > 0)
+                    {
+                        <span class="badge-custom badge-success">
+                            <span class="status-dot status-success"></span>
+                            رصيد نشط
+                        </span>
+                    }
+                    else if (Model.Balance < 0)
+                    {
+                        <span class="badge-custom badge-danger">
+                            <span class="status-dot status-danger"></span>
+                            رصيد مدين
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge-custom badge-warning">
+                            <span class="status-dot status-warning"></span>
+                            رصيد صفر
+                        </span>
+                    }
+                </div>
+
+                <!-- User Details -->
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="bi bi-person-badge"></i>
+                            معرف المستخدم
+                        </span>
+                        <span class="info-value">@Model.Id.Substring(0, 8)...</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="bi bi-calendar-check"></i>
+                            آخر تحديث
+                        </span>
+                        <span class="info-value">@DateTime.Now.ToString("dd/MM/yyyy")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Adjustment Form Card -->
+    <div class="col-lg-8">
+        <div class="card shadow-card">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="icon-wrapper-lg" style="background: var(--primary-lighter); color: var(--primary-main);">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1 fw-semibold" style="color: var(--text-primary);">تعديل الرصيد</h5>
+                        <p class="text-muted mb-0 small">قم بإضافة أو خصم مبلغ من رصيد المعلن</p>
+                    </div>
+                </div>
+
+                <form asp-action="AdjustBalancePost" method="post" id="adjustmentForm">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    @Html.AntiForgeryToken()
+
+                    <!-- Transaction Type Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold" style="color: var(--text-primary);">
+                            <i class="bi bi-tag me-1"></i>
+                            نوع العملية
+                        </label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <input type="radio" class="btn-check" name="transactionType" id="credit" value="credit" checked>
+                                <label class="btn btn-outline-success w-100 py-3" for="credit">
+                                    <i class="bi bi-plus-circle fs-4 d-block mb-2"></i>
+                                    <span class="fw-semibold">إضافة رصيد</span>
+                                    <small class="d-block text-muted mt-1">إيداع مبلغ</small>
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="radio" class="btn-check" name="transactionType" id="debit" value="debit">
+                                <label class="btn btn-outline-danger w-100 py-3" for="debit">
+                                    <i class="bi bi-dash-circle fs-4 d-block mb-2"></i>
+                                    <span class="fw-semibold">خصم رصيد</span>
+                                    <small class="d-block text-muted mt-1">سحب مبلغ</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amount Input -->
+                    <div class="mb-4">
+                        <label for="amount" class="form-label fw-semibold" style="color: var(--text-primary);">
+                            <i class="bi bi-cash-stack me-1"></i>
+                            المبلغ (دولار أمريكي)
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light">
+                                <i class="bi bi-currency-dollar text-muted"></i>
+                            </span>
+                            <input type="number"
+                                   step="0.01"
+                                   name="amount"
+                                   id="amountInput"
+                                   class="form-control form-control-lg"
+                                   placeholder="0.00"
+                                   min="0.01"
+                                   required
+                                   style="font-size: 1.5rem; font-weight: 600;">
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-info-circle me-1"></i>
+                            أدخل المبلغ بالدولار الأمريكي (مثال: 100.50)
+                        </small>
+                    </div>
+
+                    <!-- New Balance Preview -->
+                    <div class="alert alert-info border-0 mb-4" id="balancePreview" style="display: none; background-color: var(--info-lighter);">
+                        <div class="d-flex align-items-center gap-3">
+                            <i class="bi bi-calculator fs-4" style="color: var(--info-main);"></i>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold mb-1" style="color: var(--text-primary);">الرصيد المتوقع بعد العملية</div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted">الرصيد الحالي:</span>
+                                    <span class="fw-bold" style="color: var(--text-primary);">$@Model.Balance.ToString("N2")</span>
+                                    <i class="bi bi-arrow-left mx-2"></i>
+                                    <span class="text-muted">الرصيد الجديد:</span>
+                                    <span class="fw-bold fs-5" id="newBalanceValue" style="color: var(--success-main);">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Input -->
+                    <div class="mb-4">
+                        <label for="description" class="form-label fw-semibold" style="color: var(--text-primary);">
+                            <i class="bi bi-journal-text me-1"></i>
+                            وصف العملية
+                        </label>
+                        <textarea name="description"
+                                  id="description"
+                                  class="form-control"
+                                  rows="4"
+                                  placeholder="أدخل وصفاً تفصيلياً للعملية... (اختياري)"></textarea>
+                        <small class="text-muted d-block mt-2">
+                            سيتم حفظ هذا الوصف في سجل المعاملات المالية
+                        </small>
+                    </div>
+
+                    <!-- Warning Message -->
+                    <div class="alert alert-warning border-0 mb-4" style="background-color: var(--warning-lighter);">
+                        <div class="d-flex align-items-start gap-3">
+                            <i class="bi bi-exclamation-triangle fs-4" style="color: var(--warning-main);"></i>
+                            <div>
+                                <div class="fw-semibold mb-1" style="color: var(--text-primary);">تنبيه مهم</div>
+                                <p class="mb-0 small text-muted">
+                                    هذا الإجراء سيؤثر بشكل مباشر على رصيد المعلن. تأكد من صحة المبلغ والوصف قبل التأكيد.
+                                    سيتم تسجيل هذه العملية في سجل المعاملات المالية.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-3 pt-3 border-top">
+                        <button type="submit" class="btn btn-primary btn-lg px-4 flex-grow-1" id="submitBtn">
+                            <i class="bi bi-check-circle me-2"></i>
+                            تطبيق التعديل
+                        </button>
+                        <a asp-action="Advertisers" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="bi bi-x-circle me-2"></i>
+                            إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Quick Actions Card -->
+        <div class="card shadow-card mt-4">
+            <div class="card-body p-4">
+                <h6 class="fw-semibold mb-3" style="color: var(--text-primary);">
+                    <i class="bi bi-lightning-charge me-2"></i>
+                    عمليات سريعة
+                </h6>
+                <div class="row g-2">
+                    <div class="col-6 col-md-3">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-amount" data-amount="10">
+                            +$10
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-amount" data-amount="50">
+                            +$50
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-amount" data-amount="100">
+                            +$100
+                        </button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <button type="button" class="btn btn-outline-primary w-100 quick-amount" data-amount="500">
+                            +$500
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentBalance = @Model.Balance;
+        const amountInput = document.getElementById('amountInput');
+        const creditRadio = document.getElementById('credit');
+        const debitRadio = document.getElementById('debit');
+        const balancePreview = document.getElementById('balancePreview');
+        const newBalanceValue = document.getElementById('newBalanceValue');
+        const form = document.getElementById('adjustmentForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Quick amount buttons
+        document.querySelectorAll('.quick-amount').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const amount = this.getAttribute('data-amount');
+                amountInput.value = amount;
+                creditRadio.checked = true;
+                updateBalancePreview();
+                amountInput.focus();
+            });
+        });
+
+        // Update balance preview
+        function updateBalancePreview() {
+            const amount = parseFloat(amountInput.value) || 0;
+            if (amount > 0) {
+                const isCredit = creditRadio.checked;
+                const newBalance = isCredit ? currentBalance + amount : currentBalance - amount;
+
+                newBalanceValue.textContent = '$' + newBalance.toFixed(2);
+                newBalanceValue.style.color = newBalance >= 0 ? 'var(--success-main)' : 'var(--error-main)';
+
+                balancePreview.style.display = 'block';
+            } else {
+                balancePreview.style.display = 'none';
+            }
+        }
+
+        // Listen for input changes
+        amountInput.addEventListener('input', updateBalancePreview);
+        creditRadio.addEventListener('change', updateBalancePreview);
+        debitRadio.addEventListener('change', updateBalancePreview);
+
+        // Form submission - adjust amount sign
+        form.addEventListener('submit', function(e) {
+            const amount = parseFloat(amountInput.value) || 0;
+            const isDebit = debitRadio.checked;
+
+            if (amount <= 0) {
+                e.preventDefault();
+                alert('يرجى إدخال مبلغ صحيح أكبر من الصفر');
+                return;
+            }
+
+            // If debit is selected, make amount negative
+            if (isDebit) {
+                amountInput.value = -Math.abs(amount);
+            } else {
+                amountInput.value = Math.abs(amount);
+            }
+
+            // Disable submit button to prevent double submission
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري التطبيق...';
+        });
+
+        // Input validation - only allow positive numbers
+        amountInput.addEventListener('keypress', function(e) {
+            const char = String.fromCharCode(e.which);
+            if (!/[\d.]/.test(char)) {
+                e.preventDefault();
+            }
+        });
+    });
+</script> 
+}*@
+@model IEnumerable<AdSystem.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "إدارة المعلنين";
+}
+<link rel="stylesheet" href="~/css/AdminFinanceAdvertiser.css" />
+
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-title">إدارة أرصدة المعلنين</h1>
+        <p class="page-subtitle">عرض وإدارة الأرصدة المالية لجميع المعلنين في النظام</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-card-icon" style="background: var(--primary-lighter); color: var(--primary-main);">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-value">@Model.Count()</h3>
+                <p class="stat-card-label">إجمالي المعلنين</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-card-icon" style="background: var(--success-lighter); color: var(--success-main);">
+                <i class="bi bi-wallet2"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-value">
+                    @{
+                        var totalBalance = Model.Sum(u => u.Balance);
+                    }
+                    $@totalBalance.ToString("N2")
+                </h3>
+                <p class="stat-card-label">إجمالي الأرصدة</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-card-icon" style="background: var(--warning-lighter); color: var(--warning-main);">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <div class="stat-card-content">
+                <h3 class="stat-card-value">
+                    @{
+                        var avgBalance = Model.Any() ? Model.Average(u => u.Balance) : 0m;
+                    }
+                    $@avgBalance.ToString("N2")
+                </h3>
+                <p class="stat-card-label">متوسط الرصيد</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advertisers Table Card -->
+<div class="card shadow-card">
+    <div class="card-body p-0">
+        <!-- Table Header -->
+        <div class="d-flex align-items-center justify-content-between p-4 border-bottom">
+            <div>
+                <h5 class="mb-1 fw-semibold" style="color: var(--text-primary);">قائمة المعلنين</h5>
+                <p class="text-muted mb-0 small">إدارة الأرصدة والمعاملات المالية</p>
+            </div>
+            <div class="input-group" style="max-width: 280px;">
+                <span class="input-group-text bg-white border-end-0">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+                <input type="text" class="form-control border-start-0 ps-0" id="searchInput" placeholder="بحث بالبريد الإلكتروني...">
+            </div>
+        </div>
+
+        <!-- Table -->
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="advertisersTable">
+                    <thead style="background-color: var(--gray-100);">
+                        <tr>
+                            <th class="px-4 py-3 text-muted fw-semibold small">المعلن</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small">البريد الإلكتروني</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small text-center">الرصيد الحالي</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small">الحالة</th>
+                            <th class="px-4 py-3 text-muted fw-semibold small text-end">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            var balance = user.Balance;
+                            var statusClass = balance > 0 ? "success" : balance < 0 ? "danger" : "warning";
+                            var statusText = balance > 0 ? "نشط" : balance < 0 ? "مدين" : "صفر";
+
+                            <tr class="advertiser-row">
+                                <td class="px-4 py-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar-circle">
+                                            @if (!string.IsNullOrEmpty(user.DisplayName))
+                                            {
+                                                <span>@user.DisplayName.Substring(0, 1).ToUpper()</span>
+                                            }
+                                            else if (!string.IsNullOrEmpty(user.Email))
+                                            {
+                                                <span>@user.Email.Substring(0, 1).ToUpper()</span>
+                                            }
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold" style="color: var(--text-primary);">
+                                                @(user.DisplayName ?? "معلن")
+                                            </div>
+                                            <div class="text-muted small">ID: @user.Id.Substring(0, 8)</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span style="color: var(--text-secondary);">@user.Email</span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <i class="bi bi-currency-dollar" style="color: var(--@(statusClass)-main);"></i>
+                                        <span class="fw-bold" style="color: var(--@(statusClass)-main); font-size: 1.1rem;">
+                                            @balance.ToString("N2")
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="badge-custom badge-@statusClass">
+                                        <span class="status-dot status-@statusClass"></span>
+                                        @statusText
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="action-buttons justify-content-end">
+                                        <a asp-action="AdjustBalance" asp-route-id="@user.Id"
+                                           class="btn-icon btn-icon-primary"
+                                           data-bs-toggle="tooltip"
+                                           title="تعديل الرصيد">
+                                            <i class="bi bi-wallet"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@user.Id"
+                                           class="btn-icon btn-icon-info"
+                                           data-bs-toggle="tooltip"
+                                           title="عرض التفاصيل">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Table Footer with Pagination Info -->
+            <div class="d-flex align-items-center justify-content-between p-4 border-top">
+                <div class="text-muted small">
+                    عرض <span class="fw-semibold" id="rowCount">@Model.Count()</span> من @Model.Count() معلن
+                </div>
+                <div class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    آخر تحديث: @DateTime.Now.ToString("dd/MM/yyyy - hh:mm tt")
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state py-5">
+                <div class="empty-state-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h5 class="empty-state-title">لا يوجد معلنون</h5>
+                <p class="empty-state-message">لم يتم العثور على أي معلنين في النظام حالياً</p>
+            </div>
+        }
+    </div>
+</div>
+@section scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const table = document.getElementById('advertisersTable');
+        const rowCountSpan = document.getElementById('rowCount');
+
+        if (searchInput && table) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                const rows = table.querySelectorAll('tbody tr');
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    const email = row.cells[1].textContent.toLowerCase();
+                    const name = row.cells[0].textContent.toLowerCase();
+
+                    if (email.includes(searchTerm) || name.includes(searchTerm)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+
+                if (rowCountSpan) {
+                    rowCountSpan.textContent = visibleCount;
+                }
+            });
+        }
+    });
+</script>
+}

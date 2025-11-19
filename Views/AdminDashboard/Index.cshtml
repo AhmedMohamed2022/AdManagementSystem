@@ -82,6 +82,166 @@
         });
     </script>
 } *@
+@* @section Scripts {
+    <script>
+        // Chart.js Configuration
+        Chart.defaults.font.family = "'Cairo', sans-serif";
+
+        // Users Distribution Chart (Doughnut)
+        const usersCtx = document.getElementById('usersChart');
+        new Chart(usersCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['المعلنين', 'الناشرين'],
+                datasets: [{
+                    data: [@Model.TotalAdvertisers, @Model.TotalPublishers],
+                    backgroundColor: [
+                        'rgba(32, 101, 209, 0.8)',
+                        'rgba(0, 171, 85, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 13
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Ads Status Chart (Pie)
+        const adsStatusCtx = document.getElementById('adsStatusChart');
+        const inactiveAds = @Model.TotalAds - @Model.ActiveAds;
+        new Chart(adsStatusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['نشط', 'غير نشط'],
+                datasets: [{
+                    data: [@Model.ActiveAds, inactiveAds],
+                    backgroundColor: [
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 86, 48, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 13
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Websites Status Chart (Doughnut)
+        const websitesCtx = document.getElementById('websitesChart');
+        const approvedWebsites = @Model.TotalWebsites - @Model.PendingWebsites;
+        new Chart(websitesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['مفعل', 'بانتظار الموافقة'],
+                datasets: [{
+                    data: [approvedWebsites, @Model.PendingWebsites],
+                    backgroundColor: [
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 171, 0, 0.8)'
+                    ],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 13
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // System Overview Chart (Bar)
+        const systemCtx = document.getElementById('systemOverviewChart');
+        new Chart(systemCtx, {
+            type: 'bar',
+            data: {
+                labels: ['المعلنين', 'الناشرين', 'الإعلانات', 'المواقع', 'الإعلانات النشطة', 'المواقع المعلقة'],
+                datasets: [{
+                    label: 'العدد',
+                    data: [
+                        @Model.TotalAdvertisers,
+                        @Model.TotalPublishers,
+                        @Model.TotalAds,
+                        @Model.TotalWebsites,
+                        @Model.ActiveAds,
+                        @Model.PendingWebsites
+                    ],
+                    backgroundColor: [
+                        'rgba(32, 101, 209, 0.8)',
+                        'rgba(0, 171, 85, 0.8)',
+                        'rgba(255, 171, 0, 0.8)',
+                        'rgba(0, 184, 217, 0.8)',
+                        'rgba(0, 171, 85, 0.6)',
+                        'rgba(255, 86, 48, 0.8)'
+                    ],
+                    borderRadius: 8,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        grid: {
+                            color: 'rgba(145, 158, 171, 0.08)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+} *@
+
 @model AdSystem.ViewModels.AdminDashboardViewModel
 @{
     ViewData["Title"] = "لوحة تحكم المدير";
@@ -358,165 +518,7 @@
     </div>
 </div>
 
-@* @section Scripts {
-    <script>
-        // Chart.js Configuration
-        Chart.defaults.font.family = "'Cairo', sans-serif";
 
-        // Users Distribution Chart (Doughnut)
-        const usersCtx = document.getElementById('usersChart');
-        new Chart(usersCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['المعلنين', 'الناشرين'],
-                datasets: [{
-                    data: [@Model.TotalAdvertisers, @Model.TotalPublishers],
-                    backgroundColor: [
-                        'rgba(32, 101, 209, 0.8)',
-                        'rgba(0, 171, 85, 0.8)'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 15,
-                            font: {
-                                size: 13
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Ads Status Chart (Pie)
-        const adsStatusCtx = document.getElementById('adsStatusChart');
-        const inactiveAds = @Model.TotalAds - @Model.ActiveAds;
-        new Chart(adsStatusCtx, {
-            type: 'pie',
-            data: {
-                labels: ['نشط', 'غير نشط'],
-                datasets: [{
-                    data: [@Model.ActiveAds, inactiveAds],
-                    backgroundColor: [
-                        'rgba(0, 171, 85, 0.8)',
-                        'rgba(255, 86, 48, 0.8)'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 15,
-                            font: {
-                                size: 13
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Websites Status Chart (Doughnut)
-        const websitesCtx = document.getElementById('websitesChart');
-        const approvedWebsites = @Model.TotalWebsites - @Model.PendingWebsites;
-        new Chart(websitesCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['مفعل', 'بانتظار الموافقة'],
-                datasets: [{
-                    data: [approvedWebsites, @Model.PendingWebsites],
-                    backgroundColor: [
-                        'rgba(0, 171, 85, 0.8)',
-                        'rgba(255, 171, 0, 0.8)'
-                    ],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 15,
-                            font: {
-                                size: 13
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // System Overview Chart (Bar)
-        const systemCtx = document.getElementById('systemOverviewChart');
-        new Chart(systemCtx, {
-            type: 'bar',
-            data: {
-                labels: ['المعلنين', 'الناشرين', 'الإعلانات', 'المواقع', 'الإعلانات النشطة', 'المواقع المعلقة'],
-                datasets: [{
-                    label: 'العدد',
-                    data: [
-                        @Model.TotalAdvertisers,
-                        @Model.TotalPublishers,
-                        @Model.TotalAds,
-                        @Model.TotalWebsites,
-                        @Model.ActiveAds,
-                        @Model.PendingWebsites
-                    ],
-                    backgroundColor: [
-                        'rgba(32, 101, 209, 0.8)',
-                        'rgba(0, 171, 85, 0.8)',
-                        'rgba(255, 171, 0, 0.8)',
-                        'rgba(0, 184, 217, 0.8)',
-                        'rgba(0, 171, 85, 0.6)',
-                        'rgba(255, 86, 48, 0.8)'
-                    ],
-                    borderRadius: 8,
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        },
-                        grid: {
-                            color: 'rgba(145, 158, 171, 0.08)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-    </script>
-} *@
 @section Scripts {
     <script>
         // Users Distribution Chart (Doughnut)

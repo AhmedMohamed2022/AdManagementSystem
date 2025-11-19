@@ -199,8 +199,25 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons justify-content-center">
+                                        @* @if (site.IsApproved)
+                                        {
+                                            <a asp-action="Script" asp-route-id="@site.Id"
+                                               class="btn btn-sm btn-success"
+                                               title="الحصول على كود الإعلانات"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-code-square"></i>
+                                            </a>
+                                        }*@
+                                        
                                         @if (site.IsApproved)
                                         {
+                                            <a asp-controller="Placements" asp-action="Index" asp-route-websiteId="@site.Id"
+                                               class="btn btn-sm btn-primary"
+                                               title="إدارة أماكن ظهور الإعلانات"
+                                               data-bs-toggle="tooltip">
+                                                <i class="bi bi-grid-3x3-gap"></i>
+                                            </a>
+
                                             <a asp-action="Script" asp-route-id="@site.Id"
                                                class="btn btn-sm btn-success"
                                                title="الحصول على كود الإعلانات"
@@ -258,13 +275,27 @@
                             </div>
                         </div>
                         <div class="d-flex gap-2 mt-3">
-                            @if (site.IsApproved)
+                            @* @if (site.IsApproved)
                             {
                                 <a asp-action="Script" asp-route-id="@site.Id" class="btn btn-sm btn-success flex-fill">
                                     <i class="bi bi-code-square"></i>
                                     كود الإعلان
                                 </a>
+                            } *@
+                            @if (site.IsApproved)
+                            {
+                                <a asp-controller="Placements" asp-action="Index" asp-route-websiteId="@site.Id"
+                                   class="btn btn-sm btn-primary flex-fill">
+                                    <i class="bi bi-grid-3x3-gap"></i>
+                                    أماكن الإعلانات
+                                </a>
+
+                                <a asp-action="Script" asp-route-id="@site.Id" class="btn btn-sm btn-success flex-fill">
+                                    <i class="bi bi-code-square"></i>
+                                    كود الإعلان
+                                </a>
                             }
+
                             <a asp-action="Edit" asp-route-id="@site.Id" class="btn btn-sm btn-outline-primary flex-fill">
                                 <i class="bi bi-pencil"></i>
                                 تعديل

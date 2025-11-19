@@ -1,0 +1,167 @@
+﻿@* @model AdManagementSystem.Models.AdPlacement
+@{
+    ViewData["Title"] = "Add Placement";
+}
+
+<h2>Add Placement</h2>
+
+<form method="post">
+    <input type="hidden" name="WebsiteId" value="@Model.WebsiteId" />
+
+    <div class="mb-3">
+        <label class="form-label">Placement Name</label>
+        <input name="Name" class="form-control" required />
+    </div>
+    <select name="BannerSizeId" class="form-control" required>
+        @foreach (var size in (List<BannerSize>)ViewBag.Sizes)
+        {
+            <option value="@size.Id">@size.Name (@size.Width x @size.Height)</option>
+        }
+    </select>
+
+    <button type="submit" class="btn btn-success">Create</button>
+    <a href="/Placements?websiteId=@Model.WebsiteId" class="btn btn-secondary">Cancel</a>
+</form> *@
+@model AdManagementSystem.Models.AdPlacement
+@{
+    ViewData["Title"] = "إضافة موقع إعلان";
+}
+<link rel="stylesheet" href="~/css/PlacementsCreate.css" />
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">إضافة موقع إعلان جديد</h1>
+            <p class="page-subtitle mb-0">أضف موقع إعلان جديد لموقعك الإلكتروني</p>
+        </div>
+        <div class="action-buttons">
+            <a href="/Placements?websiteId=@Model.WebsiteId" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle ms-2"></i>
+                إلغاء
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-6">
+        <!-- Main Form Card -->
+        <div class="card" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+            <div class="card-body p-4">
+                <form method="post" id="createPlacementForm">
+                    <input type="hidden" name="WebsiteId" value="@Model.WebsiteId" />
+
+                    <!-- Placement Name -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold" style="color: var(--text-primary); margin-bottom: 8px;">
+                            <i class="bi bi-tag ms-2"></i>
+                            اسم موقع الإعلان
+                        </label>
+                        <input name="Name"
+                               type="text"
+                               class="form-control form-control-lg"
+                               placeholder="مثال: إعلان الصفحة الرئيسية - أعلى"
+                               required
+                               style="border-radius: var(--radius-sm); border: 1px solid var(--gray-300); padding: 12px 16px;" />
+                        <small class="form-text text-muted mt-2 d-block">
+                            <i class="bi bi-info-circle ms-1"></i>
+                            اختر اسماً واضحاً يصف موقع الإعلان في صفحتك
+                        </small>
+                    </div>
+
+                    <!-- Banner Size Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold" style="color: var(--text-primary); margin-bottom: 12px;">
+                            <i class="bi bi-aspect-ratio ms-2"></i>
+                            حجم الإعلان
+                        </label>
+
+                        <div class="row g-3">
+                            @foreach (var size in (List<BannerSize>)ViewBag.Sizes)
+                            {
+                                <div class="col-6 col-md-4">
+                                    <input type="radio"
+                                           class="btn-check"
+                                           name="BannerSizeId"
+                                           id="size_@size.Id"
+                                           value="@size.Id"
+                                           required />
+                                    <label class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-3"
+                                           for="size_@size.Id"
+                                           style="border-radius: var(--radius-md); min-height: 100px; transition: all 0.2s ease;">
+                                        <i class="bi bi-badge-ad mb-2" style="font-size: 24px;"></i>
+                                        <span class="fw-semibold d-block mb-1">@size.Name</span>
+                                        <small class="text-muted">@size.Width × @size.Height</small>
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                        <small class="form-text text-muted mt-2 d-block">
+                            <i class="bi bi-info-circle ms-1"></i>
+                            اختر المقاس المناسب لموقع الإعلان في صفحتك
+                        </small>
+                    </div>
+
+                    <!-- Info Box -->
+                    <div class="alert alert-info d-flex align-items-start mb-4" style="background-color: var(--info-lighter); border: none; border-radius: var(--radius-md); border-right: 4px solid var(--info-main);">
+                        <i class="bi bi-lightbulb flex-shrink-0 ms-3" style="font-size: 24px; color: var(--info-main);"></i>
+                        <div>
+                            <h6 class="mb-1 fw-semibold" style="color: var(--info-dark);">نصيحة مهمة</h6>
+                            <p class="mb-0" style="color: var(--info-dark); font-size: 0.875rem;">
+                                بعد إنشاء موقع الإعلان، ستحصل على كود HTML لوضعه في موقعك. تأكد من اختيار المقاس المناسب للمساحة المتاحة.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-3 justify-content-end mt-4 pt-3" style="border-top: 1px solid var(--gray-200);">
+                        <a href="/Placements?websiteId=@Model.WebsiteId" class="btn btn-outline-secondary px-4" style="border-radius: var(--radius-sm);">
+                            <i class="bi bi-x-circle ms-2"></i>
+                            إلغاء
+                        </a>
+                        <button type="submit" class="btn btn-success px-4" style="border-radius: var(--radius-sm);">
+                            <i class="bi bi-check-circle ms-2"></i>
+                            إنشاء موقع الإعلان
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="card mt-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); background: linear-gradient(135deg, var(--primary-lighter), white);">
+            <div class="card-body p-4">
+                <h5 class="mb-3 fw-semibold" style="color: var(--text-primary);">
+                    <i class="bi bi-question-circle ms-2"></i>
+                    ما هو موقع الإعلان؟
+                </h5>
+                <p class="mb-3" style="color: var(--text-secondary); line-height: 1.7;">
+                    موقع الإعلان هو المكان المحدد في موقعك الإلكتروني حيث سيظهر الإعلان. يمكنك إنشاء عدة مواقع في صفحات مختلفة.
+                </p>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color: var(--success-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">اختر اسماً يساعدك على تمييز كل موقع</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color: var(--success-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">حدد المقاس المناسب للمساحة المتاحة</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-check-circle-fill flex-shrink-0 mt-1" style="color: var(--success-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">احصل على الكود وضعه في صفحتك</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('createPlacementForm').addEventListener('submit', function(e) {
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري الإنشاء...';
+    });
+</script>

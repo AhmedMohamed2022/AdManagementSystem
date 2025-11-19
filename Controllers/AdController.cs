@@ -42,7 +42,7 @@ namespace AdManagementSystem.Controllers
             {
                 ad.Id,
                 ad.Title,
-                ad.ImageUrl,
+                ad.ImagePath,
                 ad.TargetUrl,
                 ad.Description
             });

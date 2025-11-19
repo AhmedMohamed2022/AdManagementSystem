@@ -1,4 +1,4 @@
-﻿@model AdSystem.Models.Ad
+﻿@* @model AdSystem.Models.Ad
 @{
     ViewData["Title"] = "Delete Ad";
 }
@@ -21,4 +21,155 @@
         <button type="submit" class="btn btn-danger">🗑️ Delete</button>
         <a asp-action="Index" class="btn btn-secondary">Cancel</a>
     </form>
+</div> *@
+@model AdSystem.Models.Ad
+@{
+    ViewData["Title"] = "حذف الإعلان";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">حذف الإعلان</h1>
+            <p class="page-subtitle mb-0">تأكيد حذف الإعلان بشكل نهائي</p>
+        </div>
+    </div>
 </div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-6">
+        <!-- Warning Card -->
+        <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); border: 2px solid var(--error-main);">
+            <div class="card-body p-4">
+                <!-- Warning Icon -->
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--error-light), var(--error-main)); border-radius: 50%; margin-bottom: 16px;">
+                        <i class="bi bi-exclamation-triangle-fill text-white" style="font-size: 40px;"></i>
+                    </div>
+                    <h3 class="fw-bold mb-2" style="color: var(--error-main);">تحذير: عملية لا يمكن التراجع عنها</h3>
+                    <p class="text-muted mb-0">هل أنت متأكد من حذف هذا الإعلان بشكل نهائي؟</p>
+                </div>
+
+                <!-- Ad Details -->
+                <div class="alert alert-danger mb-0" style="background-color: var(--error-lighter); border: none; border-radius: var(--radius-md); border-right: 4px solid var(--error-main);">
+                    <h5 class="mb-3 fw-semibold" style="color: var(--error-dark);">
+                        <i class="bi bi-info-circle ms-2"></i>
+                        تفاصيل الإعلان المراد حذفه
+                    </h5>
+
+                    <div class="d-flex flex-column gap-3">
+                        <!-- Title -->
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 36px; height: 36px; background-color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-card-heading" style="color: var(--error-main); font-size: 18px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block mb-1">عنوان الإعلان</small>
+                                <p class="mb-0 fw-semibold" style="color: var(--error-dark);">@Model.Title</p>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 36px; height: 36px; background-color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-text-paragraph" style="color: var(--error-main); font-size: 18px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block mb-1">الوصف</small>
+                                <p class="mb-0 fw-semibold" style="color: var(--error-dark);">@Model.Description</p>
+                            </div>
+                        </div>
+
+                        <!-- Target URL -->
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 36px; height: 36px; background-color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="bi bi-link-45deg" style="color: var(--error-main); font-size: 18px;"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <small class="text-muted d-block mb-1">الرابط المستهدف</small>
+                                <a href="@Model.TargetUrl" target="_blank" class="fw-semibold text-decoration-none" style="color: var(--primary-main); word-break: break-all;">
+                                    @Model.TargetUrl
+                                    <i class="bi bi-box-arrow-up-left ms-1" style="font-size: 12px;"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Consequences Warning -->
+        <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); background: linear-gradient(135deg, var(--warning-lighter), white);">
+            <div class="card-body p-4">
+                <h5 class="mb-3 fw-semibold" style="color: var(--text-primary);">
+                    <i class="bi bi-exclamation-octagon ms-2"></i>
+                    ماذا يحدث عند الحذف؟
+                </h5>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">سيتم حذف الإعلان بشكل نهائي من النظام</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">سيتوقف عرض الإعلان في جميع المواقع</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">لن تتمكن من استعادة البيانات بعد الحذف</span>
+                    </div>
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-x-circle-fill flex-shrink-0 mt-1" style="color: var(--error-main);"></i>
+                        <span style="color: var(--text-secondary); font-size: 0.875rem;">سيتم فقدان جميع الإحصائيات المرتبطة بهذا الإعلان</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <form asp-action="DeleteConfirmed" method="post" id="deleteForm">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-5" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-x-circle ms-2"></i>
+                    إلغاء
+                </a>
+                <button type="submit" class="btn btn-danger btn-lg px-5" style="border-radius: var(--radius-md);">
+                    <i class="bi bi-trash ms-2"></i>
+                    تأكيد الحذف
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(255, 86, 48, 0.3);
+    }
+
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
+</style>
+
+<script>
+    document.getElementById('deleteForm').addEventListener('submit', function(e) {
+        const confirmed = confirm('هل أنت متأكد تماماً؟ هذا الإجراء لا يمكن التراجع عنه!');
+        if (!confirmed) {
+            e.preventDefault();
+            return false;
+        }
+
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري الحذف...';
+    });
+</script>

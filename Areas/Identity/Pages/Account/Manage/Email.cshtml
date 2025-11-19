@@ -4,7 +4,7 @@
     ViewData["Title"] = "Manage Email";
     ViewData["ActivePage"] = ManageNavPages.Email;
 }
-
+<link rel="stylesheet" href="~/css/Email.css" />
 <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 <div class="row">
@@ -15,9 +15,9 @@
             {
                 <div class="form-floating mb-3 input-group">
                     <input asp-for="Email" class="form-control" placeholder="Please enter your email." disabled />
-                        <div class="input-group-append">
-                            <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
-                        </div>
+                    <div class="input-group-append">
+                        <span class="h-100 input-group-text text-success font-weight-bold">✓</span>
+                    </div>
                     <label asp-for="Email" class="form-label"></label>
                 </div>
             }
@@ -42,3 +42,264 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+@* @model EmailModel
+@{
+    ViewData["Title"] = "إدارة البريد الإلكتروني";
+    ViewData["ActivePage"] = ManageNavPages.Email;
+}
+<link rel="stylesheet" href="~/css/Email.css" />
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-2">
+                <li class="breadcrumb-item"><a asp-page="./Index">الملف الشخصي</a></li>
+                <li class="breadcrumb-item active">إدارة البريد الإلكتروني</li>
+            </ol>
+        </nav>
+        <h1 class="page-title">إدارة البريد الإلكتروني</h1>
+        <p class="page-subtitle">تحديث عنوان بريدك الإلكتروني والتحقق منه</p>
+    </div>
+</div>
+
+<!-- Status Message -->
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="row">
+    <!-- Email Form Card -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-1">تغيير البريد الإلكتروني</h5>
+                <p class="card-subtitle text-muted mb-0">قم بتحديث عنوان بريدك الإلكتروني بشكل آمن</p>
+            </div>
+            <div class="card-body">
+                <form id="email-form" method="post">
+                    <div asp-validation-summary="All" class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle ms-2"></i>
+                        <span>يرجى تصحيح الأخطاء التالية:</span>
+                    </div>
+
+                    <!-- Current Email Field -->
+                    <div class="form-group mb-4">
+                        <label asp-for="Email" class="form-label">
+                            <i class="bi bi-envelope ms-1"></i>
+                            البريد الإلكتروني الحالي
+                        </label>
+                        
+                        @if (Model.IsEmailConfirmed)
+                        {
+                            <div class="input-group input-group-lg">
+                                <input asp-for="Email" class="form-control" disabled />
+                                <span class="input-group-text bg-success-lighter text-success border-success">
+                                    <i class="bi bi-check-circle ms-1"></i>
+                                    مُفعّل
+                                </span>
+                            </div>
+                            <div class="form-text text-success">
+                                <i class="bi bi-shield-check ms-1"></i>
+                                تم التحقق من بريدك الإلكتروني بنجاح
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="input-group input-group-lg">
+                                <input asp-for="Email" class="form-control" disabled />
+                                <span class="input-group-text bg-warning-lighter text-warning border-warning">
+                                    <i class="bi bi-exclamation-circle ms-1"></i>
+                                    غير مُفعّل
+                                </span>
+                            </div>
+                            <div class="form-text text-warning">
+                                <i class="bi bi-info-circle ms-1"></i>
+                                بريدك الإلكتروني غير مُفعّل. يُرجى التحقق منه.
+                            </div>
+                            <button id="email-verification" 
+                                    type="submit" 
+                                    asp-page-handler="SendVerificationEmail" 
+                                    class="btn btn-outline-warning mt-2">
+                                <i class="bi bi-envelope-paper ms-2"></i>
+                                إرسال رابط التفعيل
+                            </button>
+                        }
+                    </div>
+
+                    <!-- New Email Field -->
+                    <div class="form-group mb-4">
+                        <label asp-for="Input.NewEmail" class="form-label">
+                            <i class="bi bi-envelope-plus ms-1"></i>
+                            البريد الإلكتروني الجديد
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light">
+                                <i class="bi bi-at"></i>
+                            </span>
+                            <input asp-for="Input.NewEmail" 
+                                   class="form-control" 
+                                   autocomplete="email" 
+                                   placeholder="أدخل البريد الإلكتروني الجديد"
+                                   type="email" />
+                        </div>
+                        <span asp-validation-for="Input.NewEmail" class="text-danger small"></span>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle ms-1"></i>
+                            سيتم إرسال رابط التحقق إلى البريد الجديد
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-flex gap-2 pt-3">
+                        <button id="change-email-button" 
+                                type="submit" 
+                                asp-page-handler="ChangeEmail" 
+                                class="btn btn-primary btn-lg px-4">
+                            <i class="bi bi-check-circle ms-2"></i>
+                            تغيير البريد الإلكتروني
+                        </button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="bi bi-x-circle ms-2"></i>
+                            إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Sidebar -->
+    <div class="col-lg-4">
+        <!-- Current Status Card -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">حالة البريد الإلكتروني</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    @if (Model.IsEmailConfirmed)
+                    {
+                        <div class="stat-icon bg-success-lighter">
+                            <i class="bi bi-check-circle" style="color: var(--success-main);"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1" style="color: var(--text-primary);">تم التحقق</h6>
+                            <p class="text-muted small mb-0">بريدك الإلكتروني نشط ومُفعّل</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="stat-icon bg-warning-lighter">
+                            <i class="bi bi-exclamation-triangle" style="color: var(--warning-main);"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-1" style="color: var(--text-primary);">يتطلب التحقق</h6>
+                            <p class="text-muted small mb-0">يُرجى تفعيل بريدك الإلكتروني</p>
+                        </div>
+                    }
+                </div>
+
+                <div class="metadata-list">
+                    <div class="metadata-item border-0 pb-0">
+                        <span class="metadata-label">
+                            <i class="bi bi-envelope ms-1"></i>
+                            البريد الحالي
+                        </span>
+                    </div>
+                    <div class="pt-0">
+                        <span class="metadata-value text-break">@Model.Email</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions Card -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="stat-icon bg-primary-lighter">
+                        <i class="bi bi-info-circle" style="color: var(--primary-main);"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-2" style="color: var(--text-primary);">كيفية تغيير البريد</h6>
+                        <ol class="text-muted small mb-0 pe-3" style="line-height: 1.8;">
+                            <li>أدخل عنوان البريد الجديد</li>
+                            <li>انقر على "تغيير البريد الإلكتروني"</li>
+                            <li>تحقق من صندوق الوارد للبريد الجديد</li>
+                            <li>اضغط على رابط التفعيل المُرسل</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Notice Card -->
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="stat-icon bg-error-lighter">
+                        <i class="bi bi-shield-exclamation" style="color: var(--error-main);"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-2" style="color: var(--text-primary);">ملاحظة أمنية</h6>
+                        <p class="text-muted small mb-0" style="line-height: 1.8;">
+                            تغيير البريد الإلكتروني يتطلب التحقق من البريد الجديد. 
+                            تأكد من إدخال بريد إلكتروني صحيح يمكنك الوصول إليه. 
+                            لن تتمكن من استخدام البريد الجديد حتى تفعيله.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const changeEmailBtn = document.getElementById('change-email-button');
+            const verificationBtn = document.getElementById('email-verification');
+            const emailForm = document.getElementById('email-form');
+            const newEmailInput = document.querySelector('input[name="Input.NewEmail"]');
+
+            // Change email button handler
+            if (changeEmailBtn && emailForm) {
+                emailForm.addEventListener('submit', function(e) {
+                    // Only apply loading state if the change email button was clicked
+                    if (e.submitter === changeEmailBtn) {
+                        changeEmailBtn.disabled = true;
+                        changeEmailBtn.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري التغيير...';
+                    }
+                });
+            }
+
+            // Verification button handler
+            if (verificationBtn) {
+                verificationBtn.addEventListener('click', function() {
+                    this.disabled = true;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm ms-2"></span> جاري الإرسال...';
+                });
+            }
+
+            // Email validation enhancement
+            if (newEmailInput) {
+                newEmailInput.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                    
+                    // Basic email format check
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (this.value && !emailRegex.test(this.value)) {
+                        this.classList.add('is-invalid');
+                    } else if (this.value) {
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+        });
+    </script> *@
+@* } *@
+

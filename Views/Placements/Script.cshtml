@@ -1,0 +1,359 @@
+﻿@model AdManagementSystem.Models.AdPlacement
+@{
+    ViewData["Title"] = "كود موقع الإعلان";
+    var host = Context.Request.Host.Value;
+    var bannerSize = Model.BannerSize != null ? $"{Model.BannerSize.Width} × {Model.BannerSize.Height}" : "غير محدد";
+    var bannerWidth = Model.BannerSize?.Width ?? 0;
+    var bannerHeight = Model.BannerSize?.Height ?? 0;
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="page-title">كود موقع الإعلان</h1>
+            <p class="page-subtitle mb-0">انسخ الكود وضعه في موقعك الإلكتروني</p>
+        </div>
+        <div class="action-buttons">
+            <a href="/Placements?websiteId=@Model.WebsiteId" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-right ms-2"></i>
+                العودة
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+        <!-- Placement Info Card -->
+        <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card); background: linear-gradient(135deg, var(--primary-lighter), white);">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary-light), var(--primary-main)); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-pin-map text-white" style="font-size: 28px;"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1 fw-semibold" style="color: var(--text-primary);">@Model.Name</h5>
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    @if (Model.BannerSize != null)
+                                    {
+                                        <span class="badge" style="background-color: var(--primary-main); color: white; font-weight: 500; padding: 6px 12px; border-radius: 8px;">
+                                            @bannerSize
+                                        </span>
+                                    }
+                                    <code style="color: var(--primary-main); background: white; padding: 4px 8px; border-radius: 6px; font-size: 0.875rem;">@Model.ZoneKey</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-start mt-3 mt-md-0">
+                        <a href="/Placements/Edit/@Model.Id" class="btn btn-primary">
+                            <i class="bi bi-pencil ms-2"></i>
+                            تعديل الموقع
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Installation Steps -->
+        <div class="card mb-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+            <div class="card-body p-4">
+                <h5 class="mb-4 fw-semibold" style="color: var(--text-primary);">
+                    <i class="bi bi-list-ol ms-2"></i>
+                    خطوات التركيب
+                </h5>
+
+                <div class="installation-steps">
+                    <!-- Step 1 -->
+                    <div class="step-item">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h6 class="step-title">انسخ الكود أدناه</h6>
+                            <p class="step-description">استخدم زر النسخ لنسخ الكود بسهولة</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="step-item">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h6 class="step-title">افتح ملف HTML الخاص بموقعك</h6>
+                            <p class="step-description">ابحث عن المكان الذي تريد ظهور الإعلان فيه</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h6 class="step-title">الصق الكود في موقعك</h6>
+                            <p class="step-description">ضع الكود في المكان المناسب داخل ملف HTML</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h6 class="step-title">احفظ وارفع الملف</h6>
+                            <p class="step-description">احفظ التغييرات وارفع الملف لخادم موقعك</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code Card -->
+        <div class="card" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+            <div class="card-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, var(--gray-100), white); border-bottom: 1px solid var(--gray-200); padding: 20px; border-radius: var(--radius-lg) var(--radius-lg) 0 0;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-code-slash" style="font-size: 24px; color: var(--primary-main);"></i>
+                    <h5 class="mb-0 fw-semibold" style="color: var(--text-primary);">كود HTML</h5>
+                </div>
+                <button class="btn btn-primary" onclick="copyCode(this)">
+                    <i class="bi bi-clipboard ms-2"></i>
+                    نسخ الكود
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="code-container" style="background-color: #1e1e1e; border-radius: 0 0 var(--radius-lg) var(--radius-lg); overflow: hidden;">
+                    <pre class="code-content" style="margin: 0; padding: 24px; color: #d4d4d4; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; overflow-x: auto;"><code id="adCode"><span style="color: #808080;">&lt;!-- Ad Placement: @Model.Name --&gt;</span>
+<span style="color: #569cd6;">&lt;div</span> <span style="color: #9cdcfe;">data-zone</span>=<span style="color: #ce9178;">"@Model.ZoneKey"</span><span style="color: #569cd6;">&gt;&lt;/div&gt;</span>
+@* <span style="color: #569cd6;">&lt;script</span> <span style="color: #9cdcfe;">src</span>=<span style="color: #ce9178;">"https://@host/ad.js?key=@ViewBag.ScriptKey"</span><span style="color: #569cd6;">&gt;&lt;/script&gt;</span> *@</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Alerts -->
+        <div class="row g-3 mt-4">
+            <!-- Success Tip -->
+            <div class="col-md-6">
+                <div class="alert alert-success mb-0" style="background-color: var(--success-lighter); border: none; border-radius: var(--radius-md); border-right: 4px solid var(--success-main);">
+                    <div class="d-flex align-items-start gap-3">
+                        <i class="bi bi-check-circle-fill flex-shrink-0" style="font-size: 24px; color: var(--success-main);"></i>
+                        <div>
+                            <h6 class="mb-1 fw-semibold" style="color: var(--success-dark);">نصيحة</h6>
+                            <p class="mb-0" style="color: var(--success-dark); font-size: 0.875rem;">
+                                يمكنك استخدام نفس الكود في عدة صفحات إذا أردت عرض الإعلان في أكثر من مكان
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning -->
+            <div class="col-md-6">
+                <div class="alert alert-warning mb-0" style="background-color: var(--warning-lighter); border: none; border-radius: var(--radius-md); border-right: 4px solid var(--warning-main);">
+                    <div class="d-flex align-items-start gap-3">
+                        <i class="bi bi-exclamation-triangle-fill flex-shrink-0" style="font-size: 24px; color: var(--warning-main);"></i>
+                        <div>
+                            <h6 class="mb-1 fw-semibold" style="color: var(--warning-dark);">تنبيه</h6>
+                            <p class="mb-0" style="color: var(--warning-dark); font-size: 0.875rem;">
+                                لا تقم بتعديل الكود، انسخه كما هو للحصول على أفضل النتائج
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="card mt-4" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-card);">
+            <div class="card-body p-4">
+                <h5 class="mb-4 fw-semibold" style="color: var(--text-primary);">
+                    <i class="bi bi-info-circle ms-2"></i>
+                    التفاصيل التقنية
+                </h5>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 40px; height: 40px; background-color: var(--primary-lighter); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-key" style="color: var(--primary-main);"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-semibold" style="color: var(--text-primary); font-size: 0.875rem;">مفتاح المنطقة</h6>
+                                <code style="color: var(--primary-main); background: var(--gray-100); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;">@Model.ZoneKey</code>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.BannerSize != null)
+                    {
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start gap-3">
+                                <div style="width: 40px; height: 40px; background-color: var(--info-lighter); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-aspect-ratio" style="color: var(--info-main);"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-semibold" style="color: var(--text-primary); font-size: 0.875rem;">حجم الإعلان</h6>
+                                    <p class="mb-0 text-muted" style="font-size: 0.875rem;">@bannerWidth × @bannerHeight بكسل</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 40px; height: 40px; background-color: var(--success-lighter); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-check-circle" style="color: var(--success-main);"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-semibold" style="color: var(--text-primary); font-size: 0.875rem;">متوافق مع</h6>
+                                <p class="mb-0 text-muted" style="font-size: 0.875rem;">جميع المتصفحات الحديثة</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start gap-3">
+                            <div style="width: 40px; height: 40px; background-color: var(--warning-lighter); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="bi bi-lightning" style="color: var(--warning-main);"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 fw-semibold" style="color: var(--text-primary); font-size: 0.875rem;">سرعة التحميل</h6>
+                                <p class="mb-0 text-muted" style="font-size: 0.875rem;">تحميل غير متزامن وسريع</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="d-flex gap-3 mt-4 justify-content-center flex-wrap">
+            <a href="/Placements?websiteId=@Model.WebsiteId" class="btn btn-outline-secondary" style="border-radius: var(--radius-md); padding: 12px 24px;">
+                <i class="bi bi-arrow-right ms-2"></i>
+                العودة لقائمة المواقع
+            </a>
+            <a href="/Placements/Edit/@Model.Id" class="btn btn-outline-primary" style="border-radius: var(--radius-md); padding: 12px 24px;">
+                <i class="bi bi-pencil ms-2"></i>
+                تعديل الموقع
+            </a>
+            <button class="btn btn-primary" onclick="copyCode(this)" style="border-radius: var(--radius-md); padding: 12px 24px;">
+                <i class="bi bi-clipboard ms-2"></i>
+                نسخ الكود مرة أخرى
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .installation-steps {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .step-item {
+        display: flex;
+        align-items: start;
+        gap: 16px;
+        padding: 16px;
+        background-color: var(--gray-50);
+        border-radius: var(--radius-md);
+        transition: all 0.3s ease;
+    }
+
+        .step-item:hover {
+            background-color: var(--primary-lighter);
+            transform: translateX(-4px);
+        }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary-light), var(--primary-main));
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .step-content {
+        flex-grow: 1;
+    }
+
+    .step-title {
+        margin-bottom: 4px;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .step-description {
+        margin-bottom: 0;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .code-container {
+        position: relative;
+    }
+
+    .code-content::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .code-content::-webkit-scrollbar-track {
+        background: #2d2d2d;
+    }
+
+    .code-content::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 4px;
+    }
+
+        .code-content::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+</style>
+@section scripts {
+
+<script>
+            function copyCode(btn) {
+            const codeElement = document.getElementById('adCode');
+            const code = codeElement.textContent;
+
+            navigator.clipboard.writeText(code).then(function() {
+                // Show success notification
+                const originalHTML = btn.innerHTML;
+
+                btn.innerHTML = '<i class="bi bi-check-circle ms-2"></i> تم النسخ!';
+                btn.style.backgroundColor = 'var(--success-main)';
+                btn.style.borderColor = 'var(--success-main)';
+
+                setTimeout(function() {
+                    btn.innerHTML = originalHTML;
+                    btn.style.backgroundColor = '';
+                    btn.style.borderColor = '';
+                }, 2000);
+            }).catch(function(err) {
+                alert('حدث خطأ أثناء نسخ الكود. يرجى المحاولة مرة أخرى.');
+                console.error('Failed to copy code:', err);
+            });
+        }
+
+    // Add animation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const steps = document.querySelectorAll('.step-item');
+        steps.forEach((step, index) => {
+            step.style.opacity = '0';
+            step.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                step.style.transition = 'all 0.5s ease';
+                step.style.opacity = '1';
+                step.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+    });
+</script>
+}

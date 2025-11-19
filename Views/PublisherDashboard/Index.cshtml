@@ -300,6 +300,47 @@
             </div>
         </div>
     </div>
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>الموقع</th>
+                <th>الدومين</th>
+                <th>الحالة</th>
+                <th>المشاهدات</th>
+                <th>النقرات</th>
+                <th>الأرباح</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.Earnings)
+            {
+                <tr>
+                    <td>@row.WebsiteName</td>
+                    <td>@row.Domain</td>
+                    <td>
+                        @if (row.IsApproved)
+                        {
+                            <span class="badge bg-success">مفعل</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">قيد المراجعة</span>
+                        }
+                    </td>
+                    <td>@row.Impressions.ToString("N0")</td>
+                    <td>@row.Clicks.ToString("N0")</td>
+                    <td><strong>@row.TotalEarned.ToString("N2") جنيه</strong></td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-secondary">
+                <th colspan="5" class="text-end">الإجمالي:</th>
+                <th><strong>@Model.TotalEarnings.ToString("N2") جنيه</strong></th>
+            </tr>
+        </tfoot>
+    </table>
+
 
     <!-- Performance Summary -->
     <div class="col-xl-6">

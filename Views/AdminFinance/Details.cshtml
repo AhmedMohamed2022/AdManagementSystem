@@ -1,0 +1,329 @@
+﻿@using AdManagementSystem.Models.Enums
+@model AdSystem.Models.ApplicationUser
+@{
+    ViewData["Title"] = "تفاصيل المعلن";
+}
+<link rel="stylesheet" href="~/css/AdminFinanceDetails.css" />
+
+<!-- Page Header with Breadcrumb -->
+<div class="page-header mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item"><a asp-action="Advertisers">إدارة المعلنين</a></li>
+            <li class="breadcrumb-item active">تفاصيل المعلن</li>
+        </ol>
+    </nav>
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h1 class="page-title mb-1">تفاصيل المعلن</h1>
+            <p class="page-subtitle mb-0">عرض معلومات المعلن وسجل الإعلانات والمعاملات</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="AdjustBalance" asp-route-id="@Model.Id" class="btn btn-primary">
+                <i class="bi bi-wallet me-2"></i>
+                تعديل الرصيد
+            </a>
+            <a asp-action="Advertisers" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-right me-2"></i>
+                العودة
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: User Info & Stats -->
+    <div class="col-lg-4">
+        <!-- User Profile Card -->
+        <div class="card shadow-card mb-4">
+            <div class="card-body text-center">
+                <div class="avatar-circle-xl mx-auto mb-3">
+                    @if (!string.IsNullOrEmpty(Model.DisplayName))
+                    {
+                        <span>@Model.DisplayName.Substring(0, 1).ToUpper()</span>
+                    }
+                    else if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                        <span>@Model.Email.Substring(0, 1).ToUpper()</span>
+                    }
+                </div>
+
+                <h4 class="fw-bold mb-1" style="color: var(--text-primary);">
+                    @(Model.DisplayName ?? "معلن")
+                </h4>
+                <p class="text-muted mb-3">@Model.Email</p>
+
+                <!-- Balance Display -->
+                <div class="balance-card">
+                    <p class="text-muted small mb-1">الرصيد الحالي</p>
+                    <h2 class="fw-bold mb-0" style="color: var(--@(Model.Balance >= 0 ? "success" : "error")-main);">
+                        <i class="bi bi-currency-dollar"></i>
+                        @Model.Balance.ToString("N2")
+                    </h2>
+                </div>
+
+                <!-- Status Badge -->
+                <div class="mt-3">
+                    @if (Model.Balance > 0)
+                    {
+                        <span class="badge-custom badge-success">
+                            <span class="status-dot status-success"></span>
+                            رصيد نشط
+                        </span>
+                    }
+                    else if (Model.Balance < 0)
+                    {
+                        <span class="badge-custom badge-danger">
+                            <span class="status-dot status-danger"></span>
+                            رصيد مدين
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge-custom badge-warning">
+                            <span class="status-dot status-warning"></span>
+                            رصيد صفر
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Info Card -->
+        <div class="card shadow-card">
+            <div class="card-body">
+                <h6 class="fw-semibold mb-3" style="color: var(--text-primary);">
+                    <i class="bi bi-info-circle me-2"></i>
+                    معلومات الحساب
+                </h6>
+
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="bi bi-person-badge"></i>
+                            معرف المستخدم
+                        </span>
+                        <span class="info-value">@Model.Id.Substring(0, 8)...</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="bi bi-envelope"></i>
+                            البريد الإلكتروني
+                        </span>
+                        <span class="info-value small">@Model.Email</span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="bi bi-phone"></i>
+                            رقم الهاتف
+                        </span>
+                        <span class="info-value">
+                            @(Model.PhoneNumber ?? "غير محدد")
+                        </span>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="bi bi-shield-check"></i>
+                            حالة التحقق
+                        </span>
+                        <span class="info-value">
+                            @if (Model.EmailConfirmed)
+                            {
+                                <span class="text-success">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    موثق
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="text-warning">
+                                    <i class="bi bi-exclamation-circle-fill"></i>
+                                    غير موثق
+                                </span>
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Stats & Activity -->
+    <div class="col-lg-8">
+        <!-- Statistics Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="stat-card-mini">
+                    <div class="stat-icon" style="background: var(--primary-lighter); color: var(--primary-main);">
+                        <i class="bi bi-badge-ad"></i>
+                    </div>
+                    <div>
+                        <h4 class="stat-value mb-0">
+                            @(Model.Ads?.Count ?? 0)
+                        </h4>
+                        <p class="stat-label mb-0">إجمالي الإعلانات</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card-mini">
+                    <div class="stat-icon" style="background: var(--success-lighter); color: var(--success-main);">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                    <div>
+                        <h4 class="stat-value mb-0">
+                            @(Model.Ads?.Count(a => a.Status== AdStatus.Approved) ?? 0)
+                        </h4>
+                        <p class="stat-label mb-0">إعلانات نشطة</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="stat-card-mini">
+                    <div class="stat-icon" style="background: var(--warning-lighter); color: var(--warning-main);">
+                        <i class="bi bi-pause-circle"></i>
+                    </div>
+                    <div>
+                        <h4 class="stat-value mb-0">
+                            @(Model.Ads?.Count(a => a.Status == AdStatus.Paused) ?? 0)
+                        </h4>
+                        <p class="stat-label mb-0">إعلانات متوقفة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Ads Card -->
+        <div class="card shadow-card mb-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h6 class="fw-semibold mb-0" style="color: var(--text-primary);">
+                        <i class="bi bi-badge-ad me-2"></i>
+                        الإعلانات الأخيرة
+                    </h6>
+                    <a href="#" class="text-primary small text-decoration-none">
+                        عرض الكل <i class="bi bi-arrow-left"></i>
+                    </a>
+                </div>
+
+                @if (Model.Ads != null && Model.Ads.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead style="background-color: var(--gray-100);">
+                                <tr>
+                                    <th class="px-3 py-2 text-muted small">عنوان الإعلان</th>
+                                    <th class="px-3 py-2 text-muted small text-center">الحالة</th>
+                                    @* <th class="px-3 py-2 text-muted small text-end">الميزانية</th> *@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var ad in Model.Ads.OrderByDescending(a => a.StartDate).Take(5))
+                                {
+                                    <tr>
+                                        <td class="px-3 py-2">
+                                            <div class="fw-semibold" style="color: var(--text-primary);">
+                                                @ad.Title
+                                            </div>
+                                            <small class="text-muted">
+                                                @ad.StartDate.ToString()
+                                            </small>
+                                        </td>
+                                        <td class="px-3 py-2 text-center">
+                                            @if (ad.Status ==AdStatus.Approved)
+                                            {
+                                                <span class="badge-custom badge-success">
+                                                    <span class="status-dot status-success"></span>
+                                                    نشط
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge-custom badge-secondary">
+                                                    <span class="status-dot status-secondary"></span>
+                                                    متوقف
+                                                </span>
+                                            }
+                                        </td>
+                                        @* <td class="px-3 py-2 text-end">
+                                            <span class="fw-semibold" style="color: var(--text-primary);">
+                                                $@ad.Advertiser.Balance.ToString("N2")
+                                            </span>
+                                        </td> *@
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4">
+                        <i class="bi bi-badge-ad text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="text-muted mt-2 mb-0">لا توجد إعلانات حتى الآن</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Account Activity Timeline -->
+        <div class="card shadow-card">
+            <div class="card-body">
+                <h6 class="fw-semibold mb-4" style="color: var(--text-primary);">
+                    <i class="bi bi-clock-history me-2"></i>
+                    النشاط الأخير
+                </h6>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: var(--success-main);"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="fw-semibold" style="color: var(--text-primary);">
+                                    تم إنشاء الحساب
+                                </span>
+                                <span class="text-muted small">منذ شهر</span>
+                            </div>
+                            <p class="text-muted small mb-0">تم تسجيل حساب جديد في النظام</p>
+                        </div>
+                    </div>
+
+                    @if (Model.Ads != null && Model.Ads.Any())
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker" style="background: var(--primary-main);"></div>
+                            <div class="timeline-content">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="fw-semibold" style="color: var(--text-primary);">
+                                        إضافة إعلان جديد
+                                    </span>
+                                    <span class="text-muted small">منذ 3 أيام</span>
+                                </div>
+                                <p class="text-muted small mb-0">تم إنشاء إعلان: @Model.Ads.FirstOrDefault()?.Title</p>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker" style="background: var(--info-main);"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                <span class="fw-semibold" style="color: var(--text-primary);">
+                                    تحديث الملف الشخصي
+                                </span>
+                                <span class="text-muted small">منذ أسبوع</span>
+                            </div>
+                            <p class="text-muted small mb-0">تم تحديث معلومات الحساب</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

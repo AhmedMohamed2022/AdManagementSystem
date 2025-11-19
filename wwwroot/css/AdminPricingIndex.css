@@ -1,0 +1,112 @@
+﻿/* Custom Badge for Rule Types */
+.badge-custom {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.813rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-primary {
+    background-color: var(--primary-lighter);
+    color: var(--primary-dark);
+}
+
+.badge-success {
+    background-color: var(--success-lighter);
+    color: var(--success-dark);
+}
+
+.badge-warning {
+    background-color: var(--warning-lighter);
+    color: #B76E00;
+}
+
+.badge-info {
+    background-color: var(--info-lighter);
+    color: var(--info-main);
+}
+
+.badge-secondary {
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+}
+
+/* Pricing Badge */
+.pricing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+}
+
+.pricing-badge-cpm {
+    background-color: var(--primary-lighter);
+    color: var(--primary-dark);
+}
+
+.pricing-badge-cpc {
+    background-color: var(--success-lighter);
+    color: var(--success-dark);
+}
+
+/* Table Hover Effect */
+.rule-row {
+    transition: background-color 0.2s ease;
+}
+
+    .rule-row:hover {
+        background-color: var(--gray-100);
+    }
+
+/* Form Controls */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-main);
+    box-shadow: 0 0 0 0.2rem rgba(32, 101, 209, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+
+    .page-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .table-responsive {
+        border-radius: 0;
+    }
+
+    .pricing-badge {
+        font-size: 0.75rem;
+        padding: 6px 8px;
+    }
+}
+
+/* Animation for filtered rows */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
