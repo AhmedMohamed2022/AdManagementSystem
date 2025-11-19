@@ -1228,8 +1228,8 @@ namespace AdManagementSystem.Controllers
             if (ad == null)
                 return NotFound("Ad not found or inactive.");
 
-            //var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-            var ip = "3.84.174.52";
+            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+            //var ip = "3.84.174.52";
             var (country, city) = await _geoService.ResolveIpAsync(ip);
 
             var impression = new AdImpression
