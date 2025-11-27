@@ -29,56 +29,6 @@ public class PublisherReportsController : Controller
         ViewBag.Filter = filter;
         return View(model);
     }
-    //[HttpGet("ExportCsv")]
-    //public async Task<IActionResult> ExportCsv([FromQuery] ReportFilterViewModel filter)
-    //{
-    //    var user = await _userManager.GetUserAsync(User);
-    //    var report = await _reportService.GetPublisherReportAsync(user.Id, filter);
-
-    //    var sb = new StringBuilder();
-    //    sb.AppendLine("Website,Impressions,Clicks,Earnings");
-
-    //    foreach (var site in report.Websites)
-    //        sb.AppendLine($"{site.Name},{site.Impressions},{site.Clicks},{site.Earnings}");
-
-    //    var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-    //    return File(bytes, "text/csv", "PublisherReport.csv");
-    //}
-
-    //[HttpGet("ExportPdf")]
-    //public async Task<IActionResult> ExportPdf([FromQuery] ReportFilterViewModel filter)
-    //{
-    //    var user = await _userManager.GetUserAsync(User);
-    //    var report = await _reportService.GetPublisherReportAsync(user.Id, filter);
-
-    //    using var ms = new MemoryStream();
-    //    var doc = new Document(PageSize.A4);
-    //    PdfWriter.GetInstance(doc, ms);
-    //    doc.Open();
-
-    //    doc.Add(new Paragraph("Publisher Report"));
-    //    doc.Add(new Paragraph($"Generated: {DateTime.UtcNow}"));
-    //    doc.Add(new Paragraph(" "));
-
-    //    var table = new PdfPTable(4);
-    //    table.AddCell("Website");
-    //    table.AddCell("Impressions");
-    //    table.AddCell("Clicks");
-    //    table.AddCell("Earnings");
-
-    //    foreach (var site in report.Websites)
-    //    {
-    //        table.AddCell(site.Name);
-    //        table.AddCell(site.Impressions.ToString());
-    //        table.AddCell(site.Clicks.ToString());
-    //        table.AddCell(site.Earnings.ToString("0.00"));
-    //    }
-
-    //    doc.Add(table);
-    //    doc.Close();
-
-    //    return File(ms.ToArray(), "application/pdf", "PublisherReport.pdf");
-    //}
     [HttpGet("ExportCsv")]
     public async Task<IActionResult> ExportCsv([FromQuery] ReportFilterViewModel filter)
     {

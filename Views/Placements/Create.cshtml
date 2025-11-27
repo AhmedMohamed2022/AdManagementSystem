@@ -1,28 +1,4 @@
-﻿@* @model AdManagementSystem.Models.AdPlacement
-@{
-    ViewData["Title"] = "Add Placement";
-}
-
-<h2>Add Placement</h2>
-
-<form method="post">
-    <input type="hidden" name="WebsiteId" value="@Model.WebsiteId" />
-
-    <div class="mb-3">
-        <label class="form-label">Placement Name</label>
-        <input name="Name" class="form-control" required />
-    </div>
-    <select name="BannerSizeId" class="form-control" required>
-        @foreach (var size in (List<BannerSize>)ViewBag.Sizes)
-        {
-            <option value="@size.Id">@size.Name (@size.Width x @size.Height)</option>
-        }
-    </select>
-
-    <button type="submit" class="btn btn-success">Create</button>
-    <a href="/Placements?websiteId=@Model.WebsiteId" class="btn btn-secondary">Cancel</a>
-</form> *@
-@model AdManagementSystem.Models.AdPlacement
+﻿@model AdManagementSystem.Models.AdPlacement
 @{
     ViewData["Title"] = "إضافة موقع إعلان";
 }

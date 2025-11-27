@@ -1,44 +1,4 @@
-﻿@* @model AdSystem.Models.Website
-@{
-    ViewData["Title"] = "Ad Placements";
-}
-
-<h2>Ad Placements for @Model.Domain</h2>
-
-<p>
-    <a class="btn btn-primary" href="/Placements/Create?websiteId=@Model.Id">+ Add New Placement</a>
-</p>
-
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>ZoneKey</th>
-            <th>Size</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model.Placements ?? new List<AdPlacement>())
-        {
-            <tr>
-                <td>@p.Name</td>
-                <td><code>@p.ZoneKey</code></td>
-                <td>@p.BannerSize.Width x @p.BannerSize.Height</td>
-                <td>
-                    <a class="btn btn-sm btn-info" href="/Placements/Script/@p.Id">Script</a>
-                    <a class="btn btn-sm btn-warning" href="/Placements/Edit/@p.Id">Edit</a>
-                    <a class="btn btn-sm btn-danger" href="/Placements/Delete/@p.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<p>
-    <a href="/Websites" class="btn btn-secondary">Back to Websites</a>
-</p> *@
-@model AdSystem.Models.Website
+﻿@model AdSystem.Models.Website
 @{
     ViewData["Title"] = "مواقع الإعلانات";
 }

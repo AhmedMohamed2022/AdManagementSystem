@@ -1,38 +1,4 @@
-﻿@* @model AdSystem.Models.ApplicationUser
-@{
-    ViewData["Title"] = "My Wallet";
-    var tx = ViewBag.Transactions as List<AdManagementSystem.Models.WalletTransaction>;
-}
-<h2>My Wallet</h2>
-<div class="mb-3">
-    <strong>Balance:</strong> @Model.Balance.ToString("N2")
-</div>
-
-<p>Deposits: Admin can deposit to your account. Contact support.</p>
-
-<h4>Recent Transactions</h4>
-@if (tx?.Any() ?? false)
-{
-    <table class="table">
-        <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Description</th></tr></thead>
-        <tbody>
-            @foreach (var t in tx)
-            {
-                <tr>
-                    <td>@t.CreatedAt</td>
-                    <td>@t.Type</td>
-                    <td>@t.Amount</td>
-                    <td>@t.Description</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No transactions yet.</p>
-} *@
-@using AdManagementSystem.Models.Enums
+﻿@using AdManagementSystem.Models.Enums
 @model AdSystem.Models.ApplicationUser
 @{
     ViewData["Title"] = "محفظتي";

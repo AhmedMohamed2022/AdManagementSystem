@@ -1,5 +1,4 @@
-﻿// File: Services/FakeEmailSender.cs
-using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using System.Threading.Tasks;
 
 namespace AdManagementSystem.Services

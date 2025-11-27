@@ -25,56 +25,6 @@ public class AdminReportsController : Controller
         ViewBag.Filter = filter;
         return View(model);
     }
-
-    // ---------------- CSV EXPORT ----------------
-    //[HttpGet("ExportCsv")]
-    //public async Task<IActionResult> ExportCsv([FromQuery] ReportFilterViewModel filter)
-    //{
-    //    var report = await _reportService.GetAdminReportAsync(filter);
-
-    //    var sb = new StringBuilder();
-    //    sb.AppendLine("Country,City,Impressions,Clicks");
-
-    //    foreach (var region in report.Regions)
-    //        sb.AppendLine($"{region.Country},{region.City},{region.Impressions},{region.Clicks}");
-
-    //    var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-    //    return File(bytes, "text/csv", "AdminReport.csv");
-    //}
-
-    //// ---------------- PDF EXPORT ----------------
-    //[HttpGet("ExportPdf")]
-    //public async Task<IActionResult> ExportPdf([FromQuery] ReportFilterViewModel filter)
-    //{
-    //    var report = await _reportService.GetAdminReportAsync(filter);
-    //    using var ms = new MemoryStream();
-    //    var doc = new Document(PageSize.A4);
-    //    PdfWriter.GetInstance(doc, ms);
-    //    doc.Open();
-
-    //    doc.Add(new Paragraph("Admin Report"));
-    //    doc.Add(new Paragraph($"Generated: {DateTime.UtcNow}"));
-    //    doc.Add(new Paragraph(" "));
-
-    //    var table = new PdfPTable(4);
-    //    table.AddCell("Country");
-    //    table.AddCell("City");
-    //    table.AddCell("Impressions");
-    //    table.AddCell("Clicks");
-
-    //    foreach (var region in report.Regions)
-    //    {
-    //        table.AddCell(region.Country);
-    //        table.AddCell(region.City);
-    //        table.AddCell(region.Impressions.ToString());
-    //        table.AddCell(region.Clicks.ToString());
-    //    }
-
-    //    doc.Add(table);
-    //    doc.Close();
-
-    //    return File(ms.ToArray(), "application/pdf", "AdminReport.pdf");
-    //}
     [HttpGet("ExportCsv")]
     public async Task<IActionResult> ExportCsv([FromQuery] ReportFilterViewModel filter)
     {

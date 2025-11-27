@@ -1,96 +1,9 @@
-//using AdManagementSystem.Data;
-//using AdManagementSystem.Services;
-//using AdSystem.Data;
-//using AdSystem.Models;
-//using Microsoft.AspNetCore.Identity;
-//using Microsoft.AspNetCore.Identity.UI.Services;
-//using Microsoft.EntityFrameworkCore;
-//using System;
-
-//namespace AdManagementSystem
-//{
-//    public class Program
-//    {
-//        public static async Task Main(string[] args)
-//        {
-//            var builder = WebApplication.CreateBuilder(args);
-
-//            // Add services to the container.
-//            builder.Services.AddControllersWithViews();
-//            builder.Services.AddRazorPages();
-
-//            // Configure EF connection
-//            builder.Services.AddDbContext<AppDbContext>(options =>
-//                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
-//            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//      .AddEntityFrameworkStores<AppDbContext>()
-//      .AddDefaultTokenProviders();
-//            builder.Services.ConfigureApplicationCookie(options =>
-//            {
-//                options.LoginPath = "/Identity/Account/Login";
-//                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-//            });
-
-//            builder.Services.AddScoped<IEmailSender, FakeEmailSender>();
-//            builder.Services.AddScoped<IAdService, AdService>();
-
-
-
-//            builder.Services.AddCors(options =>
-//            {
-//                options.AddPolicy("AllowAll", policy =>
-//                {
-//                    policy
-//                        .AllowAnyOrigin()
-//                        .AllowAnyHeader()
-//                        .AllowAnyMethod();
-//                });
-//            });
-
-//            var app = builder.Build();
-
-//            // Configure the HTTP request pipeline.
-//            if (!app.Environment.IsDevelopment())
-//            {
-//                app.UseExceptionHandler("/Home/Error");
-//                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-//                app.UseHsts();
-//            }
-
-//            app.UseHttpsRedirection();
-//            app.UseStaticFiles();
-
-//            app.UseRouting();
-//            app.UseCors("AllowAll");
-
-//            app.UseAuthentication();
-//            app.UseAuthorization();
-//            app.MapControllers();
-
-//            //default route
-//            app.MapControllerRoute(
-//                name: "default",
-//                pattern: "{controller=Home}/{action=Index}/{id?}");
-         
-//            app.MapRazorPages(); // enable built-in login/register pages
-//            using (var scope = app.Services.CreateScope())
-//            {
-//                var services = scope.ServiceProvider;
-//                await SeedData.InitializeAsync(services);
-//            }
-//            app.Run();
-//        }
-//    }
-//}
 using AdManagementSystem.Data;
 using AdManagementSystem.Services;
 using AdSystem.Data;
 using AdSystem.Filters;
 using AdSystem.Models;
 using AdSystem.Services;
-//using Microsoft.AspNetCore.HttpOverrides;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -162,12 +75,6 @@ namespace AdManagementSystem
             builder.Services.AddSingleton<IClickTokenService, ClickTokenService>();
             builder.Services.AddScoped<ActiveUserFilter>();
             builder.Services.AddSingleton<IPdfService, PdfService>();
-    //        builder.Services.Configure<GeoIPOptions>(
-    //builder.Configuration.GetSection("GeoIP"));
-
-
-
-
 
             var cloudName = builder.Configuration["Cloudinary:CloudName"];
             var apiKey = builder.Configuration["Cloudinary:ApiKey"];
@@ -185,48 +92,6 @@ namespace AdManagementSystem
             {
                 client.Timeout = TimeSpan.FromSeconds(6);
             });
-
-
-            // Ensure pricing service registration exists (IPricingService -> PricingService)
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowAll", policy =>
-            //    {
-            //        policy
-            //            .AllowAnyOrigin()
-            //            .AllowAnyHeader()
-            //            .AllowAnyMethod();
-            //    });
-            //});
-            // CORS CONFIGURATION (replace your current section)
-            //builder.Services.AddCors(options =>
-            //{
-            //    //options.AddPolicy("AdScriptPolicy", policy =>
-            //    //{
-            //    //    using var tempScope = builder.Services.BuildServiceProvider().CreateScope();
-            //    //    var db = tempScope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-            //    //    // Get all approved website domains (normalize URLs)
-            //    //    var allowedOrigins = db.Websites
-            //    //        .Where(w => w.IsApproved && w.Domain != null)
-            //    //        .Select(w =>
-            //    //            w.Domain.StartsWith("http") ? w.Domain.TrimEnd('/') : $"https://{w.Domain.TrimEnd('/')}"
-            //    //        )
-            //    //        .ToArray();
-
-            //    //    policy
-            //    //        .WithOrigins(allowedOrigins)
-            //    //        .AllowAnyHeader()
-            //    //        .AllowAnyMethod();
-
-            //    //});
-
-            //    // Keep your general "AllowAll" if needed elsewhere
-            //    options.AddPolicy("AllowAll", policy =>
-            //    {
-            //        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-            //    });
-            //});
 
             builder.Services.AddCors(options =>
             {
@@ -251,11 +116,6 @@ namespace AdManagementSystem
 
             var app = builder.Build();
 
-            //// Enable X-Forwarded-For header processing
-            //app.UseForwardedHeaders(new ForwardedHeadersOptions
-            //{
-            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            //});
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {

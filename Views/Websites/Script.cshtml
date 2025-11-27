@@ -1,376 +1,4 @@
-﻿@* @model AdSystem.Models.Website
-@{
-    ViewData["Title"] = "Ad Script Snippet";
-}
-
-@if (!Model.IsApproved)
-{
-    <div class="alert alert-warning">Your website is not yet approved by the admin.</div>
-}
-else
-{
-<div class="container mt-4">
-    <h2 class="mb-4">📜Ad Script for @Model.Domain</h2>
-
-    <div class="alert alert-info">
-        <p>Copy and paste the following script into your website’s HTML before the closing <code>&lt;/body&gt;</code> tag:</p>
-
-    </div>
-    <pre class="bg-light border p-3"><code> &lt;div id="ad-container"&gt;&lt;/div&gt;
-&lt;script src="@Url.Content($"https://{Context.Request.Host}/ad.js?key={Model.ScriptKey}")"&gt;&lt;/script&gt;</code></pre>
-    
-    <a asp-action="Index" class="btn btn-secondary mt-3">⬅️ Back to Websites</a>
-</div>
-} 
-@model AdSystem.Models.Website
-@{
-    ViewData["Title"] = "كود دمج الإعلانات";
-}
-
-<!-- Page Header -->
-<div class="page-header">
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
-        <div>
-            <h4 class="page-title mb-1">كود دمج الإعلانات</h4>
-            <p class="page-subtitle mb-0">احصل على كود السكريبت لموقعك @Model.Domain</p>
-        </div>
-        <div class="action-buttons">
-            <a asp-action="Index" class="btn btn-light">
-                <i class="bi bi-arrow-right ms-1"></i>
-                العودة للمواقع
-            </a>
-        </div>
-    </div>
-</div>
-
-@if (!Model.IsApproved)
-{
-    <!-- Pending Approval Alert -->
-    <div class="alert border-0 d-flex align-items-start gap-3 p-4" style="background: var(--warning-lighter); border-radius: var(--radius-md);">
-        <div class="flex-shrink-0">
-            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                 style="width: 48px; height: 48px; background: white; color: var(--warning-main);">
-                <i class="bi bi-clock-history" style="font-size: 24px;"></i>
-            </div>
-        </div>
-        <div class="flex-grow-1">
-            <h5 class="mb-2 fw-semibold" style="color: var(--warning-dark);">الموقع قيد المراجعة</h5>
-            <p class="mb-0" style="color: var(--warning-dark);">
-                موقعك لم يتم الموافقة عليه بعد من قبل الإدارة. سيتم إشعارك فور الموافقة على موقعك لتتمكن من استخدام كود الإعلانات.
-            </p>
-        </div>
-    </div>
-
-    <!-- Preview Card (Disabled State) -->
-    <div class="card shadow-sm border-0 mt-4" style="border-radius: var(--radius-lg); opacity: 0.6; pointer-events: none;">
-        <div class="card-body p-4">
-            <div class="d-flex align-items-center gap-3 mb-4">
-                <div class="rounded-circle d-flex align-items-center justify-content-center"
-                     style="width: 56px; height: 56px; background: var(--gray-200); color: var(--text-disabled);">
-                    <i class="bi bi-code-slash" style="font-size: 24px;"></i>
-                </div>
-                <div>
-                    <h5 class="mb-1 fw-semibold">كود السكريبت</h5>
-                    <p class="text-muted small mb-0">غير متاح حتى الموافقة على الموقع</p>
-                </div>
-            </div>
-
-            <div class="p-4 rounded" style="background: var(--gray-100); border: 2px dashed var(--gray-300);">
-                <code class="text-muted">سيتوفر الكود بعد الموافقة...</code>
-            </div>
-        </div>
-    </div>
-}
-else
-{
-    <!-- Success Alert -->
-    <div class="alert border-0 d-flex align-items-start gap-3 p-4 mb-4" style="background: var(--success-lighter); border-radius: var(--radius-md);">
-        <div class="flex-shrink-0">
-            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                 style="width: 48px; height: 48px; background: white; color: var(--success-main);">
-                <i class="bi bi-check-circle-fill" style="font-size: 24px;"></i>
-            </div>
-        </div>
-        <div class="flex-grow-1">
-            <h5 class="mb-2 fw-semibold" style="color: var(--success-dark);">موقعك مفعّل ومعتمد!</h5>
-            <p class="mb-0" style="color: var(--success-dark);">
-                تهانينا! تم اعتماد موقعك. يمكنك الآن نسخ كود السكريبت أدناه ودمجه في موقعك لبدء عرض الإعلانات.
-            </p>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <!-- Script Code Card -->
-        <div class="col-12 col-lg-8">
-            <div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                                 style="width: 56px; height: 56px; background: var(--primary-lighter); color: var(--primary-main);">
-                                <i class="bi bi-code-slash" style="font-size: 24px;"></i>
-                            </div>
-                            <div>
-                                <h5 class="mb-1 fw-semibold">كود دمج الإعلانات</h5>
-                                <p class="text-muted small mb-0">انسخ والصق هذا الكود في موقعك</p>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" onclick="copyScript()">
-                            <i class="bi bi-clipboard ms-1"></i>
-                            نسخ الكود
-                        </button>
-                    </div>
-
-                    <!-- Code Block -->
-                    <div class="position-relative">
-                        <div class="p-4 rounded" style="background: #1e1e1e; border: 1px solid var(--gray-300);">
-                            <pre class="mb-0" style="color: #d4d4d4; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; overflow-x: auto;" id="scriptCode"><code><span style="color: #808080;">&lt;!-- Ad Container --&gt;</span>
-    <span style="color: #569cd6;">&lt;div</span> <span style="color: #9cdcfe;">id</span>=<span style="color: #ce9178;">"ad-container"</span><span style="color: #569cd6;">&gt;&lt;/div&gt;</span>
-
-    <span style="color: #808080;">&lt;!-- Ad Script --&gt;</span>
-    <span style="color: #569cd6;">&lt;script</span> <span style="color: #9cdcfe;">src</span>=<span style="color: #ce9178;">"@Url.Content($"https://{Context.Request.Host}/ad.js?key={Model.ScriptKey}")"</span><span style="color: #569cd6;">&gt;&lt;/script&gt;</span></code></pre>
-                        </div>
-                        <div class="position-absolute top-0 end-0 m-3">
-                            <span class="badge" style="background: var(--gray-700); color: white; padding: 6px 12px;">
-                                HTML
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Installation Steps -->
-            <div class="card shadow-sm border-0 mt-4" style="border-radius: var(--radius-lg);">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center"
-                             style="width: 48px; height: 48px; background: var(--info-lighter); color: var(--info-main);">
-                            <i class="bi bi-list-ol" style="font-size: 20px;"></i>
-                        </div>
-                        <div>
-                            <h5 class="mb-1 fw-semibold">خطوات التركيب</h5>
-                            <p class="text-muted small mb-0">اتبع هذه الخطوات لدمج الإعلانات في موقعك</p>
-                        </div>
-                    </div>
-
-                    <div class="installation-steps">
-                        <div class="step-item d-flex gap-3 mb-4">
-                            <div class="flex-shrink-0">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-semibold"
-                                     style="width: 36px; height: 36px; background: var(--primary-main); color: white;">
-                                    1
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-2 fw-semibold">انسخ الكود أعلاه</h6>
-                                <p class="text-muted mb-0 small">انقر على زر "نسخ الكود" لنسخ السكريبت بالكامل</p>
-                            </div>
-                        </div>
-
-                        <div class="step-item d-flex gap-3 mb-4">
-                            <div class="flex-shrink-0">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-semibold"
-                                     style="width: 36px; height: 36px; background: var(--primary-main); color: white;">
-                                    2
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-2 fw-semibold">افتح ملف HTML الخاص بموقعك</h6>
-                                <p class="text-muted mb-0 small">افتح الصفحة التي تريد عرض الإعلانات فيها في محرر النصوص</p>
-                            </div>
-                        </div>
-
-                        <div class="step-item d-flex gap-3 mb-4">
-                            <div class="flex-shrink-0">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-semibold"
-                                     style="width: 36px; height: 36px; background: var(--primary-main); color: white;">
-                                    3
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-2 fw-semibold">الصق الكود قبل وسم <code style="background: var(--gray-100); padding: 2px 8px; border-radius: 4px;">&lt;/body&gt;</code></h6>
-                                <p class="text-muted mb-0 small">ضع الكود في نهاية الصفحة قبل إغلاق وسم body مباشرة</p>
-                            </div>
-                        </div>
-
-                        <div class="step-item d-flex gap-3">
-                            <div class="flex-shrink-0">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-semibold"
-                                     style="width: 36px; height: 36px; background: var(--primary-main); color: white;">
-                                    4
-                                </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-2 fw-semibold">احفظ الملف وارفعه لموقعك</h6>
-                                <p class="text-muted mb-0 small">بعد الحفظ، ارفع الملف المحدث إلى خادم موقعك وستبدأ الإعلانات بالظهور تلقائياً</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar Info Cards -->
-        <div class="col-12 col-lg-4">
-            <!-- Website Info -->
-            <div class="card shadow-sm border-0 mb-3" style="border-radius: var(--radius-lg);">
-                <div class="card-body p-4">
-                    <h6 class="mb-3 fw-semibold">معلومات الموقع</h6>
-
-                    <div class="mb-3">
-                        <div class="text-muted small mb-1">اسم الموقع</div>
-                        <div class="fw-medium" style="color: var(--text-primary);">@Model.Name</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="text-muted small mb-1">النطاق</div>
-                        <a href="@Model.Domain" target="_blank" class="text-decoration-none d-inline-flex align-items-center gap-1" style="color: var(--primary-main);">
-                            <span class="text-break">@Model.Domain</span>
-                            <i class="bi bi-box-arrow-up-left"></i>
-                        </a>
-                    </div>
-
-                    <div class="mb-3">
-                        <div class="text-muted small mb-1">مفتاح السكريبت</div>
-                        <code class="d-block p-2 rounded text-break small" style="background: var(--gray-100); color: var(--text-primary);">@Model.ScriptKey</code>
-                    </div>
-
-                    <div>
-                        <div class="text-muted small mb-1">الحالة</div>
-                        <span class="badge rounded-pill" style="background: var(--success-lighter); color: var(--success-dark); font-weight: 600; padding: 6px 12px;">
-                            <i class="bi bi-check-circle-fill ms-1"></i>
-                            مفعّل
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Help Card -->
-            <div class="card shadow-sm border-0 mb-3" style="border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--primary-light) 100%);">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-question-circle" style="font-size: 24px; color: var(--primary-main);"></i>
-                        <h6 class="mb-0 fw-semibold" style="color: var(--primary-dark);">هل تحتاج مساعدة؟</h6>
-                    </div>
-                    <p class="small mb-3" style="color: var(--primary-dark);">
-                        إذا واجهت أي مشكلة في تركيب الكود أو لديك أي استفسار، تواصل معنا.
-                    </p>
-                    <button class="btn btn-light w-100" style="color: var(--primary-main);">
-                        <i class="bi bi-chat-dots ms-1"></i>
-                        الدعم الفني
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tips Card -->
-            <div class="card shadow-sm border-0" style="border-radius: var(--radius-lg);">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-lightbulb" style="font-size: 20px; color: var(--warning-main);"></i>
-                        <h6 class="mb-0 fw-semibold">نصائح مهمة</h6>
-                    </div>
-                    <ul class="small text-muted mb-0 pe-3" style="line-height: 1.8;">
-                        <li class="mb-2">تأكد من وضع الكود قبل وسم <code>&lt;/body&gt;</code> مباشرة</li>
-                        <li class="mb-2">لا تقم بتعديل الكود أو مفتاح السكريبت</li>
-                        <li class="mb-2">يمكنك استخدام نفس الكود في صفحات متعددة</li>
-                        <li>ستظهر الإعلانات تلقائياً بعد التركيب</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
-@section Scripts {
-    <script>
-        function copyScript() {
-            const scriptCode = document.getElementById('scriptCode').textContent;
-
-            // Create temporary textarea
-            const textarea = document.createElement('textarea');
-            textarea.value = scriptCode.trim();
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-
-            // Select and copy
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-
-            // Show success feedback
-            const button = event.target.closest('button');
-            const originalHTML = button.innerHTML;
-            button.innerHTML = '<i class="bi bi-check-circle ms-1"></i> تم النسخ!';
-            button.classList.remove('btn-primary');
-            button.style.background = 'var(--success-main)';
-            button.style.borderColor = 'var(--success-main)';
-
-            // Show toast notification
-            showToast();
-
-            setTimeout(() => {
-                button.innerHTML = originalHTML;
-                button.classList.add('btn-primary');
-                button.style.background = '';
-                button.style.borderColor = '';
-            }, 2000);
-        }
-
-        function showToast() {
-            // Create toast element
-            const toast = document.createElement('div');
-            toast.className = 'position-fixed bottom-0 end-0 p-3';
-            toast.style.zIndex = '9999';
-            toast.innerHTML = `
-                <div class="alert border-0 d-flex align-items-center gap-2 mb-0 shadow-lg" style="background: var(--success-main); color: white; border-radius: var(--radius-md); animation: slideIn 0.3s ease;">
-                    <i class="bi bi-check-circle-fill" style="font-size: 20px;"></i>
-                    <span class="fw-medium">تم نسخ الكود بنجاح!</span>
-                </div>
-            `;
-
-            document.body.appendChild(toast);
-
-            // Remove after 3 seconds
-            setTimeout(() => {
-                toast.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Add animation styles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Add smooth transitions
-        document.addEventListener('DOMContentLoaded', function() {
-            const buttons = document.querySelectorAll('.btn');
-
-            buttons.forEach(button => {
-                button.style.transition = 'all 0.2s ease';
-
-                button.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-2px)';
-                });
-
-                button.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                });
-            });
-        });
-    </script>
-} *@
-@model AdSystem.Models.Website
+﻿@model AdSystem.Models.Website
 @{
     ViewData["Title"] = "كود دمج الإعلانات";
 }

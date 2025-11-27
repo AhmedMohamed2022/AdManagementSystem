@@ -3,28 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AdSystem.Models
 {
-    //public class Website
-    //{
-    //    public int Id { get; set; }
-
-    //    [Required]
-    //    public string Name { get; set; }
-
-    //    [Required]
-    //    public string Url { get; set; }
-
-    //    // Auto-generated script key (publisher cannot edit it)
-    //    public string ScriptKey { get; set; }
-
-    //    // Admin must approve website before ads appear
-    //    public bool IsApproved { get; set; } = false;
-
-    //    public string? UserId { get; set; }
-    //    public ApplicationUser User { get; set; }
-
-    //    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    //}
-    // <summary>
     /// Represents a publisher’s website that can display ads.
     /// </summary>
     public class Website

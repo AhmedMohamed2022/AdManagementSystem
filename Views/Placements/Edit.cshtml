@@ -1,29 +1,4 @@
-﻿@* @model AdManagementSystem.Models.AdPlacement
-@{
-    ViewData["Title"] = "Edit Placement";
-}
-
-<h2>Edit Placement</h2>
-
-<form method="post">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="WebsiteId" />
-
-    <div class="mb-3">
-        <label class="form-label">Placement Name</label>
-        <input asp-for="Name" class="form-control" required />
-    </div>
-    <select name="BannerSizeId" class="form-control" required>
-        @foreach (var size in (List<BannerSize>)ViewBag.Sizes)
-        {
-            <option value="@size.Id">@size.Name (@size.Width x @size.Height)</option>
-        }
-    </select>
-
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a href="/Placements?websiteId=@Model.WebsiteId" class="btn btn-secondary">Cancel</a>
-</form> *@
-@model AdManagementSystem.Models.AdPlacement
+﻿@model AdManagementSystem.Models.AdPlacement
 @{
     ViewData["Title"] = "تعديل موقع الإعلان";
 }

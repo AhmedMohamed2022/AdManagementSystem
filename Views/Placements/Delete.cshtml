@@ -1,19 +1,4 @@
-﻿@* @model AdManagementSystem.Models.AdPlacement
-@{
-    ViewData["Title"] = "Delete Placement";
-}
-
-<h2>Delete Placement</h2>
-
-<p>Are you sure you want to delete <strong>@Model.Name</strong>?</p>
-
-<form method="post">
-    <input type="hidden" asp-for="Id" />
-
-    <button type="submit" class="btn btn-danger">Delete</button>
-    <a href="/Placements?websiteId=@Model.WebsiteId" class="btn btn-secondary">Cancel</a>
-</form> *@
-@model AdManagementSystem.Models.AdPlacement
+﻿@model AdManagementSystem.Models.AdPlacement
 @{
     ViewData["Title"] = "حذف موقع الإعلان";
 }

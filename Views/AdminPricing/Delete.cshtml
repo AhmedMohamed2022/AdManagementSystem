@@ -1,16 +1,4 @@
-﻿@* @using AdSystem.Models
-@model AdPricingRule
-
-<h3>Delete Pricing Rule</h3>
-
-<p>Are you sure you want to delete this rule?</p>
-
-<form asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button class="btn btn-danger">Yes, Delete</button>
-    <a class="btn btn-secondary" href="/AdminPricing/Index">Cancel</a>
-</form> *@
-@using AdSystem.Models
+﻿@using AdSystem.Models
 @model AdPricingRule
 @{
     ViewData["Title"] = "حذف قاعدة التسعير";
